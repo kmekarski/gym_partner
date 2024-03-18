@@ -44,7 +44,7 @@ class _TabsScreenState extends State<TabsScreen> {
         onTap: _selectPage,
         items: [
           tabBarItem(context, icon: Icons.event_note, text: 'My plans'),
-          tabBarItem(context, icon: Icons.event_note, text: 'Shared plans'),
+          tabBarItem(context, icon: Icons.event_note, text: 'Browse plans'),
           tabBarItem(context, icon: Icons.history, text: 'History'),
           tabBarItem(context, icon: Icons.settings, text: 'Settings'),
         ],

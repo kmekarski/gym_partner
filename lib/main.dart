@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_partner/screens/auth.dart';
 import 'package:gym_partner/screens/tabs.dart';
 
 void main() async {
@@ -11,7 +12,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: TabsScreen(),
+      home: AuthScreen(),
     );
   }
 }
