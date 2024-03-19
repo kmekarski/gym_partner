@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
+import 'package:gym_partner/screens/plan_details.dart';
+import 'package:gym_partner/widgets/plans_list.dart';
 
 class MyPlansScreen extends ConsumerStatefulWidget {
   const MyPlansScreen({super.key});
@@ -38,6 +41,14 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     }
   }
 
+  void _selectPlan(BuildContext context, Plan plan) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlanDetailsScreen(plan: plan),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final plans = ref.watch(userPlansProvider);
@@ -53,10 +64,8 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
         return _centerMessage(
             context, 'You haven\'t created any workout plans yet.');
       } else {
-        return ListView.builder(
-          itemCount: plans.length,
-          itemBuilder: (ctx, index) => Text(plans[index].name),
-        );
+        return PlansList(
+            plans: plans, onSelectPlan: (plan) => _selectPlan(context, plan));
       }
     }
 
@@ -65,7 +74,10 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     );
     return Scaffold(
       appBar: appBar,
-      body: content(),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: content(),
+      ),
     );
   }
 

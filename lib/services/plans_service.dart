@@ -28,7 +28,6 @@ class PlansService {
     } catch (e) {
       print("Error getting user's plans from Firebase: $e");
     }
-
     return userPlans;
   }
 
