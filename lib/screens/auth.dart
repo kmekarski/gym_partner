@@ -108,7 +108,9 @@ class _AuthScreenState extends State<AuthScreen> {
                           label: Text('Repeat password'),
                         ),
                         validator: (value) {
-                          if (value != _passwordController.text) {
+                          if (value == null ||
+                              value.trim().length < 6 ||
+                              value != _passwordController.text) {
                             return 'Passwords must match';
                           }
                           return null;

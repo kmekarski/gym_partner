@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1008734845420",
+    "project_id": "gym-partner-ed941",
+    "storage_bucket": "gym-partner-ed941.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008734845420:android:c87c31a298557eb6da68c9",
+        "android_client_info": {
+          "package_name": "com.example.gym_partner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxXlmx_JDIY8w-RKk7WbtYBZKXtw2BKZs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
