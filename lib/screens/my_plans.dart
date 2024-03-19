@@ -13,34 +13,6 @@ class MyPlansScreen extends ConsumerStatefulWidget {
 }
 
 class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
-  bool _isFetching = false;
-  String? _error;
-
-  @override
-  void initState() {
-    _fetchPlans();
-    super.initState();
-  }
-
-  void _fetchPlans() async {
-    setState(() {
-      _isFetching = true;
-      _error = null;
-    });
-
-    try {
-      await ref.read(userPlansProvider.notifier).getUserPlans();
-    } catch (error) {
-      setState(() {
-        _error = 'Error while fetching plans.\nTry again later.';
-      });
-    } finally {
-      setState(() {
-        _isFetching = false;
-      });
-    }
-  }
-
   void _selectPlan(BuildContext context, Plan plan) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -54,12 +26,6 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     final plans = ref.watch(userPlansProvider);
 
     Widget content() {
-      if (_isFetching) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      if (_error != null) {
-        return _centerMessage(context, _error!);
-      }
       if (plans.isEmpty) {
         return _centerMessage(
             context, 'You haven\'t created any workout plans yet.');

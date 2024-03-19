@@ -48,4 +48,8 @@ class Plan {
   final List<PlanDay> days;
   final List<PlanTag> tags;
   final String authorName;
+
+  int getCompletionPercentage(int currentDayIndex) {
+    return (100 * currentDayIndex / days.length) as int;
+  }
 }

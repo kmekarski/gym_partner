@@ -31,7 +31,7 @@ class PlansService {
     return userPlans;
   }
 
-  Future<Plan?> addPlan(Plan plan) async {
+  Future<Plan?> addUserPlan(Plan plan) async {
     try {
       DocumentReference planDocRef = await userDocRef(currentUser.uid)
           .collection('plans')
