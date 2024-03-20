@@ -13,14 +13,12 @@ class AppUser {
   factory AppUser.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map<String, dynamic>;
 
-    List<dynamic> plansDataData = data['plansData'] ?? [];
+    List<dynamic> plansDataData = data['plans_data'] ?? [];
     List<UserPlanData> plansData = plansDataData.map((planData) {
       return UserPlanData(
           planId: planData['plan_id'],
           currentDayIndex: planData['current_day_index']);
     }).toList();
-
-    print(data['username']);
     return AppUser(
       id: doc.id,
       username: data['username'] ?? '',

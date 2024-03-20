@@ -17,4 +17,15 @@ class UserNotifier extends StateNotifier<AppUser> {
   Future<void> getUserData() async {
     state = await usersService.currentUserData;
   }
+
+  Future<void> incrementCurrentDayIndex(Plan plan) async {
+    AppUser? updatedUser;
+    try {
+      updatedUser = await usersService.incrementCurrentDayIndex(plan);
+    } finally {
+      if (updatedUser != null) {
+        state = updatedUser;
+      }
+    }
+  }
 }

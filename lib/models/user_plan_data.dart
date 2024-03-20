@@ -3,4 +3,11 @@ class UserPlanData {
 
   String planId;
   int currentDayIndex;
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'plan_id': planId,
+      'current_day_index': currentDayIndex,
+    };
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/user.dart';
 
 class PlansService {
   DocumentReference<Map<String, dynamic>> userDocRef(String userId) {
@@ -11,8 +12,8 @@ class PlansService {
     return FirebaseAuth.instance.currentUser!;
   }
 
-  Future<Map<String, dynamic>> get currentUserData async {
-    return (await userDocRef(currentUser.uid).get()).data()!;
+  Future<AppUser> get currentUserData async {
+    return AppUser.fromFirestore((await userDocRef(currentUser.uid).get()));
   }
 
   Future<List<Plan>> getUserPlans() async {
@@ -47,7 +48,7 @@ class PlansService {
         name: plan.name,
         days: plan.days,
         tags: plan.tags,
-        authorName: userData['username'],
+        authorName: userData.username,
       );
     } catch (e) {
       print("Error adding user's plan to Firebase: $e");

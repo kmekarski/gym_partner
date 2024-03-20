@@ -50,6 +50,6 @@ class Plan {
   final String authorName;
 
   int getCompletionPercentage(int currentDayIndex) {
-    return (100 * currentDayIndex / days.length) as int;
+    return (100 * currentDayIndex / days.length).round();
   }
 }
