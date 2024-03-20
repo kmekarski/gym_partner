@@ -30,7 +30,7 @@ class Plan {
     final difficultyString = (data['difficulty'] ?? '').toString();
     final difficulty = PlanDifficulty.values.firstWhere(
       (e) => e.toString() == difficultyString,
-      orElse: () => PlanDifficulty.beginner,
+      orElse: () => PlanDifficulty.easy,
     );
 
     return Plan(

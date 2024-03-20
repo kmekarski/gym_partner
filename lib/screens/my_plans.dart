@@ -37,7 +37,10 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     }
 
     var appBar = AppBar(
-      title: const Text('My workout plans'),
+      title: const Text(
+        'My workout plans',
+        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 26),
+      ),
       actions: [
         IconButton(
             onPressed: () => Navigator.of(context).push(

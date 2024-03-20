@@ -8,7 +8,7 @@ class FormBadge extends StatefulWidget {
     required this.selectedBackgroundColor,
     required this.unselectedBackgroundColor,
     this.width,
-    this.height = 40,
+    this.height = 42,
     this.isSelected = false,
     this.selectedTextColor = Colors.black,
     this.unselectedTextColor = Colors.grey,
@@ -62,7 +62,7 @@ class _FormBadgeState extends State<FormBadge> {
           width: widget.width,
           height: widget.height,
           padding: widget.width == null
-              ? const EdgeInsets.symmetric(horizontal: 16)
+              ? const EdgeInsets.symmetric(horizontal: 18)
               : EdgeInsets.only(left: widget.hasX ? 16 : 0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
@@ -80,7 +80,7 @@ class _FormBadgeState extends State<FormBadge> {
                       color: widget.isSelected
                           ? widget.selectedTextColor
                           : widget.unselectedTextColor,
-                      fontSize: 14,
+                      fontSize: 16,
                     ),
               ),
               if (widget.hasX) const Spacer(),

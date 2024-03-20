@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +38,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   double _plusDayButtonWidth = 50;
 
   List<PlanTag> _selectedTags = [];
-  PlanDifficulty _selectedDifficulty = PlanDifficulty.beginner;
+  PlanDifficulty _selectedDifficulty = PlanDifficulty.easy;
 
   void _selectDay(int index) {
     setState(() {
@@ -65,14 +66,15 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   }
 
   void _animateDaysList() {
-    final listWidth = MediaQuery.of(context).size.width - _plusDayButtonWidth;
+    final listWidth =
+        MediaQuery.of(context).size.width - _plusDayButtonWidth - 24;
     final elementWidth = _daysListElementWidth + _daysListGapWidth;
     final numOfelementsOnScreen = (listWidth / elementWidth).floor();
     print(numOfelementsOnScreen);
     final needsToScroll = _days.length > numOfelementsOnScreen;
     _daysListScrollController.animateTo(
         needsToScroll
-            ? (_days.length - numOfelementsOnScreen) * elementWidth
+            ? (_days.length - numOfelementsOnScreen - 1) * elementWidth + 24
             : 0,
         duration: Duration(milliseconds: 300),
         curve: Curves.fastOutSlowIn);
@@ -126,8 +128,25 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     Navigator.of(context).pop();
   }
 
+  Widget sectionTitle(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final tagSelectedBackgroundColor =
+        Theme.of(context).colorScheme.primaryContainer;
+    final tagUnselectedBackgroundColor =
+        Theme.of(context).colorScheme.secondaryContainer;
     var daysPicker = SizedBox(
       height: 50,
       width: MediaQuery.of(context).size.width,
@@ -138,7 +157,19 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
               controller: _daysListScrollController,
               scrollDirection: Axis.horizontal,
               children: [
-                for (var (index, day) in _days.indexed) dayButton(day, index),
+                for (var (index, day) in _days.indexed)
+                  FormBadge.withX(
+                    text: 'Day ${index + 1}',
+                    width: _daysListElementWidth,
+                    isSelected: index == _selectedDayIndex,
+                    onTap: () {
+                      _selectDay(index);
+                    },
+                    onXTap: () => _removeDay(index),
+                    selectedBackgroundColor: tagSelectedBackgroundColor,
+                    unselectedBackgroundColor: tagUnselectedBackgroundColor,
+                    margin: EdgeInsets.only(right: _daysListGapWidth),
+                  ),
               ],
             ),
           ),
@@ -157,19 +188,35 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         ],
       ),
     );
-    var exercisesPicker = const Expanded(
-      child: Center(
-        child: Text('Lets add'),
+    var exercisesPicker = Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {},
+                label: const Text('Add exercise...'),
+                icon: const Icon(Icons.add),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'or make it a rest day!',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
+        ),
       ),
     );
-    final tagSelectedBackgroundColor =
-        Theme.of(context).colorScheme.primaryContainer;
-    final tagUnselectedBackgroundColor =
-        Theme.of(context).colorScheme.secondaryContainer;
+
     var tagsPicker = Row(
       children: [
-        const Text('Tags'),
-        const SizedBox(width: 16),
+        sectionTitle('Tags:'),
         Row(
           children: [
             for (final tag in PlanTag.values)
@@ -184,22 +231,29 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       ],
     );
 
-    var difficultyPicker = Row(
-      children: [
-        const Text('Difficulty'),
-        const SizedBox(width: 16),
-        Row(
-          children: [
-            for (final difficulty in PlanDifficulty.values)
-              FormBadge(
-                  text: difficulty.toString().split('.').last,
-                  isSelected: _selectedDifficulty == difficulty,
-                  onTap: () => _selectDifficulty(difficulty),
-                  selectedBackgroundColor: tagSelectedBackgroundColor,
-                  unselectedBackgroundColor: tagUnselectedBackgroundColor)
-          ],
-        ),
-      ],
+    var difficultyPicker = SizedBox(
+      height: 42,
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          sectionTitle('Difficulty:'),
+          Expanded(
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                for (final difficulty in PlanDifficulty.values)
+                  FormBadge(
+                      text: difficulty.toString().split('.').last,
+                      isSelected: _selectedDifficulty == difficulty,
+                      onTap: () => _selectDifficulty(difficulty),
+                      selectedBackgroundColor: tagSelectedBackgroundColor,
+                      unselectedBackgroundColor: tagUnselectedBackgroundColor)
+              ],
+            ),
+          ),
+        ],
+      ),
     );
 
     var bottomButtons = Row(
@@ -238,59 +292,32 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create workout plan'),
+        title: const Text(
+          'Create workout plan',
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 26),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(right: 16, left: 16, bottom: 32),
+        padding: const EdgeInsets.only(right: 24, left: 24, bottom: 32),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              sectionTitle('Name:'),
               nameTextFormField,
+              const SizedBox(height: 4),
+              sectionTitle('Exercises:'),
+              const SizedBox(height: 8),
               daysPicker,
+              const SizedBox(height: 12),
               exercisesPicker,
+              const SizedBox(height: 24),
               tagsPicker,
               const SizedBox(height: 24),
               difficultyPicker,
               const SizedBox(height: 24),
               bottomButtons,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget dayButton(PlanDay day, int index) {
-    return Padding(
-      padding: EdgeInsets.only(right: _daysListGapWidth),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(100),
-        onTap: () {
-          _selectDay(index);
-        },
-        child: Container(
-          width: _daysListElementWidth,
-          padding: const EdgeInsets.only(left: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            color: Theme.of(context).colorScheme.primaryContainer,
-          ),
-          child: Row(
-            children: [
-              Text(
-                'Day ${index + 1}',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color:
-                        index == _selectedDayIndex ? Colors.black : Colors.grey,
-                    fontSize: 14),
-              ),
-              const Spacer(),
-              IconButton(
-                onPressed: () => _removeDay(index),
-                icon: const Icon(Icons.close),
-                iconSize: 18,
-              )
             ],
           ),
         ),

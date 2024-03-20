@@ -1,5 +1,5 @@
 enum PlanDifficulty {
-  beginner,
-  intermediate,
+  easy,
+  medium,
   expert,
 }
