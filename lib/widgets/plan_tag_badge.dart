@@ -7,9 +7,6 @@ class PlanTagBadge extends StatelessWidget {
   final PlanTag tag;
 
   final Map<PlanTag, IconData> tagIcons = {
-    PlanTag.beginner: Icons.directions_walk,
-    PlanTag.intermediate: Icons.directions_run,
-    PlanTag.expert: Icons.sports_gymnastics,
     PlanTag.strength: Icons.fitness_center,
     PlanTag.cardio: Icons.favorite,
     PlanTag.yoga: Icons.self_improvement,

@@ -20,9 +20,11 @@ class PlanDetailsScreen extends ConsumerWidget {
             Text(plan.name),
             Text('${plan.days.length} day(s)'),
             ElevatedButton(
-                onPressed: () => ref
-                    .read(userProvider.notifier)
-                    .incrementCurrentDayIndex(plan),
+                onPressed: () {
+                  ref
+                      .read(userProvider.notifier)
+                      .incrementCurrentDayIndex(plan);
+                },
                 child: Text('day index + 1'))
           ],
         ),

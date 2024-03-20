@@ -16,7 +16,7 @@ class UserPlansNotifier extends StateNotifier<List<Plan>> {
     state = await plansService.getUserPlans();
   }
 
-  Future<void> addNewPlan(Plan plan) async {
+  Future<Plan?> addNewPlan(Plan plan) async {
     Plan? addedPlan;
     try {
       addedPlan = await plansService.addUserPlan(plan);
@@ -25,5 +25,6 @@ class UserPlansNotifier extends StateNotifier<List<Plan>> {
         state = [...state, addedPlan];
       }
     }
+    return addedPlan;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
+import 'package:gym_partner/screens/new_plan.dart';
 import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 
@@ -37,6 +38,15 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
 
     var appBar = AppBar(
       title: const Text('My workout plans'),
+      actions: [
+        IconButton(
+            onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const NewPlanScreen(),
+                  ),
+                ),
+            icon: const Icon(Icons.add))
+      ],
     );
     return Scaffold(
       appBar: appBar,

@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/user.dart';
+import 'package:gym_partner/models/user_plan_data.dart';
+import 'package:gym_partner/services/users_service.dart';
 
 class PlansService {
   DocumentReference<Map<String, dynamic>> userDocRef(String userId) {

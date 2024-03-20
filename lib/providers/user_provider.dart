@@ -28,4 +28,15 @@ class UserNotifier extends StateNotifier<AppUser> {
       }
     }
   }
+
+  Future<void> addNewPlanData(String planId) async {
+    AppUser? updatedUser;
+    try {
+      updatedUser = await usersService.addNewPlanData(planId);
+    } finally {
+      if (updatedUser != null) {
+        state = updatedUser;
+      }
+    }
+  }
 }

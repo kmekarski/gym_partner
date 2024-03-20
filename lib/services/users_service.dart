@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/user.dart';
+import 'package:gym_partner/models/user_plan_data.dart';
 
 class UsersService {
   DocumentReference<Map<String, dynamic>> userDocRef(String userId) {
@@ -14,6 +15,27 @@ class UsersService {
 
   Future<AppUser> get currentUserData async {
     return AppUser.fromFirestore(await userDocRef(currentUser.uid).get());
+  }
+
+  Future<AppUser?> addNewPlanData(String planId) async {
+    try {
+      final userData = await currentUserData;
+      final newPlanData = UserPlanData(planId: planId, currentDayIndex: 0);
+      userData.plansData.add(newPlanData);
+
+      print(userData.plansData.length);
+
+      await userDocRef(currentUser.uid).update({
+        'plans_data': userData.plansData
+            .map((planData) => planData.toFirestore())
+            .toList(),
+      });
+
+      return userData;
+    } catch (e) {
+      print("Error adding plan data: $e");
+      return null;
+    }
   }
 
   Future<AppUser?> incrementCurrentDayIndex(Plan plan) async {
@@ -37,7 +59,12 @@ class UsersService {
               plansData.map((planData) => planData.toFirestore()).toList(),
         },
       );
-      return await currentUserData;
+      final updatedUserData = AppUser(
+          id: userData.id,
+          username: userData.username,
+          email: userData.email,
+          plansData: plansData);
+      return updatedUserData;
     } catch (e) {
       print("Error updating current day index: $e");
       return null;
