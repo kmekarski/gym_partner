@@ -20,8 +20,12 @@ class _ExerciseSearchbarState extends State<ExerciseSearchbar> {
     return SearchAnchor(
       builder: (context, controller) {
         return SearchBar(
+          elevation: MaterialStateProperty.all(0),
           controller: controller,
-          leading: Icon(Icons.search),
+          leading: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Icon(Icons.search),
+          ),
           onTap: () {
             controller.openView();
           },
