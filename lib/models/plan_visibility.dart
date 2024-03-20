@@ -1,0 +1,4 @@
+enum PlanVisibility {
+  public,
+  private,
+}

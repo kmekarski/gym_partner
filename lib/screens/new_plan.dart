@@ -9,6 +9,7 @@ import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
+import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/exercise_searchbar.dart';
@@ -42,6 +43,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   List<PlanTag> _selectedTags = [];
   PlanDifficulty _selectedDifficulty = PlanDifficulty.easy;
+  PlanVisibility _selectedVisibility = PlanVisibility.private;
 
   void _selectDay(int index) {
     setState(() {
@@ -110,6 +112,12 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   void _selectDifficulty(PlanDifficulty difficulty) {
     setState(() {
       _selectedDifficulty = difficulty;
+    });
+  }
+
+  void _selectVisibility(PlanVisibility visibility) {
+    setState(() {
+      _selectedVisibility = visibility;
     });
   }
 
@@ -221,9 +229,12 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                   onSelect: _addExercise),
               const SizedBox(height: 16),
               if (_days[_selectedDayIndex].exercises.isEmpty)
-                Text(
-                  '...or make it a rest day!',
-                  style: Theme.of(context).textTheme.titleMedium,
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '...or make it a rest day!',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               if (_days[_selectedDayIndex].exercises.isNotEmpty)
                 Expanded(
@@ -231,6 +242,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                     itemCount: _days[_selectedDayIndex].exercises.length,
                     itemBuilder: (context, index) => NewPlanExerciseCard(
                       exercise: _days[_selectedDayIndex].exercises[index],
+                      index: index,
                       onXTap: _removeExercise,
                     ),
                   ),
@@ -280,20 +292,40 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       ),
     );
 
-    var bottomButtons = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+    var visibilityPicker = Row(
       children: [
-        ElevatedButton(
-          onPressed: _submitPlanData,
-          child: _isSending
-              ? const SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(),
-                )
-              : const Text('Save'),
+        sectionTitle('Visibility:'),
+        Row(
+          children: [
+            for (final visibility in PlanVisibility.values)
+              FormBadge(
+                  text: visibility.toString().split('.').last,
+                  isSelected: _selectedVisibility == visibility,
+                  onTap: () => _selectVisibility(visibility),
+                  selectedBackgroundColor: tagSelectedBackgroundColor,
+                  unselectedBackgroundColor: tagUnselectedBackgroundColor)
+          ],
         ),
       ],
+    );
+
+    var createButton = SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            foregroundColor: Colors.black),
+        onPressed: _submitPlanData,
+        icon: const Icon(Icons.add),
+        label: _isSending
+            ? const SizedBox(
+                height: 16,
+                width: 16,
+                child: CircularProgressIndicator(),
+              )
+            : const Text('Create plan'),
+      ),
     );
     var nameTextFormField = TextFormField(
       onSaved: (newValue) {
@@ -330,18 +362,18 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
             children: [
               sectionTitle('Name:'),
               nameTextFormField,
-              const SizedBox(height: 4),
-              sectionTitle('Exercises:'),
-              const SizedBox(height: 8),
-              daysPicker,
               const SizedBox(height: 12),
+              visibilityPicker,
+              const SizedBox(height: 24),
+              daysPicker,
+              const SizedBox(height: 16),
               exercisesPicker,
               const SizedBox(height: 24),
               tagsPicker,
               const SizedBox(height: 24),
               difficultyPicker,
-              const SizedBox(height: 24),
-              bottomButtons,
+              const SizedBox(height: 36),
+              createButton,
             ],
           ),
         ),
