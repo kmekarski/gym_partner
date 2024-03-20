@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_partner/models/plan_day.dart';
+import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 
 class Plan {
@@ -8,6 +9,7 @@ class Plan {
     required this.name,
     required this.days,
     required this.tags,
+    required this.difficulty,
     required this.authorName,
   });
 
@@ -24,11 +26,19 @@ class Plan {
       return PlanTag.values.firstWhere((e) => e.toString() == tagString,
           orElse: () => PlanTag.cardio);
     }).toList();
+
+    final difficultyString = (data['difficulty'] ?? '').toString();
+    final difficulty = PlanDifficulty.values.firstWhere(
+      (e) => e.toString() == difficultyString,
+      orElse: () => PlanDifficulty.beginner,
+    );
+
     return Plan(
       id: doc.id,
       name: data['name'] ?? '',
       days: days,
       tags: tags,
+      difficulty: difficulty,
       authorName: data['author_name'] ?? '',
     );
   }
@@ -39,6 +49,7 @@ class Plan {
       'name': name,
       'days': days.map((day) => day.toFirestore()).toList(),
       'tags': tags.map((tag) => tag.toString()).toList(),
+      'difficulty': difficulty.toString(),
       'author_name': authorName,
     };
   }
@@ -47,6 +58,7 @@ class Plan {
   final String name;
   final List<PlanDay> days;
   final List<PlanTag> tags;
+  final PlanDifficulty difficulty;
   final String authorName;
 
   int getCompletionPercentage(int currentDayIndex) {

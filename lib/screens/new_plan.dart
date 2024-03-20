@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_day.dart';
+import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
@@ -27,6 +29,12 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   int? _selectedDayIndex = 0;
 
+  final _daysListScrollController = ScrollController();
+
+  double _daysListElementWidth = 111;
+  double _daysListGapWidth = 8;
+  double _plusDayButtonWidth = 50;
+
   void _selectDay(int index) {
     setState(() {
       _selectedDayIndex = index;
@@ -41,6 +49,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       _days.removeAt(index);
       _selectedDayIndex = _days.length - 1;
     });
+    _animateDaysList();
   }
 
   void _newDay() {
@@ -48,6 +57,21 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       _days.add(PlanDay(id: '${_days.length}'));
       _selectedDayIndex = _days.length - 1;
     });
+    _animateDaysList();
+  }
+
+  void _animateDaysList() {
+    final listWidth = MediaQuery.of(context).size.width - _plusDayButtonWidth;
+    final elementWidth = _daysListElementWidth + _daysListGapWidth;
+    final numOfelementsOnScreen = (listWidth / elementWidth).floor();
+    print(numOfelementsOnScreen);
+    final needsToScroll = _days.length > numOfelementsOnScreen;
+    _daysListScrollController.animateTo(
+        needsToScroll
+            ? (_days.length - numOfelementsOnScreen) * elementWidth
+            : 0,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.fastOutSlowIn);
   }
 
   void _submitPlanData() async {
@@ -66,6 +90,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         name: _enteredName,
         days: _days,
         tags: [PlanTag.cardio],
+        difficulty: PlanDifficulty.beginner,
         authorName: 'someAuthor');
 
     final addedPlan =
@@ -132,15 +157,35 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
           child: Column(
             children: [
               nameTextFormField,
-              Row(
-                children: [
-                  for (var (index, day) in _days.indexed) dayLabel(day, index),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: _newDay,
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
+              Container(
+                height: 50,
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        controller: _daysListScrollController,
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          for (var (index, day) in _days.indexed)
+                            dayButton(day, index),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: _plusDayButtonWidth,
+                      child: Row(
+                        children: [
+                          const Spacer(),
+                          IconButton(
+                            onPressed: _newDay,
+                            icon: const Icon(Icons.add),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 200,
@@ -156,26 +201,39 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     );
   }
 
-  Widget dayLabel(PlanDay day, int index) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      ),
-      onPressed: () {
-        _selectDay(index);
-      },
-      child: Row(
-        children: [
-          Text(
-            'Day ${index + 1}',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color:
-                      index == _selectedDayIndex ? Colors.black : Colors.grey,
-                ),
+  Widget dayButton(PlanDay day, int index) {
+    return Padding(
+      padding: EdgeInsets.only(right: _daysListGapWidth),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(100),
+        onTap: () {
+          _selectDay(index);
+        },
+        child: Container(
+          width: _daysListElementWidth,
+          padding: const EdgeInsets.only(left: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            color: Theme.of(context).colorScheme.primaryContainer,
           ),
-          IconButton(
-              onPressed: () => _removeDay(index), icon: const Icon(Icons.close))
-        ],
+          child: Row(
+            children: [
+              Text(
+                'Day ${index + 1}',
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color:
+                        index == _selectedDayIndex ? Colors.black : Colors.grey,
+                    fontSize: 14),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () => _removeDay(index),
+                icon: const Icon(Icons.close),
+                iconSize: 18,
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

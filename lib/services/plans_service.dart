@@ -51,6 +51,7 @@ class PlansService {
         name: plan.name,
         days: plan.days,
         tags: plan.tags,
+        difficulty: plan.difficulty,
         authorName: userData.username,
       );
     } catch (e) {
