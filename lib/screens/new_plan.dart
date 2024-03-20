@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/models/exercise.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/widgets/exercise_searchbar.dart';
 import 'package:gym_partner/widgets/form_clickable_badge.dart';
 
 class NewPlanScreen extends ConsumerStatefulWidget {
@@ -29,7 +31,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     PlanDay(id: '0'),
   ];
 
-  int? _selectedDayIndex = 0;
+  int _selectedDayIndex = 0;
 
   final _daysListScrollController = ScrollController();
 
@@ -63,6 +65,12 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       _selectedDayIndex = _days.length - 1;
     });
     _animateDaysList();
+  }
+
+  void _addExercise(Exercise exercise) {
+    setState(() {
+      _days[_selectedDayIndex].exercises.add(exercise);
+    });
   }
 
   void _animateDaysList() {
@@ -190,24 +198,34 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     );
     var exercisesPicker = Expanded(
       child: Container(
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Center(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
-              ElevatedButton.icon(
-                onPressed: () {},
-                label: const Text('Add exercise...'),
-                icon: const Icon(Icons.add),
-              ),
+              ExerciseSearchbar(
+                  hintText: _days[_selectedDayIndex].exercises.isEmpty
+                      ? 'Search for exercise...'
+                      : 'Add another exercise...',
+                  onSelect: _addExercise),
               const SizedBox(height: 16),
-              Text(
-                'or make it a rest day!',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              if (_days[_selectedDayIndex].exercises.isEmpty)
+                Text(
+                  '...or make it a rest day!',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              if (_days[_selectedDayIndex].exercises.isNotEmpty)
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _days[_selectedDayIndex].exercises.length,
+                    itemBuilder: (context, index) =>
+                        Text(_days[_selectedDayIndex].exercises[index].name),
+                  ),
+                ),
             ],
           ),
         ),
