@@ -265,19 +265,16 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         mainAxisSize: MainAxisSize.max,
         children: [
           sectionTitle('Difficulty:'),
-          Expanded(
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (final difficulty in PlanDifficulty.values)
-                  FormBadge(
-                      text: difficulty.toString().split('.').last,
-                      isSelected: _selectedDifficulty == difficulty,
-                      onTap: () => _selectDifficulty(difficulty),
-                      selectedBackgroundColor: tagSelectedBackgroundColor,
-                      unselectedBackgroundColor: tagUnselectedBackgroundColor)
-              ],
-            ),
+          Row(
+            children: [
+              for (final difficulty in PlanDifficulty.values)
+                FormBadge(
+                    text: difficulty.toString().split('.').last,
+                    isSelected: _selectedDifficulty == difficulty,
+                    onTap: () => _selectDifficulty(difficulty),
+                    selectedBackgroundColor: tagSelectedBackgroundColor,
+                    unselectedBackgroundColor: tagUnselectedBackgroundColor),
+            ],
           ),
         ],
       ),
