@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 
-class PlanTagBadge extends StatelessWidget {
-  PlanTagBadge(this.tag, {super.key});
+class PlanBadge extends StatelessWidget {
+  PlanBadge(this.tag, {super.key});
 
   final PlanTag tag;
-
-  final Map<PlanTag, IconData> tagIcons = {
-    PlanTag.strength: Icons.fitness_center,
-    PlanTag.cardio: Icons.favorite,
-    PlanTag.yoga: Icons.self_improvement,
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +15,6 @@ class PlanTagBadge extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              tagIcons[tag],
-              size: 16,
-            ),
             const SizedBox(width: 6),
             Text(
               tag.name,

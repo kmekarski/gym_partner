@@ -37,6 +37,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   double _plusDayButtonWidth = 50;
 
   List<PlanTag> _selectedTags = [];
+  PlanDifficulty _selectedDifficulty = PlanDifficulty.beginner;
 
   void _selectDay(int index) {
     setState(() {
@@ -89,6 +90,12 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     }
   }
 
+  void _selectDifficulty(PlanDifficulty difficulty) {
+    setState(() {
+      _selectedDifficulty = difficulty;
+    });
+  }
+
   void _submitPlanData() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -105,8 +112,8 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         name: _enteredName,
         days: _days,
         tags: _selectedTags,
-        difficulty: PlanDifficulty.beginner,
-        authorName: 'someAuthor');
+        difficulty: _selectedDifficulty,
+        authorName: '');
 
     final addedPlan =
         await ref.read(userPlansProvider.notifier).addNewPlan(newPlan);
@@ -121,6 +128,40 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var daysPicker = SizedBox(
+      height: 50,
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        children: [
+          Expanded(
+            child: ListView(
+              controller: _daysListScrollController,
+              scrollDirection: Axis.horizontal,
+              children: [
+                for (var (index, day) in _days.indexed) dayButton(day, index),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: _plusDayButtonWidth,
+            child: Row(
+              children: [
+                const Spacer(),
+                IconButton(
+                  onPressed: _newDay,
+                  icon: const Icon(Icons.add),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    var exercisesPicker = const Expanded(
+      child: Center(
+        child: Text('Lets add'),
+      ),
+    );
     final tagSelectedBackgroundColor =
         Theme.of(context).colorScheme.primaryContainer;
     final tagUnselectedBackgroundColor =
@@ -128,15 +169,32 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     var tagsPicker = Row(
       children: [
         const Text('Tags'),
-        const SizedBox(width: 10),
+        const SizedBox(width: 16),
         Row(
           children: [
             for (final tag in PlanTag.values)
               FormBadge(
                   text: tag.toString().split('.').last,
                   isSelected: _selectedTags.contains(tag),
-                  width: 80,
                   onTap: () => _toggleTag(tag),
+                  selectedBackgroundColor: tagSelectedBackgroundColor,
+                  unselectedBackgroundColor: tagUnselectedBackgroundColor)
+          ],
+        ),
+      ],
+    );
+
+    var difficultyPicker = Row(
+      children: [
+        const Text('Difficulty'),
+        const SizedBox(width: 16),
+        Row(
+          children: [
+            for (final difficulty in PlanDifficulty.values)
+              FormBadge(
+                  text: difficulty.toString().split('.').last,
+                  isSelected: _selectedDifficulty == difficulty,
+                  onTap: () => _selectDifficulty(difficulty),
                   selectedBackgroundColor: tagSelectedBackgroundColor,
                   unselectedBackgroundColor: tagUnselectedBackgroundColor)
           ],
@@ -183,50 +241,18 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         title: const Text('Create workout plan'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(right: 16, left: 16, bottom: 32),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               nameTextFormField,
+              daysPicker,
+              exercisesPicker,
               tagsPicker,
-              SizedBox(height: 16),
-              SizedBox(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        controller: _daysListScrollController,
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          for (var (index, day) in _days.indexed)
-                            dayButton(day, index),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: _plusDayButtonWidth,
-                      child: Row(
-                        children: [
-                          const Spacer(),
-                          IconButton(
-                            onPressed: _newDay,
-                            icon: const Icon(Icons.add),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 200,
-                child: Center(
-                  child: Text('Lets add'),
-                ),
-              ),
+              const SizedBox(height: 24),
+              difficultyPicker,
+              const SizedBox(height: 24),
               bottomButtons,
             ],
           ),

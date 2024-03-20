@@ -7,7 +7,7 @@ class FormBadge extends StatefulWidget {
     required this.onTap,
     required this.selectedBackgroundColor,
     required this.unselectedBackgroundColor,
-    this.width = 100,
+    this.width,
     this.height = 40,
     this.isSelected = false,
     this.selectedTextColor = Colors.black,
@@ -23,7 +23,7 @@ class FormBadge extends StatefulWidget {
     required this.onXTap,
     required this.selectedBackgroundColor,
     required this.unselectedBackgroundColor,
-    this.width = 100,
+    this.width,
     this.height = 40,
     this.isSelected = false,
     this.selectedTextColor = Colors.black,
@@ -36,7 +36,7 @@ class FormBadge extends StatefulWidget {
   final EdgeInsets margin;
   final void Function() onTap;
   final void Function() onXTap;
-  final double width;
+  final double? width;
   final double height;
 
   final bool isSelected;
@@ -61,7 +61,9 @@ class _FormBadgeState extends State<FormBadge> {
         child: Container(
           width: widget.width,
           height: widget.height,
-          padding: EdgeInsets.only(left: widget.hasX ? 16 : 0),
+          padding: widget.width == null
+              ? const EdgeInsets.symmetric(horizontal: 16)
+              : EdgeInsets.only(left: widget.hasX ? 16 : 0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
             color: widget.isSelected
@@ -75,10 +77,11 @@ class _FormBadgeState extends State<FormBadge> {
               Text(
                 widget.text,
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: widget.isSelected
-                        ? widget.selectedTextColor
-                        : widget.unselectedTextColor,
-                    fontSize: 14),
+                      color: widget.isSelected
+                          ? widget.selectedTextColor
+                          : widget.unselectedTextColor,
+                      fontSize: 14,
+                    ),
               ),
               if (widget.hasX) const Spacer(),
               if (widget.hasX)

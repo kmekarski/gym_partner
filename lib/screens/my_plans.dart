@@ -51,7 +51,7 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     return Scaffold(
       appBar: appBar,
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: content(),
       ),
     );

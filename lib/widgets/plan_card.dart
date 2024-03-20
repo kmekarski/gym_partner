@@ -3,7 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
-import 'package:gym_partner/widgets/plan_tag_badge.dart';
+import 'package:gym_partner/widgets/form_clickable_badge.dart';
+import 'package:gym_partner/widgets/plan_badge.dart';
 
 class PlanCard extends StatelessWidget {
   const PlanCard(
@@ -20,21 +21,42 @@ class PlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var numOfDaysIndicator = Row(
       children: [
-        const Icon(
+        Icon(
           Icons.calendar_month,
-          size: 24,
+          size: 30,
+          color: Theme.of(context).colorScheme.secondary,
         ),
         const SizedBox(width: 4),
         Text(
           '${plan.days.length}',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       ],
     );
 
+    var difficultyBadge = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(50),
+        color: Theme.of(context).colorScheme.primaryContainer,
+      ),
+      child: Text(
+        plan.difficulty.toString().split('.').last,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+    );
+
     var tags = Row(
       children: [
-        for (PlanTag tag in plan.tags) PlanTagBadge(tag),
+        for (PlanTag tag in plan.tags)
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Text(
+              tag.toString().split('.').last,
+              style:
+                  Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 18),
+            ),
+          ),
       ],
     );
 
@@ -53,17 +75,15 @@ class PlanCard extends StatelessWidget {
           ),
           Text(
             '${plan.getCompletionPercentage(planData.currentDayIndex)}%',
-            style: const TextStyle(
-              fontSize: 16,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ],
       ),
     );
     return Card(
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(vertical: 12),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(16),
       ),
       clipBehavior: Clip.hardEdge,
       elevation: 2,
@@ -72,8 +92,9 @@ class PlanCard extends StatelessWidget {
           onSelectPlan(plan);
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          padding: const EdgeInsets.all(16),
           child: SizedBox(
+            height: 130,
             child: Column(
               children: [
                 Row(
@@ -81,19 +102,30 @@ class PlanCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      plan.name,
-                      style: Theme.of(context).textTheme.titleLarge,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          plan.name,
+                          style:
+                              Theme.of(context).textTheme.titleLarge!.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 26,
+                                  ),
+                        ),
+                        const SizedBox(height: 8),
+                        tags,
+                      ],
                     ),
                     progressCircle
                   ],
                 ),
-                const SizedBox(height: 8),
+                Spacer(),
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    tags,
+                    difficultyBadge,
                     numOfDaysIndicator,
                   ],
                 ),

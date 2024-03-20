@@ -37,14 +37,21 @@ class PlansService {
 
   Future<Plan?> addUserPlan(Plan plan) async {
     try {
+      final userData = await currentUserData;
+      final planToBeAdded = Plan(
+        id: plan.id,
+        name: plan.name,
+        days: plan.days,
+        tags: plan.tags,
+        difficulty: plan.difficulty,
+        authorName: userData.username,
+      );
       DocumentReference planDocRef = await userDocRef(currentUser.uid)
           .collection('plans')
-          .add(plan.toFirestore());
+          .add(planToBeAdded.toFirestore());
 
       final planId = planDocRef.id;
       planDocRef.update({'id': planId});
-
-      final userData = await currentUserData;
 
       return Plan(
         id: planId,
