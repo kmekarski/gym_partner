@@ -9,6 +9,7 @@ import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/widgets/form_clickable_badge.dart';
 
 class NewPlanScreen extends ConsumerStatefulWidget {
   const NewPlanScreen({super.key});
@@ -34,6 +35,8 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   double _daysListElementWidth = 111;
   double _daysListGapWidth = 8;
   double _plusDayButtonWidth = 50;
+
+  List<PlanTag> _selectedTags = [];
 
   void _selectDay(int index) {
     setState(() {
@@ -74,6 +77,18 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         curve: Curves.fastOutSlowIn);
   }
 
+  void _toggleTag(PlanTag tag) {
+    if (_selectedTags.contains(tag)) {
+      setState(() {
+        _selectedTags.remove(tag);
+      });
+    } else {
+      setState(() {
+        _selectedTags.add(tag);
+      });
+    }
+  }
+
   void _submitPlanData() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -89,7 +104,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         id: '',
         name: _enteredName,
         days: _days,
-        tags: [PlanTag.cardio],
+        tags: _selectedTags,
         difficulty: PlanDifficulty.beginner,
         authorName: 'someAuthor');
 
@@ -106,15 +121,32 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tagSelectedBackgroundColor =
+        Theme.of(context).colorScheme.primaryContainer;
+    final tagUnselectedBackgroundColor =
+        Theme.of(context).colorScheme.secondaryContainer;
+    var tagsPicker = Row(
+      children: [
+        const Text('Tags'),
+        const SizedBox(width: 10),
+        Row(
+          children: [
+            for (final tag in PlanTag.values)
+              FormBadge(
+                  text: tag.toString().split('.').last,
+                  isSelected: _selectedTags.contains(tag),
+                  width: 80,
+                  onTap: () => _toggleTag(tag),
+                  selectedBackgroundColor: tagSelectedBackgroundColor,
+                  unselectedBackgroundColor: tagUnselectedBackgroundColor)
+          ],
+        ),
+      ],
+    );
+
     var bottomButtons = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Cancel'),
-        ),
         ElevatedButton(
           onPressed: _submitPlanData,
           child: _isSending
@@ -143,7 +175,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       },
       maxLength: 50,
       decoration: const InputDecoration(
-        label: Text('Name'),
+        label: Text('Enter plan name'),
       ),
     );
     return Scaffold(
@@ -157,7 +189,9 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
           child: Column(
             children: [
               nameTextFormField,
-              Container(
+              tagsPicker,
+              SizedBox(height: 16),
+              SizedBox(
                 height: 50,
                 width: MediaQuery.of(context).size.width,
                 child: Row(
