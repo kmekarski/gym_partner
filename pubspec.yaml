@@ -39,6 +39,7 @@ dependencies:
   firebase_core: ^2.27.1
   cloud_firestore: ^4.15.9
   flutter_riverpod: ^2.5.1
+  numberpicker: ^2.1.2
 
 dev_dependencies:
   flutter_test:

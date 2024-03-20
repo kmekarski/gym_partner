@@ -13,6 +13,7 @@ import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/exercise_searchbar.dart';
 import 'package:gym_partner/widgets/form_clickable_badge.dart';
+import 'package:gym_partner/widgets/new_plan_exercise_card.dart';
 
 class NewPlanScreen extends ConsumerStatefulWidget {
   const NewPlanScreen({super.key});
@@ -70,6 +71,12 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   void _addExercise(Exercise exercise) {
     setState(() {
       _days[_selectedDayIndex].exercises.add(exercise);
+    });
+  }
+
+  void _removeExercise(Exercise exercise) {
+    setState(() {
+      _days[_selectedDayIndex].exercises.remove(exercise);
     });
   }
 
@@ -222,8 +229,10 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                 Expanded(
                   child: ListView.builder(
                     itemCount: _days[_selectedDayIndex].exercises.length,
-                    itemBuilder: (context, index) =>
-                        Text(_days[_selectedDayIndex].exercises[index].name),
+                    itemBuilder: (context, index) => NewPlanExerciseCard(
+                      exercise: _days[_selectedDayIndex].exercises[index],
+                      onXTap: _removeExercise,
+                    ),
                   ),
                 ),
             ],
