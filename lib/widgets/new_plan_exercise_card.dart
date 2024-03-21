@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gym_partner/models/exercise.dart';
+import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class NewPlanExerciseCard extends StatefulWidget {
@@ -8,24 +9,26 @@ class NewPlanExerciseCard extends StatefulWidget {
       {super.key,
       required this.exercise,
       required this.index,
+      required this.onNumberOfSetsChanged,
+      required this.onNumberOfRepsChanged,
+      required this.onRestTimeChanged,
       required this.onXTap});
 
   final int index;
-  final Exercise exercise;
-  final void Function(Exercise exercise) onXTap;
+  final PlanExercise exercise;
+  final void Function(PlanExercise exercise) onXTap;
+  final void Function(int value) onNumberOfSetsChanged;
+  final void Function(int value) onNumberOfRepsChanged;
+  final void Function(int value) onRestTimeChanged;
 
   @override
   State<NewPlanExerciseCard> createState() => _NewPlanExerciseCardState();
 }
 
 class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
-  int _numberOfSets = 3;
-  int _numberOfReps = 10;
-  int _restTime = 120;
-
   @override
   Widget build(BuildContext context) {
-    final bodyPartsString = widget.exercise.bodyParts
+    final bodyPartsString = widget.exercise.exercise.bodyParts
         .map((bodyPart) => bodyPart.toString().split('.').last)
         .join(', ');
     return Card(
@@ -43,7 +46,7 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${widget.index + 1}. ${widget.exercise.name}',
+                        '${widget.index + 1}. ${widget.exercise.exercise.name}',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(bodyPartsString),
@@ -62,36 +65,13 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                picker(
-                    'Sets',
-                    _numberOfSets,
-                    1,
-                    10,
-                    1,
-                    (value) => setState(() {
-                          _numberOfSets = value;
-                        })),
-                picker(
-                    'Reps',
-                    _numberOfReps,
-                    1,
-                    20,
-                    1,
-                    (value) => setState(() {
-                          _numberOfReps = value;
-                        })),
-                picker(
-                  'Rest time',
-                  _restTime,
-                  10,
-                  240,
-                  10,
-                  (value) => setState(() {
-                    _restTime = value;
-                  }),
-                  textMapper: (numberText) => '${numberText}s',
-                  width: 114,
-                ),
+                picker('Sets', widget.exercise.numOfSets, 1, 10, 1,
+                    widget.onNumberOfSetsChanged),
+                picker('Reps', widget.exercise.numOfReps, 1, 20, 1,
+                    widget.onNumberOfRepsChanged),
+                picker('Rest time', widget.exercise.restTime, 10, 240, 10,
+                    widget.onRestTimeChanged,
+                    textMapper: (numberText) => '${numberText}s', width: 114),
               ],
             ),
           ],

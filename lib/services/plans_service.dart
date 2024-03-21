@@ -44,6 +44,7 @@ class PlansService {
         days: plan.days,
         tags: plan.tags,
         difficulty: plan.difficulty,
+        visibility: plan.visibility,
         authorName: userData.username,
       );
       DocumentReference planDocRef = await userDocRef(currentUser.uid)
@@ -59,6 +60,7 @@ class PlansService {
         days: plan.days,
         tags: plan.tags,
         difficulty: plan.difficulty,
+        visibility: plan.visibility,
         authorName: userData.username,
       );
     } catch (e) {

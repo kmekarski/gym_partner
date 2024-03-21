@@ -87,7 +87,12 @@ class _FormBadgeState extends State<FormBadge> {
               if (widget.hasX)
                 IconButton(
                   onPressed: widget.onXTap,
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    color: widget.isSelected
+                        ? widget.selectedTextColor
+                        : widget.unselectedTextColor,
+                  ),
                   iconSize: 18,
                 ),
             ],

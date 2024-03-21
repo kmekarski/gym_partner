@@ -2,15 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
+import 'package:gym_partner/models/plan_visibility.dart';
 
 class Plan {
   Plan({
     required this.id,
     required this.name,
+    required this.authorName,
     required this.days,
     required this.tags,
     required this.difficulty,
-    required this.authorName,
+    required this.visibility,
   });
 
   factory Plan.fromFirestore(DocumentSnapshot doc) {
@@ -33,12 +35,19 @@ class Plan {
       orElse: () => PlanDifficulty.easy,
     );
 
+    final visibilityString = (data['visibility'] ?? '').toString();
+    final visibility = PlanVisibility.values.firstWhere(
+      (e) => e.toString() == visibilityString,
+      orElse: () => PlanVisibility.private,
+    );
+
     return Plan(
       id: doc.id,
       name: data['name'] ?? '',
       days: days,
       tags: tags,
       difficulty: difficulty,
+      visibility: visibility,
       authorName: data['author_name'] ?? '',
     );
   }
@@ -59,6 +68,7 @@ class Plan {
   final List<PlanDay> days;
   final List<PlanTag> tags;
   final PlanDifficulty difficulty;
+  final PlanVisibility visibility;
   final String authorName;
 
   int getCompletionPercentage(int currentDayIndex) {

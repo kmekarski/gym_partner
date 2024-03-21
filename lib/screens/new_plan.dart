@@ -8,6 +8,7 @@ import 'package:gym_partner/models/exercise.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
+import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
@@ -71,12 +72,13 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   }
 
   void _addExercise(Exercise exercise) {
+    final newPlanExercise = PlanExercise(exercise: exercise);
     setState(() {
-      _days[_selectedDayIndex].exercises.add(exercise);
+      _days[_selectedDayIndex].exercises.add(newPlanExercise);
     });
   }
 
-  void _removeExercise(Exercise exercise) {
+  void _removeExercise(PlanExercise exercise) {
     setState(() {
       _days[_selectedDayIndex].exercises.remove(exercise);
     });
@@ -138,6 +140,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         days: _days,
         tags: _selectedTags,
         difficulty: _selectedDifficulty,
+        visibility: _selectedVisibility,
         authorName: '');
 
     final addedPlan =
@@ -166,10 +169,11 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tagSelectedBackgroundColor =
-        Theme.of(context).colorScheme.primaryContainer;
+    final tagSelectedBackgroundColor = Theme.of(context).colorScheme.primary;
     final tagUnselectedBackgroundColor =
         Theme.of(context).colorScheme.secondaryContainer;
+    final tagSelectedTextColor = Colors.white;
+    final tagUnselectedTextColor = Colors.black87;
     var daysPicker = SizedBox(
       height: 50,
       width: MediaQuery.of(context).size.width,
@@ -191,6 +195,8 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                     onXTap: () => _removeDay(index),
                     selectedBackgroundColor: tagSelectedBackgroundColor,
                     unselectedBackgroundColor: tagUnselectedBackgroundColor,
+                    selectedTextColor: tagSelectedTextColor,
+                    unselectedTextColor: tagUnselectedTextColor,
                     margin: EdgeInsets.only(right: _daysListGapWidth),
                   ),
               ],
@@ -243,6 +249,18 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                     itemBuilder: (context, index) => NewPlanExerciseCard(
                       exercise: _days[_selectedDayIndex].exercises[index],
                       index: index,
+                      onNumberOfSetsChanged: (value) => setState(() {
+                        _days[_selectedDayIndex].exercises[index].numOfSets =
+                            value;
+                      }),
+                      onNumberOfRepsChanged: (value) => setState(() {
+                        _days[_selectedDayIndex].exercises[index].numOfReps =
+                            value;
+                      }),
+                      onRestTimeChanged: (value) => setState(() {
+                        _days[_selectedDayIndex].exercises[index].restTime =
+                            value;
+                      }),
                       onXTap: _removeExercise,
                     ),
                   ),
@@ -260,11 +278,14 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
           children: [
             for (final tag in PlanTag.values)
               FormBadge(
-                  text: tag.toString().split('.').last,
-                  isSelected: _selectedTags.contains(tag),
-                  onTap: () => _toggleTag(tag),
-                  selectedBackgroundColor: tagSelectedBackgroundColor,
-                  unselectedBackgroundColor: tagUnselectedBackgroundColor)
+                text: tag.toString().split('.').last,
+                isSelected: _selectedTags.contains(tag),
+                onTap: () => _toggleTag(tag),
+                selectedBackgroundColor: tagSelectedBackgroundColor,
+                unselectedBackgroundColor: tagUnselectedBackgroundColor,
+                selectedTextColor: tagSelectedTextColor,
+                unselectedTextColor: tagUnselectedTextColor,
+              )
           ],
         ),
       ],
@@ -281,11 +302,14 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
             children: [
               for (final difficulty in PlanDifficulty.values)
                 FormBadge(
-                    text: difficulty.toString().split('.').last,
-                    isSelected: _selectedDifficulty == difficulty,
-                    onTap: () => _selectDifficulty(difficulty),
-                    selectedBackgroundColor: tagSelectedBackgroundColor,
-                    unselectedBackgroundColor: tagUnselectedBackgroundColor),
+                  text: difficulty.toString().split('.').last,
+                  isSelected: _selectedDifficulty == difficulty,
+                  onTap: () => _selectDifficulty(difficulty),
+                  selectedBackgroundColor: tagSelectedBackgroundColor,
+                  unselectedBackgroundColor: tagUnselectedBackgroundColor,
+                  selectedTextColor: tagSelectedTextColor,
+                  unselectedTextColor: tagUnselectedTextColor,
+                ),
             ],
           ),
         ],
@@ -299,11 +323,14 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
           children: [
             for (final visibility in PlanVisibility.values)
               FormBadge(
-                  text: visibility.toString().split('.').last,
-                  isSelected: _selectedVisibility == visibility,
-                  onTap: () => _selectVisibility(visibility),
-                  selectedBackgroundColor: tagSelectedBackgroundColor,
-                  unselectedBackgroundColor: tagUnselectedBackgroundColor)
+                text: visibility.toString().split('.').last,
+                isSelected: _selectedVisibility == visibility,
+                onTap: () => _selectVisibility(visibility),
+                selectedBackgroundColor: tagSelectedBackgroundColor,
+                unselectedBackgroundColor: tagUnselectedBackgroundColor,
+                selectedTextColor: tagSelectedTextColor,
+                unselectedTextColor: tagUnselectedTextColor,
+              )
           ],
         ),
       ],
@@ -314,17 +341,22 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       height: 50,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            foregroundColor: Colors.black),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Colors.white),
         onPressed: _submitPlanData,
-        icon: const Icon(Icons.add),
+        icon: _isSending ? const Icon(null) : const Icon(Icons.add),
         label: _isSending
             ? const SizedBox(
                 height: 16,
                 width: 16,
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
               )
-            : const Text('Create plan'),
+            : const Text(
+                'Create plan',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
       ),
     );
     var nameTextFormField = TextFormField(
