@@ -13,13 +13,13 @@ class ExerciseSearchbar extends StatefulWidget {
 }
 
 class _ExerciseSearchbarState extends State<ExerciseSearchbar> {
-  final _searchController = SearchController();
-
   @override
   Widget build(BuildContext context) {
     return SearchAnchor(
       builder: (context, controller) {
         return SearchBar(
+          backgroundColor: MaterialStateProperty.all(
+              Theme.of(context).colorScheme.onPrimary),
           elevation: MaterialStateProperty.all(0),
           controller: controller,
           leading: const Padding(

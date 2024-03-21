@@ -19,7 +19,16 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme =
+        ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 113, 19, 19));
     return MaterialApp(
+      theme: ThemeData().copyWith(
+        colorScheme: colorScheme,
+        cardTheme: const CardTheme().copyWith(
+          elevation: 0,
+          color: colorScheme.primaryContainer.withOpacity(0.8),
+        ),
+      ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

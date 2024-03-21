@@ -80,7 +80,6 @@ class _FormBadgeState extends State<FormBadge> {
                       color: widget.isSelected
                           ? widget.selectedTextColor
                           : widget.unselectedTextColor,
-                      fontSize: 16,
                     ),
               ),
               if (widget.hasX) const Spacer(),
@@ -100,6 +99,5 @@ class _FormBadgeState extends State<FormBadge> {
         ),
       ),
     );
-    ;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
+import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/new_plan.dart';
 import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
@@ -25,14 +26,21 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
   @override
   Widget build(BuildContext context) {
     final plans = ref.watch(userPlansProvider);
+    final plansData = ref.watch(userProvider).plansData;
 
     Widget content() {
       if (plans.isEmpty) {
         return _centerMessage(
             context, 'You haven\'t created any workout plans yet.');
       } else {
+        final recentPlanId =
+            plansData.firstWhere((planData) => planData.isRecent).planId;
+        final recentPlan = plans.firstWhere((plan) => plan.id == recentPlanId);
+        final restOfPlans = plans.where((plan) => plan.id != recentPlanId);
+        final sortedPlans = [recentPlan, ...restOfPlans];
         return PlansList(
-            plans: plans, onSelectPlan: (plan) => _selectPlan(context, plan));
+            plans: sortedPlans,
+            onSelectPlan: (plan) => _selectPlan(context, plan));
       }
     }
 

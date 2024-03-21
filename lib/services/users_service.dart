@@ -20,10 +20,33 @@ class UsersService {
   Future<AppUser?> addNewPlanData(String planId) async {
     try {
       final userData = await currentUserData;
-      final newPlanData = UserPlanData(planId: planId, currentDayIndex: 0);
+      final newPlanData =
+          UserPlanData(planId: planId, currentDayIndex: 0, isRecent: false);
       userData.plansData.add(newPlanData);
+      await userDocRef(currentUser.uid).update({
+        'plans_data': userData.plansData
+            .map((planData) => planData.toFirestore())
+            .toList(),
+      });
 
-      print(userData.plansData.length);
+      return userData;
+    } catch (e) {
+      print("Error adding plan data: $e");
+      return null;
+    }
+  }
+
+  Future<AppUser?> setPlanAsRecent(String planId) async {
+    try {
+      final userData = await currentUserData;
+
+      for (final planData in userData.plansData) {
+        if (planData.planId == planId) {
+          planData.isRecent = true;
+        } else {
+          planData.isRecent = false;
+        }
+      }
 
       await userDocRef(currentUser.uid).update({
         'plans_data': userData.plansData

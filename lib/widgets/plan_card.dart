@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
-import 'package:gym_partner/widgets/form_clickable_badge.dart';
-import 'package:gym_partner/widgets/plan_badge.dart';
 
 class PlanCard extends StatelessWidget {
   const PlanCard(
@@ -24,12 +21,14 @@ class PlanCard extends StatelessWidget {
         Icon(
           Icons.calendar_month,
           size: 30,
-          color: Theme.of(context).colorScheme.secondary,
+          color: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(width: 4),
         Text(
           '${plan.days.length}',
-          style: Theme.of(context).textTheme.titleLarge,
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
         ),
       ],
     );
@@ -37,12 +36,26 @@ class PlanCard extends StatelessWidget {
     var difficultyBadge = Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(50),
-        color: Theme.of(context).colorScheme.primaryContainer,
-      ),
+          borderRadius: BorderRadius.circular(50),
+          color: Theme.of(context).colorScheme.primary),
       child: Text(
         plan.difficulty.toString().split('.').last,
-        style: Theme.of(context).textTheme.bodyLarge,
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+      ),
+    );
+
+    var isRecentBadge = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+      child: Text(
+        'Recent workout',
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
       ),
     );
 
@@ -53,8 +66,10 @@ class PlanCard extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16),
             child: Text(
               tag.toString().split('.').last,
-              style:
-                  Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 18),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontSize: 18,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
             ),
           ),
       ],
@@ -70,7 +85,8 @@ class PlanCard extends StatelessWidget {
             child: CircularProgressIndicator(
               value: planData.currentDayIndex / plan.days.length,
               strokeWidth: 6,
-              backgroundColor: Colors.black12,
+              backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           Text(
@@ -86,7 +102,6 @@ class PlanCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       clipBehavior: Clip.hardEdge,
-      elevation: 2,
       child: InkWell(
         onTap: () {
           onSelectPlan(plan);
@@ -94,7 +109,7 @@ class PlanCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: SizedBox(
-            height: 130,
+            height: 124,
             child: Column(
               children: [
                 Row(
@@ -120,12 +135,19 @@ class PlanCard extends StatelessWidget {
                     progressCircle
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
                 Row(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     difficultyBadge,
+                    if (planData.isRecent)
+                      Row(
+                        children: [
+                          const SizedBox(width: 6),
+                          isRecentBadge,
+                        ],
+                      ),
+                    const Spacer(),
                     numOfDaysIndicator,
                   ],
                 ),

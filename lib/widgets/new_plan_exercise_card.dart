@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:gym_partner/models/exercise.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 class NewPlanExerciseCard extends StatefulWidget {
   const NewPlanExerciseCard(
@@ -32,6 +29,7 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
         .map((bodyPart) => bodyPart.toString().split('.').last)
         .join(', ');
     return Card(
+      color: Theme.of(context).colorScheme.onPrimary,
       margin: const EdgeInsets.only(bottom: 12),
       child: Container(
         padding: const EdgeInsets.only(top: 4, right: 4, bottom: 16, left: 4),

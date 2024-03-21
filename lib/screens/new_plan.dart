@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/exercise.dart';
 import 'package:gym_partner/models/plan.dart';
@@ -38,11 +34,11 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   final _daysListScrollController = ScrollController();
 
-  double _daysListElementWidth = 111;
-  double _daysListGapWidth = 8;
-  double _plusDayButtonWidth = 50;
+  final double _daysListElementWidth = 111;
+  final double _daysListGapWidth = 8;
+  final double _plusDayButtonWidth = 50;
 
-  List<PlanTag> _selectedTags = [];
+  final List<PlanTag> _selectedTags = [];
   PlanDifficulty _selectedDifficulty = PlanDifficulty.easy;
   PlanVisibility _selectedVisibility = PlanVisibility.private;
 
@@ -89,13 +85,12 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         MediaQuery.of(context).size.width - _plusDayButtonWidth - 24;
     final elementWidth = _daysListElementWidth + _daysListGapWidth;
     final numOfelementsOnScreen = (listWidth / elementWidth).floor();
-    print(numOfelementsOnScreen);
     final needsToScroll = _days.length > numOfelementsOnScreen;
     _daysListScrollController.animateTo(
         needsToScroll
             ? (_days.length - numOfelementsOnScreen - 1) * elementWidth + 24
             : 0,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.fastOutSlowIn);
   }
 
@@ -172,8 +167,9 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     final tagSelectedBackgroundColor = Theme.of(context).colorScheme.primary;
     final tagUnselectedBackgroundColor =
         Theme.of(context).colorScheme.secondaryContainer;
-    final tagSelectedTextColor = Colors.white;
-    final tagUnselectedTextColor = Colors.black87;
+    final tagSelectedTextColor = Theme.of(context).colorScheme.onPrimary;
+    final tagUnselectedTextColor =
+        Theme.of(context).colorScheme.onPrimaryContainer;
     var daysPicker = SizedBox(
       height: 50,
       width: MediaQuery.of(context).size.width,
@@ -219,7 +215,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     );
     var exercisesPicker = Expanded(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(16),
@@ -342,15 +338,16 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Colors.white),
+            foregroundColor: Theme.of(context).colorScheme.onPrimary),
         onPressed: _submitPlanData,
         icon: _isSending ? const Icon(null) : const Icon(Icons.add),
         label: _isSending
-            ? const SizedBox(
+            ? SizedBox(
                 height: 16,
                 width: 16,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  strokeWidth: 3,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               )
             : const Text(

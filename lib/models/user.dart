@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
 
 class AppUser {
@@ -17,7 +16,8 @@ class AppUser {
     List<UserPlanData> plansData = plansDataData.map((planData) {
       return UserPlanData(
           planId: planData['plan_id'],
-          currentDayIndex: planData['current_day_index']);
+          currentDayIndex: planData['current_day_index'],
+          isRecent: planData['is_recent']);
     }).toList();
     return AppUser(
       id: doc.id,
