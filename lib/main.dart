@@ -20,13 +20,19 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme =
-        ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 113, 19, 19));
+        ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 219, 41, 174));
     return MaterialApp(
       theme: ThemeData().copyWith(
         colorScheme: colorScheme,
         cardTheme: const CardTheme().copyWith(
           elevation: 0,
-          color: colorScheme.primaryContainer.withOpacity(0.8),
+          color: colorScheme.primaryContainer.withOpacity(0.7),
+        ),
+        appBarTheme: const AppBarTheme().copyWith(
+          titleTextStyle: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.w600, fontSize: 26),
         ),
       ),
       home: StreamBuilder(

@@ -166,7 +166,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   Widget build(BuildContext context) {
     final tagSelectedBackgroundColor = Theme.of(context).colorScheme.primary;
     final tagUnselectedBackgroundColor =
-        Theme.of(context).colorScheme.secondaryContainer;
+        Theme.of(context).colorScheme.primaryContainer;
     final tagSelectedTextColor = Theme.of(context).colorScheme.onPrimary;
     final tagUnselectedTextColor =
         Theme.of(context).colorScheme.onPrimaryContainer;
@@ -217,7 +217,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
+          color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Center(

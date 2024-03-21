@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
+import 'package:gym_partner/widgets/plans_list.dart';
 
 class PlanCard extends StatelessWidget {
-  const PlanCard(
-      {super.key,
-      required this.plan,
-      required this.planData,
-      required this.onSelectPlan});
+  const PlanCard({
+    super.key,
+    required this.type,
+    this.planData,
+    required this.plan,
+    required this.onSelectPlan,
+  });
 
+  final PlansListType type;
   final Plan plan;
-  final UserPlanData planData;
+  final UserPlanData? planData;
   final void Function(Plan plan) onSelectPlan;
 
   @override
@@ -50,7 +54,7 @@ class PlanCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.15)),
       child: Text(
         'Recent workout',
         style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -75,27 +79,30 @@ class PlanCard extends StatelessWidget {
       ],
     );
 
-    var progressCircle = Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox(
-            width: 60,
-            height: 60,
-            child: CircularProgressIndicator(
-              value: planData.currentDayIndex / plan.days.length,
-              strokeWidth: 6,
-              backgroundColor: Theme.of(context).colorScheme.onPrimary,
-              color: Theme.of(context).colorScheme.primary,
+    var progressCircle = planData != null
+        ? Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: CircularProgressIndicator(
+                    value: planData!.currentDayIndex / plan.days.length,
+                    strokeWidth: 6,
+                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                Text(
+                  '${plan.getCompletionPercentage(planData!.currentDayIndex)}%',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
-          ),
-          Text(
-            '${plan.getCompletionPercentage(planData.currentDayIndex)}%',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
-    );
+          )
+        : null;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 12),
       shape: RoundedRectangleBorder(
@@ -132,7 +139,8 @@ class PlanCard extends StatelessWidget {
                         tags,
                       ],
                     ),
-                    progressCircle
+                    if (planData != null) progressCircle!,
+                    if (planData == null) Text(plan.authorName),
                   ],
                 ),
                 const Spacer(),
@@ -140,7 +148,7 @@ class PlanCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     difficultyBadge,
-                    if (planData.isRecent)
+                    if (planData != null && planData!.isRecent)
                       Row(
                         children: [
                           const SizedBox(width: 6),

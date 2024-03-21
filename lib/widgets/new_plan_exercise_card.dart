@@ -89,7 +89,9 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
     String Function(String numberText)? textMapper,
   }) {
     final buttonStyle = IconButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer);
+      backgroundColor: Theme.of(context).cardTheme.color,
+      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+    );
     const double iconSize = 16;
     const double buttonSize = 32;
     return SizedBox(

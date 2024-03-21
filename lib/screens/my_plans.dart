@@ -33,12 +33,28 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
         return _centerMessage(
             context, 'You haven\'t created any workout plans yet.');
       } else {
-        final recentPlanId =
-            plansData.firstWhere((planData) => planData.isRecent).planId;
-        final recentPlan = plans.firstWhere((plan) => plan.id == recentPlanId);
-        final restOfPlans = plans.where((plan) => plan.id != recentPlanId);
-        final sortedPlans = [recentPlan, ...restOfPlans];
+        // final recentPlanId =
+        //     plansData.firstWhere((planData) => planData.isRecent).planId;
+        // final recentPlan = plans.firstWhere((plan) => plan.id == recentPlanId);
+        // final restOfPlans =
+        //     plans.where((plan) => plan.id != recentPlanId).toList();
+
+        final List<Plan> sortedPlans = [];
+
+        String? recentPlanId;
+
+        for (final planData in plansData) {
+          if (planData.isRecent) {
+            recentPlanId = planData.planId;
+            sortedPlans
+                .add(plans.firstWhere((plan) => plan.id == planData.planId));
+          }
+        }
+
+        sortedPlans.addAll(plans.where((plan) => plan.id != recentPlanId));
+
         return PlansList(
+            type: PlansListType.private,
             plans: sortedPlans,
             onSelectPlan: (plan) => _selectPlan(context, plan));
       }
@@ -47,7 +63,6 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     var appBar = AppBar(
       title: const Text(
         'My workout plans',
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 26),
       ),
       actions: [
         IconButton(

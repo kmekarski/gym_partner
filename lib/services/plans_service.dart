@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/models/user.dart';
 
 class PlansService {
@@ -14,6 +15,22 @@ class PlansService {
 
   Future<AppUser> get currentUserData async {
     return AppUser.fromFirestore((await userDocRef(currentUser.uid).get()));
+  }
+
+  Future<List<Plan>> getPublicPlans() async {
+    List<Plan> plans = [];
+
+    try {
+      QuerySnapshot plansSnapshot =
+          await FirebaseFirestore.instance.collection('public_plans').get();
+
+      for (var doc in plansSnapshot.docs) {
+        plans.add(Plan.fromFirestore(doc));
+      }
+    } catch (e) {
+      print("Error getting public plans from Firebase: $e");
+    }
+    return plans;
   }
 
   Future<List<Plan>> getUserPlans() async {
@@ -44,14 +61,14 @@ class PlansService {
         visibility: plan.visibility,
         authorName: userData.username,
       );
-      DocumentReference planDocRef = await userDocRef(currentUser.uid)
+      DocumentReference userPlanDocRef = await userDocRef(currentUser.uid)
           .collection('plans')
           .add(planToBeAdded.toFirestore());
 
-      final planId = planDocRef.id;
-      planDocRef.update({'id': planId});
+      final planId = userPlanDocRef.id;
+      userPlanDocRef.update({'id': planId});
 
-      return Plan(
+      final addedPlan = Plan(
         id: planId,
         name: plan.name,
         days: plan.days,
@@ -60,9 +77,21 @@ class PlansService {
         visibility: plan.visibility,
         authorName: userData.username,
       );
+
+      if (plan.visibility == PlanVisibility.public) {
+        await _addPublicPlan(addedPlan);
+      }
+
+      return addedPlan;
     } catch (e) {
       print("Error adding user's plan to Firebase: $e");
       return null;
     }
+  }
+
+  Future<void> _addPublicPlan(Plan plan) async {
+    FirebaseFirestore.instance
+        .collection('public_plans')
+        .add(plan.toFirestore());
   }
 }

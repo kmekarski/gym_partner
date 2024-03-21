@@ -59,6 +59,7 @@ class Plan {
       'days': days.map((day) => day.toFirestore()).toList(),
       'tags': tags.map((tag) => tag.toString()).toList(),
       'difficulty': difficulty.toString(),
+      'visibility': visibility.toString(),
       'author_name': authorName,
     };
   }
