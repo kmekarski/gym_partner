@@ -7,6 +7,7 @@ import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/plan_visibility.dart';
+import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/exercise_searchbar.dart';
@@ -142,6 +143,9 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         await ref.read(userPlansProvider.notifier).addNewPlan(newPlan);
 
     await ref.read(userProvider.notifier).addNewPlanData(addedPlan!.id);
+    if (_selectedVisibility == PlanVisibility.public) {
+      ref.read(publicPlansProvider.notifier).addPlan(addedPlan);
+    }
 
     if (!context.mounted) {
       return;

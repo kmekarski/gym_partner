@@ -16,4 +16,8 @@ class PublicPlansNotifier extends StateNotifier<List<Plan>> {
   Future<void> getPlans() async {
     state = await plansService.getPublicPlans();
   }
+
+  void addPlan(Plan plan) {
+    state = [...state, plan];
+  }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 
 class SharedPlansScreen extends ConsumerStatefulWidget {
@@ -13,18 +15,20 @@ class SharedPlansScreen extends ConsumerStatefulWidget {
 }
 
 class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
-  late Future<void> _plansFuture;
-
-  @override
-  void initState() {
-    _plansFuture = ref.read(publicPlansProvider.notifier).getPlans();
-    super.initState();
+  void _selectPlan(Plan plan) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlanDetailsScreen(
+          type: PlansListType.public,
+          plan: plan,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final plans = ref.watch(publicPlansProvider);
-    print(plans);
 
     Widget content() {
       if (plans.isEmpty) {
@@ -34,7 +38,7 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
         return PlansList(
           type: PlansListType.public,
           plans: plans,
-          onSelectPlan: (plan) => {},
+          onSelectPlan: _selectPlan,
         );
       }
     }
@@ -45,15 +49,7 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: FutureBuilder(
-            future: _plansFuture,
-            builder: (context, snapshot) {
-              return snapshot.connectionState == ConnectionState.waiting
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : content();
-            }),
+        child: content(),
       ),
     );
   }

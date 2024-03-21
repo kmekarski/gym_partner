@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/services/plans_service.dart';
 import 'package:gym_partner/services/users_service.dart';
 

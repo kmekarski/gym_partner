@@ -18,7 +18,10 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
   void _selectPlan(BuildContext context, Plan plan) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => PlanDetailsScreen(plan: plan),
+        builder: (context) => PlanDetailsScreen(
+          type: PlansListType.private,
+          plan: plan,
+        ),
       ),
     );
   }

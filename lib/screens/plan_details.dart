@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/widgets/plans_list.dart';
 
 class PlanDetailsScreen extends ConsumerWidget {
-  const PlanDetailsScreen({super.key, required this.plan});
+  const PlanDetailsScreen({super.key, required this.type, required this.plan});
 
+  final PlansListType type;
   final Plan plan;
 
   @override
@@ -42,18 +44,32 @@ class PlanDetailsScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(userProvider.notifier).incrementCurrentDayIndex(plan);
-              },
-              child: const Text('day index + 1'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(userProvider.notifier).setPlanAsRecent(plan.id);
-              },
-              child: const Text('set as recent'),
-            ),
+            if (type == PlansListType.private)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      ref
+                          .read(userProvider.notifier)
+                          .incrementCurrentDayIndex(plan);
+                    },
+                    child: const Text('day index + 1'),
+                  ),
+                  const SizedBox(width: 6),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.read(userProvider.notifier).setPlanAsRecent(plan.id);
+                    },
+                    child: const Text('set as recent'),
+                  ),
+                ],
+              ),
+            if (type == PlansListType.public)
+              ElevatedButton(
+                onPressed: () {},
+                child: Text('add to your plans'),
+              ),
           ],
         ),
       ),

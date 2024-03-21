@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/my_plans.dart';
@@ -21,6 +22,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   void initState() {
     ref.read(userProvider.notifier).getUserData();
     ref.read(userPlansProvider.notifier).getUserPlans();
+    ref.read(publicPlansProvider.notifier).getPlans();
     super.initState();
   }
 
