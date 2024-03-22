@@ -21,11 +21,15 @@ class PlansService {
     List<Plan> plans = [];
 
     try {
+      final userData = await currentUserData;
       QuerySnapshot plansSnapshot =
           await FirebaseFirestore.instance.collection('public_plans').get();
 
       for (var doc in plansSnapshot.docs) {
-        plans.add(Plan.fromFirestore(doc));
+        final plan = Plan.fromFirestore(doc);
+        if (plan.authorId != userData.id) {
+          plans.add(plan);
+        }
       }
     } catch (e) {
       print("Error getting public plans from Firebase: $e");
@@ -47,6 +51,19 @@ class PlansService {
       print("Error getting user's plans from Firebase: $e");
     }
     return userPlans;
+  }
+
+  Future<Plan?> downloadPlan(Plan plan) async {
+    try {
+      await userDocRef(currentUser.uid)
+          .collection('plans')
+          .doc(plan.id)
+          .set(plan.toFirestore());
+      return plan;
+    } catch (e) {
+      print("Error downloading other user's plan: $e");
+      return null;
+    }
   }
 
   Future<Plan?> addUserPlan(Plan plan) async {
@@ -94,6 +111,7 @@ class PlansService {
   Future<void> _addPublicPlan(Plan plan) async {
     FirebaseFirestore.instance
         .collection('public_plans')
-        .add(plan.toFirestore());
+        .doc(plan.id)
+        .set(plan.toFirestore());
   }
 }

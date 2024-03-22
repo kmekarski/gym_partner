@@ -28,6 +28,7 @@ class PlansList extends ConsumerWidget {
       return ListView.builder(
         itemCount: plans.length,
         itemBuilder: (ctx, index) {
+          for (final planData in plansData) {}
           final planData = plansData.firstWhere(
             (data) => data.planId == plans[index].id,
           );

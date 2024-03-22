@@ -28,9 +28,9 @@ Map<PlanFilterCriteria, bool Function(Plan plan, AppUser userData)>
   PlanFilterCriteria.all: (plan, userData) => true,
   PlanFilterCriteria.my: (plan, userData) => userData.id == plan.authorId,
   PlanFilterCriteria.ongoing: (plan, userData) =>
-      userData.plansData
-          .firstWhere((element) => element.planId == plan.id)
-          .currentDayIndex >
+      userData.plansData.firstWhere((element) {
+        return element.planId == plan.id;
+      }).currentDayIndex >
       0,
   PlanFilterCriteria.downloaded: (plan, userData) =>
       userData.id != plan.authorId,

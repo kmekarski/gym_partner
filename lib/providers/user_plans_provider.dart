@@ -28,4 +28,16 @@ class UserPlansNotifier extends StateNotifier<List<Plan>> {
     }
     return addedPlan;
   }
+
+  Future<Plan?> downloadPlan(Plan plan) async {
+    Plan? downloadedPlan;
+    try {
+      downloadedPlan = await plansService.downloadPlan(plan);
+    } finally {
+      if (downloadedPlan != null) {
+        state = [...state, downloadedPlan];
+      }
+    }
+    return downloadedPlan;
+  }
 }

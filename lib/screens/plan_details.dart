@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
+import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 
@@ -10,6 +11,14 @@ class PlanDetailsScreen extends ConsumerWidget {
 
   final PlansListType type;
   final Plan plan;
+
+  void _downloadPlan(WidgetRef ref) async {
+    final downloadedPlan =
+        await ref.read(userPlansProvider.notifier).downloadPlan(plan);
+    if (downloadedPlan != null) {
+      await ref.read(userProvider.notifier).addNewPlanData(downloadedPlan!.id);
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,7 +76,7 @@ class PlanDetailsScreen extends ConsumerWidget {
               ),
             if (type == PlansListType.public)
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _downloadPlan(ref),
                 child: Text('add to your plans'),
               ),
           ],
