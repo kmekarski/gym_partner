@@ -200,10 +200,12 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
 
   Widget _filterChip(PlanFilterCriteria criteria, int number) {
     final isSelected = _selectedFilterCriteria == criteria;
-    return CustomFilterChip.withNumber(
-        text: planFilterCriteriaChipNames[criteria] ?? '',
-        number: number,
-        onTap: () => _selectFilterCriteria(criteria),
-        isSelected: isSelected);
+    return CustomFilterChip(
+      text: planFilterCriteriaChipNames[criteria] ?? '',
+      number: number,
+      onTap: () => _selectFilterCriteria(criteria),
+      isSelected: isSelected,
+      hasTick: true,
+    );
   }
 }

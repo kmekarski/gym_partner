@@ -6,20 +6,15 @@ class CustomFilterChip extends StatelessWidget {
     required this.text,
     required this.onTap,
     required this.isSelected,
-  }) : this.number = null;
-
-  const CustomFilterChip.withNumber({
-    super.key,
-    required this.text,
-    required this.onTap,
-    required this.isSelected,
-    required this.number,
+    this.number = null,
+    this.hasTick = false,
   });
 
   final String text;
   final int? number;
   final void Function() onTap;
   final bool isSelected;
+  final bool hasTick;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +31,13 @@ class CustomFilterChip extends StatelessWidget {
           ),
           child: Row(
             children: [
+              if (hasTick && isSelected)
+                Row(
+                  children: [
+                    Icon(Icons.done),
+                    SizedBox(width: 4),
+                  ],
+                ),
               Text(
                 text,
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(

@@ -20,6 +20,9 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
   List<Plan> _filteredPlans = [];
   bool _showFilters = false;
 
+  final List<PlanTag> _selectedTags = [];
+  PlanDifficulty? _selectedDifficulty;
+
   @override
   void initState() {
     _filteredPlans = ref.read(publicPlansProvider);
@@ -33,26 +36,76 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    final searchQuery = _searchController.text;
-
-    const Duration debounceTime = Duration(milliseconds: 300);
-
-    Future.delayed(debounceTime, () {
-      final plans = ref.read(publicPlansProvider);
-      setState(() {
-        _filteredPlans = _filterPlans(searchQuery, plans);
-      });
+  void _toggleTag(PlanTag tag) {
+    setState(() {
+      if (_selectedTags.contains(tag)) {
+        _selectedTags.remove(tag);
+      } else {
+        _selectedTags.add(tag);
+      }
     });
   }
 
-  List<Plan> _filterPlans(String searchQuery, List<Plan> plans) {
+  void _selectDifficulty(PlanDifficulty difficulty) {
+    setState(() {
+      _selectedDifficulty = difficulty;
+    });
+  }
+
+  void _resetFilters() {
+    setState(() {
+      _selectedDifficulty = null;
+      _selectedTags.clear();
+    });
+    _applyFilters();
+  }
+
+  void _applyFilters() {
+    final plans = ref.read(publicPlansProvider);
+    setState(() {
+      _filteredPlans = _filterPlans(plans);
+    });
+  }
+
+  void _onSearchChanged() {
+    const Duration debounceTime = Duration(milliseconds: 300);
+
+    Future.delayed(debounceTime, () {
+      _applyFilters();
+    });
+  }
+
+  List<Plan> _filterPlans(List<Plan> plans) {
+    final searchQuery = _searchController.text;
+    return _filterPlansByQuery(searchQuery,
+        _filterPlansBySelectedDifficulty(_filterPlansBySelectedTags(plans)));
+  }
+
+  List<Plan> _filterPlansByQuery(String searchQuery, List<Plan> plans) {
     final query = searchQuery.toLowerCase();
     if (query.isEmpty) {
       return plans;
     }
     return plans
         .where((plan) => plan.name.toLowerCase().contains(query))
+        .toList();
+  }
+
+  List<Plan> _filterPlansBySelectedTags(List<Plan> plans) {
+    if (_selectedTags.isEmpty) {
+      return plans;
+    }
+    return plans
+        .where((plan) => _selectedTags.every((tag) => plan.tags.contains(tag)))
+        .toList();
+  }
+
+  List<Plan> _filterPlansBySelectedDifficulty(List<Plan> plans) {
+    if (_selectedDifficulty == null) {
+      return plans;
+    }
+    return plans
+        .where((plan) => _selectedDifficulty == plan.difficulty)
         .toList();
   }
 
@@ -93,7 +146,7 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
       ),
     );
 
-    var filterChips = Padding(
+    var filtersSection = Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         children: [
@@ -115,9 +168,11 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
                     children: [
                       for (final tag in PlanTag.values)
                         CustomFilterChip(
-                            text: planTagStrings[tag] ?? '',
-                            onTap: () {},
-                            isSelected: false)
+                          text: planTagStrings[tag] ?? '',
+                          onTap: () => _toggleTag(tag),
+                          isSelected: _selectedTags.contains(tag),
+                          hasTick: true,
+                        )
                     ],
                   ),
                 ),
@@ -143,14 +198,31 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
                     children: [
                       for (final difficulty in PlanDifficulty.values)
                         CustomFilterChip(
-                            text: planDifficultyStrings[difficulty] ?? '',
-                            onTap: () {},
-                            isSelected: false)
+                          text: planDifficultyStrings[difficulty] ?? '',
+                          onTap: () => _selectDifficulty(difficulty),
+                          isSelected: _selectedDifficulty == difficulty,
+                          hasTick: true,
+                        )
                     ],
                   ),
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: _resetFilters,
+                child: const Text('Reset'),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _applyFilters,
+                child: const Text('Apply filters'),
+              ),
+            ],
           )
         ],
       ),
@@ -173,7 +245,7 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
                 ),
               ],
             ),
-            if (_showFilters) filterChips,
+            if (_showFilters) filtersSection,
             Expanded(
               child: _buildContent(_filteredPlans),
             ),
