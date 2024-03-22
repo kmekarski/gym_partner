@@ -131,13 +131,15 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
     });
 
     final newPlan = Plan(
-        id: '',
-        name: _enteredName,
-        days: _days,
-        tags: _selectedTags,
-        difficulty: _selectedDifficulty,
-        visibility: _selectedVisibility,
-        authorName: '');
+      id: '',
+      name: _enteredName,
+      days: _days,
+      tags: _selectedTags,
+      difficulty: _selectedDifficulty,
+      visibility: _selectedVisibility,
+      authorName: '',
+      authorId: '',
+    );
 
     final addedPlan =
         await ref.read(userPlansProvider.notifier).addNewPlan(newPlan);

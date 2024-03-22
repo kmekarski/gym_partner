@@ -9,6 +9,7 @@ class Plan {
     required this.id,
     required this.name,
     required this.authorName,
+    required this.authorId,
     required this.days,
     required this.tags,
     required this.difficulty,
@@ -49,6 +50,7 @@ class Plan {
       difficulty: difficulty,
       visibility: visibility,
       authorName: data['author_name'] ?? '',
+      authorId: data['author_id'] ?? '',
     );
   }
 
@@ -61,6 +63,7 @@ class Plan {
       'difficulty': difficulty.toString(),
       'visibility': visibility.toString(),
       'author_name': authorName,
+      'author_id': authorId,
     };
   }
 
@@ -71,6 +74,7 @@ class Plan {
   final PlanDifficulty difficulty;
   final PlanVisibility visibility;
   final String authorName;
+  final String authorId;
 
   int getCompletionPercentage(int currentDayIndex) {
     return (100 * currentDayIndex / days.length).round();

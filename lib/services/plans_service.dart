@@ -60,6 +60,7 @@ class PlansService {
         difficulty: plan.difficulty,
         visibility: plan.visibility,
         authorName: userData.username,
+        authorId: userData.id,
       );
       DocumentReference userPlanDocRef = await userDocRef(currentUser.uid)
           .collection('plans')
@@ -76,6 +77,7 @@ class PlansService {
         difficulty: plan.difficulty,
         visibility: plan.visibility,
         authorName: userData.username,
+        authorId: userData.id,
       );
 
       if (plan.visibility == PlanVisibility.public) {

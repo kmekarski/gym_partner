@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_filter_criteria.dart';
+import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/new_plan.dart';
@@ -19,6 +20,11 @@ class MyPlansScreen extends ConsumerStatefulWidget {
 
 class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
   PlanFilterCriteria _selectedFilterCriteria = PlanFilterCriteria.all;
+
+  int _allPlansCount = 0;
+  int _myPlansCount = 0;
+  int _ongoingPlansCount = 0;
+  int _downloadedPlansCount = 0;
 
   void _selectPlan(BuildContext context, Plan plan) {
     Navigator.of(context).push(
@@ -40,27 +46,57 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
   @override
   Widget build(BuildContext context) {
     final plans = ref.watch(userPlansProvider);
-    final plansData = ref.watch(userProvider).plansData;
+    final userData = ref.watch(userProvider);
+    final plansData = userData.plansData;
+
+    _allPlansCount = plans.length;
+    _myPlansCount = plans
+        .where((plan) => planFilterCriteriaConditions[PlanFilterCriteria.my]!(
+            plan, userData))
+        .length;
+    _ongoingPlansCount = plans
+        .where((plan) =>
+            planFilterCriteriaConditions[PlanFilterCriteria.ongoing]!(
+                plan, userData))
+        .length;
+    _downloadedPlansCount = plans
+        .where((plan) =>
+            planFilterCriteriaConditions[PlanFilterCriteria.downloaded]!(
+                plan, userData))
+        .length;
 
     Widget content() {
-      if (plans.isEmpty) {
-        return _centerMessage(
-            context, 'You haven\'t created any workout plans yet.');
-      } else {
-        final List<Plan> sortedPlans = [];
+      final filterCondition =
+          planFilterCriteriaConditions[_selectedFilterCriteria] ??
+              (Plan plan, AppUser userData) => true;
+      final filteredPlans =
+          plans.where((plan) => filterCondition(plan, userData)).toList();
 
-        String? recentPlanId;
+      final List<Plan> sortedPlans = [];
 
-        for (final planData in plansData) {
-          if (planData.isRecent) {
+      String? recentPlanId;
+
+      for (final planData in plansData) {
+        if (planData.isRecent) {
+          try {
+            var foundPlan =
+                filteredPlans.firstWhere((plan) => plan.id == planData.planId);
             recentPlanId = planData.planId;
-            sortedPlans
-                .add(plans.firstWhere((plan) => plan.id == planData.planId));
-          }
+            sortedPlans.add(foundPlan);
+          } catch (e) {}
         }
+      }
 
-        sortedPlans.addAll(plans.where((plan) => plan.id != recentPlanId));
+      sortedPlans
+          .addAll(filteredPlans.where((plan) => plan.id != recentPlanId));
 
+      if (sortedPlans.isEmpty) {
+        return _centerMessage(
+            context,
+            _selectedFilterCriteria == PlanFilterCriteria.all
+                ? 'You don\'t have any workout plans yet.'
+                : 'Couldn\'t find any plans matching selected criteria.');
+      } else {
         return PlansList(
             type: PlansListType.private,
             plans: sortedPlans,
@@ -89,16 +125,16 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _filterButton(PlanFilterCriteria.all, 11),
-          _filterButton(PlanFilterCriteria.my, 22),
-          _filterButton(PlanFilterCriteria.ongoing, 3),
-          _filterButton(PlanFilterCriteria.downloaded, 44),
+          _filterButton(PlanFilterCriteria.all, _allPlansCount),
+          _filterButton(PlanFilterCriteria.my, _myPlansCount),
+          _filterButton(PlanFilterCriteria.ongoing, _ongoingPlansCount),
+          _filterButton(PlanFilterCriteria.downloaded, _downloadedPlansCount),
         ],
       ),
     );
 
     var listTitle = Container(
-      margin: EdgeInsets.symmetric(vertical: 16),
+      margin: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
