@@ -104,7 +104,7 @@ class PlanCard extends StatelessWidget {
           )
         : null;
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),

@@ -29,6 +29,7 @@ class App extends StatelessWidget {
           color: colorScheme.primaryContainer.withOpacity(0.7),
         ),
         appBarTheme: const AppBarTheme().copyWith(
+          centerTitle: false,
           titleTextStyle: Theme.of(context)
               .textTheme
               .titleLarge!
