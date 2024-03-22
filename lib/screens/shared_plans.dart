@@ -7,6 +7,7 @@ import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
+import 'package:gym_partner/widgets/shared_plans_filters.dart';
 
 class SharedPlansScreen extends ConsumerStatefulWidget {
   const SharedPlansScreen({super.key});
@@ -17,11 +18,9 @@ class SharedPlansScreen extends ConsumerStatefulWidget {
 
 class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
   final _searchController = TextEditingController();
-  List<Plan> _filteredPlans = [];
-  bool _showFilters = false;
-
-  final List<PlanTag> _selectedTags = [];
+  List<PlanTag> _selectedTags = [];
   PlanDifficulty? _selectedDifficulty;
+  List<Plan> _filteredPlans = [];
 
   @override
   void initState() {
@@ -34,30 +33,6 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  void _toggleTag(PlanTag tag) {
-    setState(() {
-      if (_selectedTags.contains(tag)) {
-        _selectedTags.remove(tag);
-      } else {
-        _selectedTags.add(tag);
-      }
-    });
-  }
-
-  void _selectDifficulty(PlanDifficulty difficulty) {
-    setState(() {
-      _selectedDifficulty = difficulty;
-    });
-  }
-
-  void _resetFilters() {
-    setState(() {
-      _selectedDifficulty = null;
-      _selectedTags.clear();
-    });
-    _applyFilters();
   }
 
   void _applyFilters() {
@@ -120,10 +95,20 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
     );
   }
 
-  void _toggleShowFilters() {
-    setState(() {
-      _showFilters = !_showFilters;
-    });
+  void _showFiltersModal() async {
+    final selectedFilters =
+        await showModalBottomSheet<Map<PlanFilterCriteria, dynamic>>(
+            isScrollControlled: true,
+            context: context,
+            builder: (context) => SharedPlansFilters(
+                  tags: _selectedTags,
+                  difficulty: _selectedDifficulty,
+                ));
+
+    _selectedDifficulty = selectedFilters?[PlanFilterCriteria.difficulty];
+    _selectedTags = selectedFilters?[PlanFilterCriteria.tags] ?? [];
+
+    _applyFilters();
   }
 
   @override
@@ -146,88 +131,6 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
       ),
     );
 
-    var filtersSection = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 44,
-            child: Row(
-              children: [
-                Text(
-                  'Tags:',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      for (final tag in PlanTag.values)
-                        CustomFilterChip(
-                          text: planTagStrings[tag] ?? '',
-                          onTap: () => _toggleTag(tag),
-                          isSelected: _selectedTags.contains(tag),
-                          hasTick: true,
-                        )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 44,
-            child: Row(
-              children: [
-                Text(
-                  'Difficulty:',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      for (final difficulty in PlanDifficulty.values)
-                        CustomFilterChip(
-                          text: planDifficultyStrings[difficulty] ?? '',
-                          onTap: () => _selectDifficulty(difficulty),
-                          isSelected: _selectedDifficulty == difficulty,
-                          hasTick: true,
-                        )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton(
-                onPressed: _resetFilters,
-                child: const Text('Reset'),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: _applyFilters,
-                child: const Text('Apply filters'),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Other users\' workout plans'),
@@ -240,12 +143,12 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
               children: [
                 Expanded(child: searchbar),
                 IconButton(
-                  onPressed: _toggleShowFilters,
-                  icon: const Icon(Icons.tune),
+                  onPressed: _showFiltersModal,
+                  icon: Icon(Icons.tune),
                 ),
               ],
             ),
-            if (_showFilters) filtersSection,
+            // if (_showFilters) filtersSection,
             Expanded(
               child: _buildContent(_filteredPlans),
             ),

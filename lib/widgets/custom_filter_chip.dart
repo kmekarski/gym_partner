@@ -32,7 +32,7 @@ class CustomFilterChip extends StatelessWidget {
           child: Row(
             children: [
               if (hasTick && isSelected)
-                Row(
+                const Row(
                   children: [
                     Icon(Icons.done),
                     SizedBox(width: 4),

@@ -20,7 +20,7 @@ class MyPlansScreen extends ConsumerStatefulWidget {
 }
 
 class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
-  PlanFilterCriteria _selectedFilterCriteria = PlanFilterCriteria.all;
+  MyPlansCategory _selectedFilterCriteria = MyPlansCategory.all;
 
   int _allPlansCount = 0;
   int _myPlansCount = 0;
@@ -38,7 +38,7 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     );
   }
 
-  void _selectFilterCriteria(PlanFilterCriteria criteria) {
+  void _selectFilterCriteria(MyPlansCategory criteria) {
     setState(() {
       _selectedFilterCriteria = criteria;
     });
@@ -52,17 +52,16 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
 
     _allPlansCount = plans.length;
     _myPlansCount = plans
-        .where((plan) => planFilterCriteriaConditions[PlanFilterCriteria.my]!(
-            plan, userData))
+        .where((plan) =>
+            planFilterCriteriaConditions[MyPlansCategory.my]!(plan, userData))
         .length;
     _ongoingPlansCount = plans
-        .where((plan) =>
-            planFilterCriteriaConditions[PlanFilterCriteria.ongoing]!(
-                plan, userData))
+        .where((plan) => planFilterCriteriaConditions[MyPlansCategory.ongoing]!(
+            plan, userData))
         .length;
     _downloadedPlansCount = plans
         .where((plan) =>
-            planFilterCriteriaConditions[PlanFilterCriteria.downloaded]!(
+            planFilterCriteriaConditions[MyPlansCategory.downloaded]!(
                 plan, userData))
         .length;
 
@@ -94,7 +93,7 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
       if (sortedPlans.isEmpty) {
         return _centerMessage(
             context,
-            _selectedFilterCriteria == PlanFilterCriteria.all
+            _selectedFilterCriteria == MyPlansCategory.all
                 ? 'You don\'t have any workout plans yet.'
                 : 'Couldn\'t find any plans matching selected criteria.');
       } else {
@@ -126,10 +125,10 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _filterChip(PlanFilterCriteria.all, _allPlansCount),
-          _filterChip(PlanFilterCriteria.my, _myPlansCount),
-          _filterChip(PlanFilterCriteria.ongoing, _ongoingPlansCount),
-          _filterChip(PlanFilterCriteria.downloaded, _downloadedPlansCount),
+          _filterChip(MyPlansCategory.all, _allPlansCount),
+          _filterChip(MyPlansCategory.my, _myPlansCount),
+          _filterChip(MyPlansCategory.ongoing, _ongoingPlansCount),
+          _filterChip(MyPlansCategory.downloaded, _downloadedPlansCount),
         ],
       ),
     );
@@ -147,13 +146,13 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          if (_selectedFilterCriteria != PlanFilterCriteria.all)
+          if (_selectedFilterCriteria != MyPlansCategory.all)
             Expanded(
               child: Row(
                 children: [
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => _selectFilterCriteria(PlanFilterCriteria.all),
+                    onTap: () => _selectFilterCriteria(MyPlansCategory.all),
                     child: Row(
                       children: [
                         Text(
@@ -198,7 +197,7 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     );
   }
 
-  Widget _filterChip(PlanFilterCriteria criteria, int number) {
+  Widget _filterChip(MyPlansCategory criteria, int number) {
     final isSelected = _selectedFilterCriteria == criteria;
     return CustomFilterChip(
       text: planFilterCriteriaChipNames[criteria] ?? '',
