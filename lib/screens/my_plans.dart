@@ -9,6 +9,7 @@ import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/new_plan.dart';
 import 'package:gym_partner/screens/plan_details.dart';
+import 'package:gym_partner/widgets/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 
 class MyPlansScreen extends ConsumerStatefulWidget {
@@ -125,10 +126,10 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _filterButton(PlanFilterCriteria.all, _allPlansCount),
-          _filterButton(PlanFilterCriteria.my, _myPlansCount),
-          _filterButton(PlanFilterCriteria.ongoing, _ongoingPlansCount),
-          _filterButton(PlanFilterCriteria.downloaded, _downloadedPlansCount),
+          _filterChip(PlanFilterCriteria.all, _allPlansCount),
+          _filterChip(PlanFilterCriteria.my, _myPlansCount),
+          _filterChip(PlanFilterCriteria.ongoing, _ongoingPlansCount),
+          _filterChip(PlanFilterCriteria.downloaded, _downloadedPlansCount),
         ],
       ),
     );
@@ -197,43 +198,12 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     );
   }
 
-  Widget _filterButton(PlanFilterCriteria criteria, int number) {
+  Widget _filterChip(PlanFilterCriteria criteria, int number) {
     final isSelected = _selectedFilterCriteria == criteria;
-    return Padding(
-      padding: const EdgeInsets.only(right: 6),
-      child: InkWell(
+    return CustomFilterChip.withNumber(
+        text: planFilterCriteriaChipNames[criteria] ?? '',
+        number: number,
         onTap: () => _selectFilterCriteria(criteria),
-        borderRadius: BorderRadius.circular(50),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(isSelected ? 0.16 : 0.08),
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Row(
-            children: [
-              Text(
-                planFilterCriteriaChipNames[criteria] ?? '',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontWeight: _selectedFilterCriteria == criteria
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                    ),
-              ),
-              const SizedBox(width: 10),
-              CircleAvatar(
-                radius: 12,
-                backgroundColor: Theme.of(context).colorScheme.onPrimary,
-                child: Text(
-                  number.toString(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w600, fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+        isSelected: isSelected);
   }
 }

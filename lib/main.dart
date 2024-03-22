@@ -35,6 +35,11 @@ class App extends StatelessWidget {
               .titleLarge!
               .copyWith(fontWeight: FontWeight.w600, fontSize: 26),
         ),
+        searchBarTheme: SearchBarThemeData().copyWith(
+          elevation: const MaterialStatePropertyAll(0),
+          backgroundColor:
+              MaterialStateProperty.all(Colors.black.withOpacity(0.08)),
+        ),
       ),
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),

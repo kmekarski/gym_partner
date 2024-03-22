@@ -280,7 +280,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
           children: [
             for (final tag in PlanTag.values)
               FormBadge(
-                text: tag.toString().split('.').last,
+                text: planTagStrings[tag] ?? '',
                 isSelected: _selectedTags.contains(tag),
                 onTap: () => _toggleTag(tag),
                 selectedBackgroundColor: tagSelectedBackgroundColor,
@@ -304,7 +304,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
             children: [
               for (final difficulty in PlanDifficulty.values)
                 FormBadge(
-                  text: difficulty.toString().split('.').last,
+                  text: planDifficultyStrings[difficulty] ?? '',
                   isSelected: _selectedDifficulty == difficulty,
                   onTap: () => _selectDifficulty(difficulty),
                   selectedBackgroundColor: tagSelectedBackgroundColor,
@@ -325,7 +325,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
           children: [
             for (final visibility in PlanVisibility.values)
               FormBadge(
-                text: visibility.toString().split('.').last,
+                text: planVisibilityStrings[visibility] ?? '',
                 isSelected: _selectedVisibility == visibility,
                 onTap: () => _selectVisibility(visibility),
                 selectedBackgroundColor: tagSelectedBackgroundColor,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_partner/models/body_part.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
 
 class NewPlanExerciseCard extends StatefulWidget {
@@ -26,7 +27,7 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
   @override
   Widget build(BuildContext context) {
     final bodyPartsString = widget.exercise.exercise.bodyParts
-        .map((bodyPart) => bodyPart.toString().split('.').last)
+        .map((bodyPart) => bodyPartStrings[bodyPart] ?? '')
         .join(', ');
     return Card(
       color: Theme.of(context).colorScheme.onPrimary,

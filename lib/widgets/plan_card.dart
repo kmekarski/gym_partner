@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
@@ -43,7 +44,7 @@ class PlanCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(50),
           color: Theme.of(context).colorScheme.primary),
       child: Text(
-        plan.difficulty.toString().split('.').last,
+        planDifficultyStrings[plan.difficulty] ?? '',
         style: Theme.of(context).textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
             ),
@@ -69,7 +70,7 @@ class PlanCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Text(
-              tag.toString().split('.').last,
+              planTagStrings[tag] ?? '',
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     fontSize: 18,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,

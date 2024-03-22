@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/plan_difficulty.dart';
+import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/screens/plan_details.dart';
+import 'package:gym_partner/widgets/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 
 class SharedPlansScreen extends ConsumerStatefulWidget {
@@ -15,6 +18,7 @@ class SharedPlansScreen extends ConsumerStatefulWidget {
 class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
   final _searchController = TextEditingController();
   List<Plan> _filteredPlans = [];
+  bool _showFilters = false;
 
   @override
   void initState() {
@@ -63,13 +67,93 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
     );
   }
 
+  void _toggleShowFilters() {
+    setState(() {
+      _showFilters = !_showFilters;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var searchbar = SearchBar(
-      controller: _searchController,
-      leading: Icon(Icons.search),
-      trailing: [Icon(Icons.close)],
-      hintText: 'Search for plans...',
+    var searchbar = Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 8),
+      child: SearchBar(
+        controller: _searchController,
+        leading: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Icon(Icons.search),
+        ),
+        trailing: [
+          IconButton(
+            onPressed: () => _searchController.clear(),
+            icon: const Icon(Icons.close),
+          ),
+        ],
+        hintText: 'Search for plans...',
+      ),
+    );
+
+    var filterChips = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 44,
+            child: Row(
+              children: [
+                Text(
+                  'Tags:',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      for (final tag in PlanTag.values)
+                        CustomFilterChip(
+                            text: planTagStrings[tag] ?? '',
+                            onTap: () {},
+                            isSelected: false)
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 44,
+            child: Row(
+              children: [
+                Text(
+                  'Difficulty:',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      for (final difficulty in PlanDifficulty.values)
+                        CustomFilterChip(
+                            text: planDifficultyStrings[difficulty] ?? '',
+                            onTap: () {},
+                            isSelected: false)
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
 
     return Scaffold(
@@ -80,7 +164,16 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
-            searchbar,
+            Row(
+              children: [
+                Expanded(child: searchbar),
+                IconButton(
+                  onPressed: _toggleShowFilters,
+                  icon: const Icon(Icons.tune),
+                ),
+              ],
+            ),
+            if (_showFilters) filterChips,
             Expanded(
               child: _buildContent(_filteredPlans),
             ),
