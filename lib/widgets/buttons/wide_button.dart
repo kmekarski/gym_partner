@@ -16,7 +16,6 @@ class WideButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(text);
     return SizedBox(
       width: double.infinity,
       height: 50,

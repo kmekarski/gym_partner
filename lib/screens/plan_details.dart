@@ -10,6 +10,7 @@ import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/workout.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/plan_day_card.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/badges/simple_badge.dart';
 
@@ -208,48 +209,7 @@ class PlanDetailsScreen extends ConsumerWidget {
                 ],
               ),
             for (final (index, exercise) in day.exercises.indexed)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (index > 0) Divider(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${index + 1}. ${exercise.exercise.name}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            Text(
-                                exercise.exercise.bodyParts
-                                    .map((e) => bodyPartStrings[e])
-                                    .join(', '),
-                                style: Theme.of(context).textTheme.bodyLarge),
-                          ],
-                        ),
-                        Text(
-                          '${exercise.numOfReps}x${exercise.numOfSets}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                  fontSize: 22, fontWeight: FontWeight.w500),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              PlanExerciseRow(exercise: exercise, index: index)
           ],
         ),
       ),
