@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 class WideButton extends StatelessWidget {
   const WideButton({
     super.key,
-    required this.label,
+    this.label = null,
     this.icon = null,
+    this.text = null,
     required this.onPressed,
   });
 
   final void Function() onPressed;
   final Icon? icon;
-  final Widget label;
+  final Widget? label;
+  final String? text;
 
   @override
   Widget build(BuildContext context) {
+    print(text);
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -23,7 +26,12 @@ class WideButton extends StatelessWidget {
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary),
               onPressed: onPressed,
-              child: label,
+              child: label ??
+                  Text(
+                    text ?? '',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
             )
           : ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -31,7 +39,12 @@ class WideButton extends StatelessWidget {
                   foregroundColor: Theme.of(context).colorScheme.onPrimary),
               onPressed: onPressed,
               icon: icon!,
-              label: label,
+              label: label ??
+                  Text(
+                    text ?? '',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
             ),
     );
   }

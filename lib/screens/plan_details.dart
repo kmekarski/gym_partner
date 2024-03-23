@@ -8,6 +8,7 @@ import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/screens/workout.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/badges/simple_badge.dart';
@@ -24,6 +25,17 @@ class PlanDetailsScreen extends ConsumerWidget {
     if (downloadedPlan != null) {
       await ref.read(userProvider.notifier).addNewPlanData(downloadedPlan!.id);
     }
+  }
+
+  void _startWorkout(PlanDay day, WidgetRef ref, BuildContext context) async {
+    if (type == PlansListType.private) {
+      // await ref.read(userProvider.notifier).incrementCurrentDayIndex(plan);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => WorkoutScreen(day: day),
+      ));
+      ref.read(userProvider.notifier).setPlanAsRecent(plan.id);
+    }
+    if (type == PlansListType.public) {}
   }
 
   @override
@@ -116,18 +128,11 @@ class PlanDetailsScreen extends ConsumerWidget {
     );
 
     var bottomButton = WideButton(
-      label: Text(
-        type == PlansListType.private ? 'Start workout' : 'Add to your plans',
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      ),
+      text:
+          type == PlansListType.private ? 'Start workout' : 'Add to your plans',
       icon: null,
-      onPressed: () async {
-        if (type == PlansListType.private) {
-          await ref.read(userProvider.notifier).incrementCurrentDayIndex(plan);
-          await ref.read(userProvider.notifier).setPlanAsRecent(plan.id);
-        }
-        if (type == PlansListType.public) {}
-      },
+      onPressed: () =>
+          _startWorkout(plan.days[planData.currentDayIndex], ref, context),
     );
     var appBar = AppBar(
       title: Text(plan.name),
@@ -140,7 +145,7 @@ class PlanDetailsScreen extends ConsumerWidget {
       appBar: appBar,
       body: Padding(
         padding:
-            const EdgeInsets.only(top: 12, right: 24, left: 24, bottom: 36),
+            const EdgeInsets.only(top: 12, right: 24, left: 24, bottom: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
