@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/models/body_part.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
@@ -7,8 +8,9 @@ import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
-import 'package:gym_partner/widgets/simple_badge.dart';
+import 'package:gym_partner/widgets/badges/simple_badge.dart';
 
 class PlanDetailsScreen extends ConsumerWidget {
   const PlanDetailsScreen({super.key, required this.type, required this.plan});
@@ -33,16 +35,29 @@ class PlanDetailsScreen extends ConsumerWidget {
     var authorInfo = Row(
       children: [
         const CircleAvatar(
-          radius: 16,
+          radius: 24,
           backgroundImage: AssetImage('assets/images/default.png'),
         ),
         const SizedBox(width: 10),
-        Text(
-          'Created by: ${plan.authorName}',
-          style: Theme.of(context).textTheme.titleMedium,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Created by',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            Text(
+              plan.authorName,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ],
         )
       ],
     );
+
     var tags = Row(
       children: [
         for (PlanTag tag in plan.tags)
@@ -58,91 +73,108 @@ class PlanDetailsScreen extends ConsumerWidget {
           ),
       ],
     );
-    var badges = Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+
+    var badges = SizedBox(
+      height: 42,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          SimpleBadge(
+              text: planDifficultyStrings[plan.difficulty] ?? '',
+              textColor: Theme.of(context).colorScheme.onPrimary,
+              backgroundColor: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          for (final tag in plan.tags)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: SimpleBadge(
+                  text: planTagStrings[tag] ?? '',
+                  textColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.primary),
+            ),
+        ],
+      ),
+    );
+
+    var todaysActivitySection = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SimpleBadge(
-            text: planDifficultyStrings[plan.difficulty] ?? '',
-            textColor: Theme.of(context).colorScheme.onPrimary,
-            backgroundColor: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 8),
-        for (final tag in plan.tags)
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: SimpleBadge(
-                text: planTagStrings[tag] ?? '',
-                textColor: Theme.of(context).colorScheme.onPrimary,
-                backgroundColor: Theme.of(context).colorScheme.primary),
-          ),
+        _sectionTitle('Today\'s activity', context),
+        _planDayCard(plan.days[planData.currentDayIndex],
+            planData.currentDayIndex, context),
+        const SizedBox(height: 16),
+        _sectionTitle('Whole plan', context),
+      ],
+    );
+
+    var daysList = Expanded(
+      child: ListView.builder(
+        itemCount: plan.days.length,
+        itemBuilder: (context, index) =>
+            _planDayCard(plan.days[index], index, context),
+      ),
+    );
+
+    var bottomButton = WideButton(
+      label: Text(
+        type == PlansListType.private ? 'Start workout' : 'Add to your plans',
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      ),
+      icon: null,
+      onPressed: () async {
+        if (type == PlansListType.private) {
+          await ref.read(userProvider.notifier).incrementCurrentDayIndex(plan);
+          await ref.read(userProvider.notifier).setPlanAsRecent(plan.id);
+        }
+        if (type == PlansListType.public) {}
+      },
+    );
+    var appBar = AppBar(
+      title: Text(plan.name),
+      actions: [
+        if (type == PlansListType.private)
+          IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
       ],
     );
     return Scaffold(
-      appBar: AppBar(
-        title: Text(plan.name),
-        actions: [
-          if (type == PlansListType.private)
-            IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
-        ],
-      ),
+      appBar: appBar,
       body: Padding(
         padding:
             const EdgeInsets.only(top: 12, right: 24, left: 24, bottom: 36),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             authorInfo,
             const SizedBox(height: 16),
             badges,
-            const SizedBox(height: 12),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                width: double.infinity,
-                child: type == PlansListType.private
-                    ? ListView.builder(
-                        itemCount: 1,
-                        itemBuilder: (context, index) => planDayCard(
-                            plan.days[planData.currentDayIndex],
-                            planData.currentDayIndex,
-                            context),
-                      )
-                    : ListView.builder(
-                        itemCount: plan.days.length,
-                        itemBuilder: (context, index) =>
-                            planDayCard(plan.days[index], index, context),
-                      ),
-              ),
-            ),
-            SizedBox(
-              width: double.infinity,
-              height: 44,
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (type == PlansListType.private) {
-                    await ref
-                        .read(userProvider.notifier)
-                        .incrementCurrentDayIndex(plan);
-                    await ref
-                        .read(userProvider.notifier)
-                        .setPlanAsRecent(plan.id);
-                  }
-                  if (type == PlansListType.public) {}
-                },
-                child: Text(type == PlansListType.private
-                    ? 'Start workout'
-                    : 'Add to your plans'),
-              ),
-            ),
+            const SizedBox(height: 16),
+            if (type == PlansListType.private) todaysActivitySection,
+            daysList,
+            const SizedBox(height: 16),
+            bottomButton,
           ],
         ),
       ),
     );
   }
 
-  Card planDayCard(PlanDay day, int dayIndex, BuildContext context) {
+  Widget _sectionTitle(String text, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+      ),
+    );
+  }
+
+  Widget _planDayCard(PlanDay day, int dayIndex, BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -151,7 +183,7 @@ class PlanDetailsScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Day ${dayIndex + 1}${type == PlansListType.private ? ' / ${plan.days.length}' : ''}',
+                  'Day ${dayIndex + 1}',
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -177,19 +209,37 @@ class PlanDetailsScreen extends ConsumerWidget {
                   if (index > 0) Divider(),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${index + 1}. ${exercise.exercise.name}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                            Text(
+                                exercise.exercise.bodyParts
+                                    .map((e) => bodyPartStrings[e])
+                                    .join(', '),
+                                style: Theme.of(context).textTheme.bodyLarge),
+                          ],
+                        ),
                         Text(
-                          '${index + 1}. ${exercise.exercise.name}',
+                          '${exercise.numOfReps}x${exercise.numOfSets}',
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge!
-                              .copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                            '${exercise.numOfSets} sets, ${exercise.numOfReps} reps',
-                            style: Theme.of(context).textTheme.bodyLarge),
+                              .copyWith(
+                                  fontSize: 22, fontWeight: FontWeight.w500),
+                        )
                       ],
                     ),
                   ),

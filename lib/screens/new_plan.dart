@@ -10,8 +10,9 @@ import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/exercise_searchbar.dart';
-import 'package:gym_partner/widgets/form_clickable_badge.dart';
+import 'package:gym_partner/widgets/badges/form_clickable_badge.dart';
 import 'package:gym_partner/widgets/new_plan_exercise_card.dart';
 
 class NewPlanScreen extends ConsumerStatefulWidget {
@@ -28,7 +29,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
   bool _isSending = false;
 
   final List<PlanDay> _days = [
-    PlanDay(id: '0'),
+    PlanDay(id: '0', exercises: []),
   ];
 
   int _selectedDayIndex = 0;
@@ -62,7 +63,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   void _newDay() {
     setState(() {
-      _days.add(PlanDay(id: '${_days.length}'));
+      _days.add(PlanDay(id: '${_days.length}', exercises: []));
       _selectedDayIndex = _days.length - 1;
     });
     _animateDaysList();
@@ -338,30 +339,24 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       ],
     );
 
-    var createButton = SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary),
-        onPressed: _submitPlanData,
-        icon: _isSending ? const Icon(null) : const Icon(Icons.add),
-        label: _isSending
-            ? SizedBox(
-                height: 16,
-                width: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              )
-            : const Text(
-                'Create plan',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+    var createButton = WideButton(
+      label: _isSending
+          ? SizedBox(
+              height: 16,
+              width: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
-      ),
+            )
+          : const Text(
+              'Create plan',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+      icon: _isSending ? const Icon(null) : const Icon(Icons.add),
+      onPressed: _submitPlanData,
     );
+
     var nameTextFormField = TextFormField(
       onSaved: (newValue) {
         _enteredName = newValue!;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
-import 'package:gym_partner/widgets/custom_filter_chip.dart';
+import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
 
 enum PlanFilterCriteria {
   tags,

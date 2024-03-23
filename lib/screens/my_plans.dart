@@ -9,7 +9,7 @@ import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/new_plan.dart';
 import 'package:gym_partner/screens/plan_details.dart';
-import 'package:gym_partner/widgets/custom_filter_chip.dart';
+import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 
 class MyPlansScreen extends ConsumerStatefulWidget {

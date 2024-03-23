@@ -5,7 +5,7 @@ import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/screens/plan_details.dart';
-import 'package:gym_partner/widgets/custom_filter_chip.dart';
+import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/shared_plans_filters.dart';
 
@@ -163,12 +163,15 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
   }
 
   Widget _buildContent(List<Plan> plans) {
+    final anyFiltersApplied = _searchController.text.isNotEmpty ||
+        _selectedTags.isNotEmpty ||
+        _selectedDifficulty != null;
     if (plans.isEmpty) {
       return _centerMessage(
           context,
-          _searchController.text.isEmpty
-              ? 'Couldn\'t find any other user\'s plans.'
-              : 'Couldn\'t find any plans matching your criteria.');
+          anyFiltersApplied
+              ? 'Couldn\'t find any plans matching your criteria.'
+              : 'Couldn\'t find any other user\'s plans.');
     } else {
       return PlansList(
         type: PlansListType.public,

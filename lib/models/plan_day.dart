@@ -3,17 +3,10 @@ import 'package:gym_partner/models/plan_exercise.dart';
 class PlanDay {
   PlanDay({
     required this.id,
-    this.exercises = const [],
+    required this.exercises,
   });
   final String id;
-  final List<PlanExercise> exercises;
-
-  // factory PlanDay.fromMap(Map<String, dynamic> map) {
-  //   return PlanDay(
-  //     id: map['id'] ?? '',
-  //     exercises: map[]
-  //   );
-  // }
+  List<PlanExercise> exercises;
 
   Map<String, dynamic> toFirestore() {
     return {

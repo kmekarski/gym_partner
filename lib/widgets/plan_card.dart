@@ -4,7 +4,7 @@ import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
-import 'package:gym_partner/widgets/simple_badge.dart';
+import 'package:gym_partner/widgets/badges/simple_badge.dart';
 
 class PlanCard extends StatelessWidget {
   const PlanCard({
