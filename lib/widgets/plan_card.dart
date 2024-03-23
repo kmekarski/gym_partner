@@ -4,6 +4,7 @@ import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
+import 'package:gym_partner/widgets/simple_badge.dart';
 
 class PlanCard extends StatelessWidget {
   const PlanCard({
@@ -38,30 +39,16 @@ class PlanCard extends StatelessWidget {
       ],
     );
 
-    var difficultyBadge = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          color: Theme.of(context).colorScheme.primary),
-      child: Text(
-        planDifficultyStrings[plan.difficulty] ?? '',
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
-      ),
+    var difficultyBadge = SimpleBadge(
+      text: planDifficultyStrings[plan.difficulty] ?? '',
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      textColor: Theme.of(context).colorScheme.onPrimary,
     );
 
-    var isRecentBadge = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          color: Theme.of(context).colorScheme.primary.withOpacity(0.15)),
-      child: Text(
-        'Recent workout',
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-      ),
+    var isRecentBadge = SimpleBadge(
+      text: 'Recent workout',
+      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+      textColor: Theme.of(context).colorScheme.onPrimaryContainer,
     );
 
     var tags = Row(
@@ -141,7 +128,21 @@ class PlanCard extends StatelessWidget {
                       ],
                     ),
                     if (planData != null) progressCircle!,
-                    if (planData == null) Text(plan.authorName),
+                    if (planData == null)
+                      Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 16,
+                            backgroundImage:
+                                AssetImage('assets/images/default.png'),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            plan.authorName,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
                   ],
                 ),
                 const Spacer(),

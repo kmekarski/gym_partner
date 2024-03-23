@@ -1,10 +1,12 @@
 import 'package:gym_partner/models/exercise.dart';
 
 class PlanExercise {
-  PlanExercise({required this.exercise})
-      : numOfSets = 3,
-        numOfReps = 10,
-        restTime = 120;
+  PlanExercise(
+      {required this.exercise,
+      this.numOfSets = 3,
+      this.numOfReps = 10,
+      this.restTime = 120});
+
   int numOfSets;
   int numOfReps;
   int restTime;

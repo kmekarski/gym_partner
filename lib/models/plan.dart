@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_partner/data/exercises.dart';
+import 'package:gym_partner/models/exercise.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
+import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/plan_visibility.dart';
 
@@ -21,7 +24,19 @@ class Plan {
 
     List<dynamic> daysData = data['days'] ?? [];
     List<PlanDay> days = daysData.map((dayData) {
-      return PlanDay(id: dayData['id'] ?? '');
+      List<dynamic> exercisesData = dayData['exercises'] ?? [];
+      List<PlanExercise> exercises = exercisesData.map(
+        (exerciseData) {
+          return PlanExercise(
+            exercise: allExercises.firstWhere(
+                (el) => el.name == (exerciseData['exercise'] ?? 'Bench press')),
+            numOfSets: exerciseData['num_of_sets'] ?? 3,
+            numOfReps: exerciseData['num_of_reps'] ?? 10,
+            restTime: exerciseData['rest_time'] ?? 120,
+          );
+        },
+      ).toList();
+      return PlanDay(id: dayData['id'] ?? '', exercises: exercises);
     }).toList();
 
     List<dynamic> tagsData = data['tags'] ?? [];

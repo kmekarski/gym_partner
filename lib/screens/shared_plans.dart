@@ -105,8 +105,10 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
                   difficulty: _selectedDifficulty,
                 ));
 
-    _selectedDifficulty = selectedFilters?[PlanFilterCriteria.difficulty];
-    _selectedTags = selectedFilters?[PlanFilterCriteria.tags] ?? [];
+    if (selectedFilters != null) {
+      _selectedDifficulty = selectedFilters?[PlanFilterCriteria.difficulty];
+      _selectedTags = selectedFilters?[PlanFilterCriteria.tags] ?? [];
+    }
 
     _applyFilters();
   }
@@ -123,7 +125,10 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
         ),
         trailing: [
           IconButton(
-            onPressed: () => _searchController.clear(),
+            onPressed: () {
+              _searchController.clear();
+              _applyFilters();
+            },
             icon: const Icon(Icons.close),
           ),
         ],
@@ -148,7 +153,6 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
                 ),
               ],
             ),
-            // if (_showFilters) filtersSection,
             Expanded(
               child: _buildContent(_filteredPlans),
             ),
