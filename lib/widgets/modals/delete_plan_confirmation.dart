@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_partner/widgets/modals/confirmation_modal.dart';
 
 class DeletePlanConfirmationModal extends StatefulWidget {
   const DeletePlanConfirmationModal({
@@ -46,18 +47,9 @@ class _DeletePlanConfirmationModalState
         widget.onDelete();
       },
     );
-    return AlertDialog(
-      title: Text(
-        'Delete plan',
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .copyWith(fontWeight: FontWeight.w600),
-      ),
-      content: Text(
-        'Do you want to delete this workout plan? This is irreversible.',
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
+    return ConfirmationModal(
+      title: 'Delete plan',
+      content: 'Do you want to delete this workout plan? This is irreversible.',
       actions: [cancelButton, deleteButton],
     );
   }
