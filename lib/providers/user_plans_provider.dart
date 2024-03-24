@@ -40,4 +40,21 @@ class UserPlansNotifier extends StateNotifier<List<Plan>> {
     }
     return downloadedPlan;
   }
+
+  Future<void> deletePlan(Plan planToDelete) async {
+    bool? didDelete;
+    try {
+      didDelete = await plansService.deletePlan(planToDelete);
+    } finally {
+      if (didDelete == true) {
+        List<Plan> newState = [];
+        for (final plan in state) {
+          if (plan.id != planToDelete.id) {
+            newState.add(plan);
+          }
+        }
+        state = newState;
+      }
+    }
+  }
 }

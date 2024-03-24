@@ -7,7 +7,7 @@ import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
-import 'package:gym_partner/widgets/shared_plans_filters.dart';
+import 'package:gym_partner/widgets/modals/shared_plans_filters.dart';
 
 class SharedPlansScreen extends ConsumerStatefulWidget {
   const SharedPlansScreen({super.key});

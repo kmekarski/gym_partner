@@ -26,6 +26,7 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
   int _myPlansCount = 0;
   int _ongoingPlansCount = 0;
   int _downloadedPlansCount = 0;
+  int _publishedPlansCount = 0;
 
   void _selectPlan(BuildContext context, Plan plan) {
     Navigator.of(context).push(
@@ -62,6 +63,12 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     _downloadedPlansCount = plans
         .where((plan) =>
             planFilterCriteriaConditions[MyPlansCategory.downloaded]!(
+                plan, userData))
+        .length;
+
+    _publishedPlansCount = plans
+        .where((plan) =>
+            planFilterCriteriaConditions[MyPlansCategory.published]!(
                 plan, userData))
         .length;
 
@@ -129,6 +136,7 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
           _filterChip(MyPlansCategory.my, _myPlansCount),
           _filterChip(MyPlansCategory.ongoing, _ongoingPlansCount),
           _filterChip(MyPlansCategory.downloaded, _downloadedPlansCount),
+          _filterChip(MyPlansCategory.published, _publishedPlansCount),
         ],
       ),
     );

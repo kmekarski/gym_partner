@@ -66,6 +66,27 @@ class PlansService {
     }
   }
 
+  Future<bool> deletePlan(Plan plan) async {
+    try {
+      await userDocRef(currentUser.uid)
+          .collection('plans')
+          .doc(plan.id)
+          .delete();
+
+      if (plan.visibility == PlanVisibility.public &&
+          currentUser.uid == plan.authorId) {
+        FirebaseFirestore.instance
+            .collection('public_plans')
+            .doc(plan.id)
+            .delete();
+      }
+      return true;
+    } catch (e) {
+      print("Error deleting plan: $e");
+      return false;
+    }
+  }
+
   Future<Plan?> addUserPlan(Plan plan) async {
     try {
       final userData = await currentUserData;

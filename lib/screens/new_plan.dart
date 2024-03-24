@@ -146,9 +146,6 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         await ref.read(userPlansProvider.notifier).addNewPlan(newPlan);
 
     await ref.read(userProvider.notifier).addNewPlanData(addedPlan!.id);
-    if (_selectedVisibility == PlanVisibility.public) {
-      ref.read(publicPlansProvider.notifier).addPlan(addedPlan);
-    }
 
     if (!context.mounted) {
       return;

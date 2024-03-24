@@ -17,6 +17,25 @@ class UsersService {
     return AppUser.fromFirestore(await userDocRef(currentUser.uid).get());
   }
 
+  Future<AppUser?> deletePlanData(String planId) async {
+    try {
+      final userData = await currentUserData;
+      userData.plansData.removeWhere(
+        (planData) => planData.planId == planId,
+      );
+      await userDocRef(currentUser.uid).update({
+        'plans_data': userData.plansData
+            .map((planData) => planData.toFirestore())
+            .toList(),
+      });
+
+      return userData;
+    } catch (e) {
+      print("Error deleting plan data: $e");
+      return null;
+    }
+  }
+
   Future<AppUser?> addNewPlanData(String planId) async {
     try {
       final userData = await currentUserData;

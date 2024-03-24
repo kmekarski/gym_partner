@@ -1,4 +1,5 @@
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
 
@@ -7,6 +8,7 @@ enum MyPlansCategory {
   my,
   ongoing,
   downloaded,
+  published,
 }
 
 Map<MyPlansCategory, String> planFilterCriteriaChipNames = {
@@ -14,6 +16,7 @@ Map<MyPlansCategory, String> planFilterCriteriaChipNames = {
   MyPlansCategory.my: 'My plans',
   MyPlansCategory.ongoing: 'Ongoing',
   MyPlansCategory.downloaded: 'Downloaded',
+  MyPlansCategory.published: 'Published'
 };
 
 Map<MyPlansCategory, String> planFilterCriteriaTitleNames = {
@@ -21,6 +24,7 @@ Map<MyPlansCategory, String> planFilterCriteriaTitleNames = {
   MyPlansCategory.my: 'Plans created by me',
   MyPlansCategory.ongoing: 'Ongoing plans',
   MyPlansCategory.downloaded: 'Downloaded plans',
+  MyPlansCategory.published: 'Published plans',
 };
 
 Map<MyPlansCategory, bool Function(Plan plan, AppUser userData)>
@@ -33,4 +37,6 @@ Map<MyPlansCategory, bool Function(Plan plan, AppUser userData)>
       }).currentDayIndex >
       0,
   MyPlansCategory.downloaded: (plan, userData) => userData.id != plan.authorId,
+  MyPlansCategory.published: (plan, userData) =>
+      plan.visibility == PlanVisibility.public && userData.id == plan.authorId
 };

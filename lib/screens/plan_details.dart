@@ -10,41 +10,67 @@ import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/workout.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/modals/delete_plan_confirmation.dart';
 import 'package:gym_partner/widgets/plan_day_card.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/badges/simple_badge.dart';
 
-class PlanDetailsScreen extends ConsumerWidget {
+class PlanDetailsScreen extends ConsumerStatefulWidget {
   const PlanDetailsScreen({super.key, required this.type, required this.plan});
 
   final PlansListType type;
   final Plan plan;
 
-  void _downloadPlan(WidgetRef ref) async {
+  @override
+  ConsumerState<PlanDetailsScreen> createState() => _PlanDetailsScreenState();
+}
+
+class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
+  bool _isDeleting = false;
+
+  void _downloadPlan() async {
+    print('download');
     final downloadedPlan =
-        await ref.read(userPlansProvider.notifier).downloadPlan(plan);
+        await ref.read(userPlansProvider.notifier).downloadPlan(widget.plan);
     if (downloadedPlan != null) {
       await ref.read(userProvider.notifier).addNewPlanData(downloadedPlan!.id);
     }
   }
 
-  void _startWorkout(PlanDay day, WidgetRef ref, BuildContext context) async {
-    if (type == PlansListType.private) {
+  void _deletePlan() async {
+    await ref.read(userPlansProvider.notifier).deletePlan(widget.plan);
+    await ref.read(userProvider.notifier).deletePlanData(widget.plan.id);
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+  }
+
+  void _showDeleteModal() {
+    showDialog(
+        context: context,
+        builder: (context) => DeletePlanConfirmationModal(
+              onDelete: _deletePlan,
+            ));
+  }
+
+  void _startWorkout(PlanDay day) async {
+    if (widget.type == PlansListType.private) {
       // await ref.read(userProvider.notifier).incrementCurrentDayIndex(plan);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => WorkoutScreen(day: day),
       ));
-      ref.read(userProvider.notifier).setPlanAsRecent(plan.id);
+      ref.read(userProvider.notifier).setPlanAsRecent(widget.plan.id);
     }
-    if (type == PlansListType.public) {}
+    if (widget.type == PlansListType.public) {}
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final planData = ref
-        .read(userProvider)
-        .plansData
-        .firstWhere((planData) => planData.planId == plan.id);
+  Widget build(BuildContext context) {
+    final planData = widget.type == PlansListType.private
+        ? ref
+            .read(userProvider)
+            .plansData
+            .firstWhere((planData) => planData.planId == widget.plan.id)
+        : null;
     var authorInfo = Row(
       children: [
         const CircleAvatar(
@@ -60,7 +86,7 @@ class PlanDetailsScreen extends ConsumerWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(
-              plan.authorName,
+              widget.plan.authorName,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -73,7 +99,7 @@ class PlanDetailsScreen extends ConsumerWidget {
 
     var tags = Row(
       children: [
-        for (PlanTag tag in plan.tags)
+        for (PlanTag tag in widget.plan.tags)
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Text(
@@ -93,11 +119,11 @@ class PlanDetailsScreen extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         children: [
           SimpleBadge(
-              text: planDifficultyStrings[plan.difficulty] ?? '',
+              text: planDifficultyStrings[widget.plan.difficulty] ?? '',
               textColor: Theme.of(context).colorScheme.onPrimary,
               backgroundColor: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
-          for (final tag in plan.tags)
+          for (final tag in widget.plan.tags)
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: SimpleBadge(
@@ -109,37 +135,42 @@ class PlanDetailsScreen extends ConsumerWidget {
       ),
     );
 
-    var todaysActivitySection = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _sectionTitle('Today\'s activity', context),
-        _planDayCard(plan.days[planData.currentDayIndex],
-            planData.currentDayIndex, context),
-        const SizedBox(height: 16),
-        _sectionTitle('Whole plan', context),
-      ],
-    );
+    var todaysActivitySection = widget.type == PlansListType.private
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _sectionTitle('Today\'s activity', context),
+              _planDayCard(widget.plan.days[planData!.currentDayIndex],
+                  planData!.currentDayIndex, context),
+              const SizedBox(height: 16),
+              _sectionTitle('Whole plan', context),
+            ],
+          )
+        : null;
 
     var daysList = Expanded(
       child: ListView.builder(
-        itemCount: plan.days.length,
+        itemCount: widget.plan.days.length,
         itemBuilder: (context, index) =>
-            _planDayCard(plan.days[index], index, context),
+            _planDayCard(widget.plan.days[index], index, context),
       ),
     );
 
     var bottomButton = WideButton(
-      text:
-          type == PlansListType.private ? 'Start workout' : 'Add to your plans',
+      text: widget.type == PlansListType.private
+          ? 'Start workout'
+          : 'Add to your plans',
       icon: null,
-      onPressed: () =>
-          _startWorkout(plan.days[planData.currentDayIndex], ref, context),
+      onPressed: () => widget.type == PlansListType.private
+          ? _startWorkout(widget.plan.days[planData!.currentDayIndex])
+          : _downloadPlan(),
     );
     var appBar = AppBar(
-      title: Text(plan.name),
+      title: Text(widget.plan.name),
       actions: [
-        if (type == PlansListType.private)
-          IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+        if (widget.type == PlansListType.private)
+          IconButton(
+              onPressed: _showDeleteModal, icon: const Icon(Icons.delete)),
       ],
     );
     return Scaffold(
@@ -154,7 +185,7 @@ class PlanDetailsScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             badges,
             const SizedBox(height: 16),
-            if (type == PlansListType.private) todaysActivitySection,
+            if (widget.type == PlansListType.private) todaysActivitySection!,
             daysList,
             const SizedBox(height: 16),
             bottomButton,
