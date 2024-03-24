@@ -7,6 +7,7 @@ import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/modals/end_workout_confirmation.dart';
 import 'package:gym_partner/widgets/modals/exercise_info.dart';
 import 'package:gym_partner/widgets/plan_day_card.dart';
+import 'package:gym_partner/widgets/workout_progress_bar.dart';
 
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({super.key, required this.day});
@@ -33,6 +34,25 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   bool get _isFirstSet {
     return _currentExerciseIndex == 0 && _currentSetIndex == 0;
+  }
+
+  int get _currentWorkoutSetIndex {
+    var workoutSetIndex = 0;
+    for (final (index, exercise) in widget.day.exercises.indexed) {
+      if (index < _currentExerciseIndex) {
+        workoutSetIndex += exercise.numOfSets;
+      }
+    }
+    workoutSetIndex += _currentSetIndex;
+    return workoutSetIndex;
+  }
+
+  int get _totalSetsCount {
+    var setsCount = 0;
+    for (var exercise in widget.day.exercises) {
+      setsCount += exercise.numOfSets;
+    }
+    return setsCount;
   }
 
   void _showDayInfo() {
@@ -137,7 +157,16 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var progressBar = PreferredSize(
+        preferredSize: const Size.fromHeight(12),
+        child: WorkoutProgressBar(
+          currentSetIndex: _currentWorkoutSetIndex,
+          totalSetsCount: _totalSetsCount,
+          isRest: _showRestScreen,
+        ));
+
     var appBar = AppBar(
+      bottom: progressBar,
       actions: [
         IconButton(
             onPressed: _showExerciseInfoModal,
@@ -149,14 +178,17 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         icon: const Icon(Icons.close),
       ),
     );
-    return _showRestScreen
-        ? RestScreen(onFinishRest: _finishRest)
-        : Scaffold(
-            appBar: appBar,
-            body: Padding(
-              padding: const EdgeInsets.only(
-                  right: 24, left: 24, top: 24, bottom: 48),
-              child: Column(
+    var restContent = Center(
+      child: ElevatedButton(child: Text('skip rest'), onPressed: _finishRest),
+    );
+    return Scaffold(
+      appBar: appBar,
+      body: Padding(
+        padding:
+            const EdgeInsets.only(right: 24, left: 24, top: 24, bottom: 48),
+        child: _showRestScreen
+            ? restContent
+            : Column(
                 children: [
                   Expanded(
                     child: Center(
@@ -207,8 +239,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   ),
                 ],
               ),
-            ),
-          );
+      ),
+    );
   }
 
   IconButton _nextOrBackIconButton(
