@@ -1,6 +1,6 @@
 enum PlanVisibility {
-  public,
   private,
+  public,
 }
 
 Map<PlanVisibility, String> planVisibilityStrings = {

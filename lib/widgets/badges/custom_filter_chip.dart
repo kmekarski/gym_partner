@@ -6,7 +6,7 @@ class CustomFilterChip extends StatelessWidget {
     required this.text,
     required this.onTap,
     required this.isSelected,
-    this.number = null,
+    this.number,
     this.hasTick = false,
   });
 
@@ -26,7 +26,7 @@ class CustomFilterChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(isSelected ? 0.16 : 0.08),
+            color: Colors.black.withOpacity(isSelected ? 0.18 : 0.08),
             borderRadius: BorderRadius.circular(50),
           ),
           child: Row(

@@ -36,7 +36,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   Widget build(BuildContext context) {
     Widget activePage = const MyPlansScreen();
     if (_selectedPageIndex == 1) {
-      activePage = const WorkoutHistoryScreen();
+      activePage = WorkoutHistoryScreen();
     }
     switch (_selectedPageIndex) {
       case 0:
@@ -44,7 +44,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       case 1:
         activePage = const SharedPlansScreen();
       case 2:
-        activePage = const WorkoutHistoryScreen();
+        activePage = WorkoutHistoryScreen();
       case 3:
         activePage = const SettingsScreen();
       default:

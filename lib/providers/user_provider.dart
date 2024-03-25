@@ -12,7 +12,13 @@ final userProvider =
 
 class UserNotifier extends StateNotifier<AppUser> {
   UserNotifier()
-      : super(AppUser(id: '', username: '', email: '', plansData: []));
+      : super(AppUser(
+          id: '',
+          username: '',
+          email: '',
+          plansData: [],
+          workoutsHistory: [],
+        ));
 
   Future<void> getUserData() async {
     state = await usersService.currentUserData;
@@ -49,6 +55,10 @@ class UserNotifier extends StateNotifier<AppUser> {
         state = updatedUser;
       }
     }
+  }
+
+  Future<void> finishWorkout(Plan plan) async {
+    AppUser? updatedUser;
   }
 
   Future<void> setPlanAsRecent(String planId) async {

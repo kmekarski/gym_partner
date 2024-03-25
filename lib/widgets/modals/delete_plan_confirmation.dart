@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_partner/widgets/modals/confirmation_modal.dart';
+import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
 class DeletePlanConfirmationModal extends StatefulWidget {
   const DeletePlanConfirmationModal({
@@ -28,14 +29,7 @@ class _DeletePlanConfirmationModalState
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       child: _isDeleting
-          ? SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            )
+          ? SmallCircleProgressIndicator()
           : Text(
               "Delete",
               style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),

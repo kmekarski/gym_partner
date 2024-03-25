@@ -14,6 +14,7 @@ import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/exercise_searchbar.dart';
 import 'package:gym_partner/widgets/badges/form_clickable_badge.dart';
 import 'package:gym_partner/widgets/new_plan_exercise_card.dart';
+import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
 class NewPlanScreen extends ConsumerStatefulWidget {
   const NewPlanScreen({super.key});
@@ -233,7 +234,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                       ? 'Search for exercise...'
                       : 'Add another exercise...',
                   onSelect: _addExercise),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               if (_days[_selectedDayIndex].exercises.isEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -338,14 +339,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
     var createButton = WideButton(
       label: _isSending
-          ? SizedBox(
-              height: 16,
-              width: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-            )
+          ? const SmallCircleProgressIndicator()
           : const Text(
               'Create plan',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -389,17 +383,17 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
             children: [
               sectionTitle('Name:'),
               nameTextFormField,
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               visibilityPicker,
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
               daysPicker,
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               exercisesPicker,
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               tagsPicker,
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               difficultyPicker,
-              const SizedBox(height: 36),
+              const SizedBox(height: 24),
               createButton,
             ],
           ),

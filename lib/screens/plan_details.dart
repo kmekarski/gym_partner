@@ -14,6 +14,7 @@ import 'package:gym_partner/widgets/modals/delete_plan_confirmation.dart';
 import 'package:gym_partner/widgets/plan_day_card.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/badges/simple_badge.dart';
+import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
 class PlanDetailsScreen extends ConsumerStatefulWidget {
   const PlanDetailsScreen({super.key, required this.type, required this.plan});
@@ -26,15 +27,18 @@ class PlanDetailsScreen extends ConsumerStatefulWidget {
 }
 
 class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
-  bool _isDeleting = false;
+  bool _isWaiting = false;
 
   void _downloadPlan() async {
-    print('download');
+    setState(() {
+      _isWaiting = true;
+    });
     final downloadedPlan =
         await ref.read(userPlansProvider.notifier).downloadPlan(widget.plan);
     if (downloadedPlan != null) {
       await ref.read(userProvider.notifier).addNewPlanData(downloadedPlan!.id);
     }
+    Navigator.of(context).pop();
   }
 
   void _deletePlan() async {
@@ -159,7 +163,10 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
     var bottomButton = WideButton(
       text: widget.type == PlansListType.private
           ? 'Start workout'
-          : 'Add to your plans',
+          : _isWaiting
+              ? null
+              : 'Add to your plans',
+      label: _isWaiting ? const SmallCircleProgressIndicator() : null,
       icon: null,
       onPressed: () => widget.type == PlansListType.private
           ? _startWorkout(widget.plan.days[planData!.currentDayIndex])
