@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/screens/finished_workout.dart';
-import 'package:gym_partner/screens/rest.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/modals/end_workout_confirmation.dart';
 import 'package:gym_partner/widgets/modals/exercise_info.dart';
@@ -21,10 +22,22 @@ class WorkoutScreen extends StatefulWidget {
 class _WorkoutScreenState extends State<WorkoutScreen> {
   int _currentExerciseIndex = 0;
   int _currentSetIndex = 0;
-  bool _showRestScreen = false;
+  bool _isRest = false;
+
+  Timer? _timer;
+  int _remainingSeconds = 0;
 
   PlanExercise get _currentExercise {
     return widget.day.exercises[_currentExerciseIndex];
+  }
+
+  PlanExercise get _nextExercise {
+    if (_currentSetIndex == _currentExercise.numOfSets - 1 &&
+        _currentExerciseIndex < widget.day.exercises.length - 1) {
+      return widget.day.exercises[_currentExerciseIndex + 1];
+    } else {
+      return _currentExercise;
+    }
   }
 
   bool get _isLastSet {
@@ -85,16 +98,37 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   void _finishSet() async {
     if (!_isLastSet) {
-      setState(() {
-        _showRestScreen = true;
-      });
+      _startRest();
+    } else {
+      _finishWorkout();
     }
-    _jumpToNextSet();
+  }
+
+  void _startRest() {
+    const oneSecond = Duration(seconds: 1);
+    _remainingSeconds = _currentExercise.restTime;
+    _timer = Timer.periodic(oneSecond, (Timer timer) {
+      if (_remainingSeconds <= 0) {
+        setState(() {
+          timer.cancel();
+        });
+        _finishRest();
+      } else {
+        setState(() {
+          _remainingSeconds--;
+        });
+      }
+    });
+    setState(() {
+      _isRest = true;
+    });
   }
 
   void _finishRest() {
+    _jumpToNextSet();
     setState(() {
-      _showRestScreen = false;
+      _isRest = false;
+      _timer?.cancel();
     });
   }
 
@@ -133,7 +167,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
 
   void _finishWorkout() {
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => FinishedWorkoutScreen(),
+      builder: (context) => const FinishedWorkoutScreen(),
     ));
   }
 
@@ -162,85 +196,165 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         child: WorkoutProgressBar(
           currentSetIndex: _currentWorkoutSetIndex,
           totalSetsCount: _totalSetsCount,
-          isRest: _showRestScreen,
+          isRest: _isRest,
         ));
 
+    var showExerciseInfoButton = IconButton(
+        onPressed: _showExerciseInfoModal,
+        icon: const Icon(Icons.question_mark));
+    var showDayInfoButton =
+        IconButton(onPressed: _showDayInfo, icon: const Icon(Icons.list));
     var appBar = AppBar(
       bottom: progressBar,
       actions: [
-        IconButton(
-            onPressed: _showExerciseInfoModal,
-            icon: const Icon(Icons.question_mark)),
-        IconButton(onPressed: _showDayInfo, icon: const Icon(Icons.list)),
+        if (!_isRest) showExerciseInfoButton,
+        showDayInfoButton,
       ],
       leading: IconButton(
         onPressed: _showEndWorkoutModal,
         icon: const Icon(Icons.close),
       ),
     );
-    var restContent = Center(
-      child: ElevatedButton(child: Text('skip rest'), onPressed: _finishRest),
+    var nextExerciseBanner = Container(
+      width: double.infinity,
+      height: 110,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(24),
+      decoration:
+          BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer),
+      child: _isLastSet
+          ? Text(
+              'Final exercise',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'NEXT EXERCISE:',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _nextExercise.exercise.name,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+              ],
+            ),
+    );
+    var restContent = Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: CircularProgressIndicator(
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            value: _remainingSeconds / _currentExercise.restTime,
+            strokeWidth: 12,
+          ),
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Rest',
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${_remainingSeconds}',
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+            ),
+          ],
+        )
+      ],
+    );
+    var exerciseHeader = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          _currentExercise.exercise.name,
+          style: Theme.of(context)
+              .textTheme
+              .displayMedium!
+              .copyWith(fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'x${_currentExercise.numOfReps}',
+          style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+        ),
+      ],
+    );
+    var bottomButtons = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (!_isFirstSet && !_isRest)
+                _nextOrBackIconButton(
+                    iconData: Icons.chevron_left,
+                    onPressed: _jumpToPreviousSet),
+              const Spacer(),
+              if (!_isLastSet && !_isRest)
+                _nextOrBackIconButton(
+                    iconData: Icons.chevron_right, onPressed: _jumpToNextSet),
+            ],
+          ),
+          IconButton(
+            padding: const EdgeInsets.all(25),
+            focusColor: Colors.black,
+            color: Theme.of(context).colorScheme.onPrimary,
+            style: IconButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary),
+            onPressed: _isRest ? _finishRest : _finishSet,
+            icon: Icon(
+              _isRest ? Icons.chevron_right : Icons.done,
+              size: 50,
+              weight: 0.1,
+            ),
+          ),
+        ],
+      ),
     );
     return Scaffold(
       appBar: appBar,
       body: Padding(
-        padding:
-            const EdgeInsets.only(right: 24, left: 24, top: 24, bottom: 48),
-        child: _showRestScreen
-            ? restContent
-            : Column(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Text('$_currentExerciseIndex'),
-                          Text('$_currentSetIndex'),
-                          Text(
-                            _currentExercise.exercise.name,
-                            style: Theme.of(context).textTheme.displayMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (!_isFirstSet)
-                            _nextOrBackIconButton(
-                                iconData: Icons.chevron_left,
-                                onPressed: _jumpToPreviousSet),
-                          const Spacer(),
-                          if (!_isLastSet)
-                            _nextOrBackIconButton(
-                                iconData: Icons.chevron_right,
-                                onPressed: _jumpToNextSet),
-                        ],
-                      ),
-                      IconButton(
-                        padding: EdgeInsets.all(25),
-                        focusColor: Colors.black,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        style: IconButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary),
-                        onPressed: _finishSet,
-                        icon: const Icon(
-                          Icons.done,
-                          size: 50,
-                          weight: 0.1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+        padding: const EdgeInsets.only(bottom: 48),
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            nextExerciseBanner,
+            Expanded(child: _isRest ? restContent : exerciseHeader),
+            bottomButtons,
+          ],
+        ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   IconButton _nextOrBackIconButton(

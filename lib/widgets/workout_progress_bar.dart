@@ -25,7 +25,7 @@ class WorkoutProgressBar extends StatelessWidget {
       if (index == currentSetIndex && !isRest) {
         return activeSetColor;
       }
-      if (index < currentSetIndex) {
+      if (index <= currentSetIndex) {
         return finishedSetColor;
       } else {
         return unfinishedSetColor;
