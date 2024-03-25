@@ -255,10 +255,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         SizedBox(
           width: 300,
           height: 300,
-          child: CircularProgressIndicator(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            value: _remainingSeconds / _currentExercise.restTime,
-            strokeWidth: 12,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 1, end: 0),
+            duration: Duration(seconds: _currentExercise.restTime + 1),
+            builder: (context, value, _) => CircularProgressIndicator(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              value: value,
+              strokeWidth: 12,
+            ),
           ),
         ),
         Column(
@@ -273,7 +277,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              '${_remainingSeconds}',
+              '${_remainingSeconds.round()}',
               style: Theme.of(context).textTheme.displaySmall!.copyWith(
                     color: Theme.of(context).colorScheme.secondary,
                   ),
