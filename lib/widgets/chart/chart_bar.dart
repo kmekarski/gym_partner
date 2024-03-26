@@ -8,7 +8,7 @@ class ChartBar extends StatelessWidget {
     required this.fill,
     required this.topLabel,
     required this.bottomLabel,
-    required this.isSelected,
+    required this.topLabelFontSize,
   }) : super(key: key);
 
   final double fullHeight;
@@ -16,7 +16,7 @@ class ChartBar extends StatelessWidget {
   final double fill;
   final String topLabel;
   final String bottomLabel;
-  final bool isSelected;
+  final double topLabelFontSize;
 
   final double labelsHeight = 64;
 
@@ -24,7 +24,6 @@ class ChartBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final barHeight = (fullHeight - labelsHeight) * fill;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
       width: width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -32,8 +31,8 @@ class ChartBar extends StatelessWidget {
         children: [
           Text(
             topLabel,
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: topLabelFontSize,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -42,11 +41,10 @@ class ChartBar extends StatelessWidget {
             tween: Tween(begin: 0, end: 1),
             duration: Duration(milliseconds: (3.5 * barHeight).round()),
             builder: (context, value, _) => Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
               height: barHeight * value,
               decoration: BoxDecoration(
-                color: isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.primaryContainer,
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
