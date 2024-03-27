@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
+import 'package:gym_partner/models/workout_in_history.dart';
 
 class UsersService {
   DocumentReference<Map<String, dynamic>> userDocRef(String userId) {
@@ -80,39 +81,62 @@ class UsersService {
     }
   }
 
-  // Future<AppUser?> addWorkoutInHistory(Plan plan) async {
-  //   try {
-  //     final userData = await currentUserData;
-  //     final plansData = userData.plansData;
-  //     final currentDayIndex = plansData
-  //         .firstWhere((planData) => planData.planId == plan.id)
-  //         .currentDayIndex;
+  Future<AppUser?> addWorkoutInHistory(
+      Plan plan, int workoutTimeInSeconds) async {
+    try {
+      final userData = await currentUserData;
+      final plansData = userData.plansData;
+      final currentWorkoutsHistory = userData.workoutsHistory;
 
-  //     final updatedDayIndex =
-  //         currentDayIndex + 1 >= plan.days.length ? 0 : currentDayIndex + 1;
+      final dayIndex = plansData
+          .firstWhere((planData) => planData.planId == plan.id)
+          .currentDayIndex;
+      final day = plan.days[dayIndex];
+      final numOfExercises = day.exercises.length;
 
-  //     plansData
-  //         .firstWhere((planData) => planData.planId == plan.id)
-  //         .currentDayIndex = updatedDayIndex;
+      int numOfSets = 0;
+      for (final exercise in day.exercises) {
+        numOfSets += exercise.numOfSets;
+      }
 
-  //     await userDocRef(currentUser.uid).update(
-  //       {
-  //         'plans_data':
-  //             plansData.map((planData) => planData.toFirestore()).toList(),
-  //       },
-  //     );
-  //     final updatedUserData = AppUser(
-  //       id: userData.id,
-  //       username: userData.username,
-  //       email: userData.email,
-  //       plansData: plansData,
-  //     );
-  //     return updatedUserData;
-  //   } catch (e) {
-  //     print("Error adding workout in history: $e");
-  //     return null;
-  //   }
-  // }
+      final workoutInHistoryToAdd = WorkoutInHistory(
+          id: currentWorkoutsHistory.length.toString(),
+          planName: plan.name,
+          tags: plan.tags,
+          dayIndex: dayIndex,
+          numOfSets: numOfSets,
+          numOfExercises: numOfExercises,
+          timeInSeconds: workoutTimeInSeconds,
+          timestamp: Timestamp.now());
+
+      final updatedWorkoutsHistory = [
+        workoutInHistoryToAdd,
+        ...currentWorkoutsHistory
+      ];
+
+      print(currentWorkoutsHistory.length);
+      print(updatedWorkoutsHistory.length);
+
+      await userDocRef(currentUser.uid).update(
+        {
+          'workouts_history': updatedWorkoutsHistory
+              .map((workoutInHistory) => workoutInHistory.toFirestore())
+              .toList(),
+        },
+      );
+      final updatedUserData = AppUser(
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        plansData: plansData,
+        workoutsHistory: updatedWorkoutsHistory,
+      );
+      return updatedUserData;
+    } catch (e) {
+      print("Error adding workout in history: $e");
+      return null;
+    }
+  }
 
   Future<AppUser?> incrementCurrentDayIndex(Plan plan) async {
     try {

@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
+import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/finished_workout.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/modals/end_workout_confirmation.dart';
@@ -10,16 +13,17 @@ import 'package:gym_partner/widgets/modals/exercise_info.dart';
 import 'package:gym_partner/widgets/plan_day_card.dart';
 import 'package:gym_partner/widgets/workout_progress_bar.dart';
 
-class WorkoutScreen extends StatefulWidget {
-  const WorkoutScreen({super.key, required this.day});
+class WorkoutScreen extends ConsumerStatefulWidget {
+  const WorkoutScreen({super.key, required this.day, required this.plan});
 
+  final Plan plan;
   final PlanDay day;
 
   @override
-  State<WorkoutScreen> createState() => _WorkoutScreenState();
+  ConsumerState<WorkoutScreen> createState() => _WorkoutScreenState();
 }
 
-class _WorkoutScreenState extends State<WorkoutScreen> {
+class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   int _currentExerciseIndex = 0;
   int _currentSetIndex = 0;
   bool _isRest = false;
@@ -166,6 +170,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   }
 
   void _finishWorkout() {
+    ref.read(userProvider.notifier).incrementCurrentDayIndex(widget.plan);
+    ref.read(userProvider.notifier).finishWorkout(widget.plan);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (context) => const FinishedWorkoutScreen(),
     ));

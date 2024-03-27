@@ -119,20 +119,21 @@ class HistoryService {
   }
 
   String _getWeekdayName(Jiffy date) {
+    print('${date.MMMEd}: ${date.dayOfWeek}');
     switch (date.dayOfWeek) {
-      case DateTime.monday:
+      case 2:
         return 'Mon';
-      case DateTime.tuesday:
+      case 3:
         return 'Tue';
-      case DateTime.wednesday:
+      case 4:
         return 'Wed';
-      case DateTime.thursday:
+      case 5:
         return 'Thu';
-      case DateTime.friday:
+      case 6:
         return 'Fri';
-      case DateTime.saturday:
+      case 7:
         return 'Sat';
-      case DateTime.sunday:
+      case 1:
         return 'Sun';
       default:
         return '';

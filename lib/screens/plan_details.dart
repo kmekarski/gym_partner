@@ -62,9 +62,11 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
 
   void _startWorkout(PlanDay day) async {
     if (widget.type == PlansListType.private) {
-      // await ref.read(userProvider.notifier).incrementCurrentDayIndex(plan);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => WorkoutScreen(day: day),
+        builder: (context) => WorkoutScreen(
+          day: day,
+          plan: widget.plan,
+        ),
       ));
       ref.read(userProvider.notifier).setPlanAsRecent(widget.plan.id);
     }

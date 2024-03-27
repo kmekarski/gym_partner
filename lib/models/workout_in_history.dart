@@ -20,4 +20,17 @@ class WorkoutInHistory {
   final int numOfExercises;
   final Timestamp timestamp;
   final int timeInSeconds;
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'plan_name': planName,
+      'tags': tags.map((tag) => tag.toString()).toList(),
+      'day_index': dayIndex,
+      'num_of_sets': numOfSets,
+      'num_of_exercises': numOfExercises,
+      'time_in_seconds': timeInSeconds,
+      'timestamp': timestamp,
+    };
+  }
 }
