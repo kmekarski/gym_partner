@@ -138,6 +138,15 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
       ),
     );
 
+    var searchbarAndFiltersButtonRow = Row(
+      children: [
+        Expanded(child: searchbar),
+        IconButton(
+          onPressed: _showFiltersModal,
+          icon: Icon(Icons.tune),
+        ),
+      ],
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Other users\' workout plans'),
@@ -145,21 +154,13 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
-          physics: const ScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Row(
-                children: [
-                  Expanded(child: searchbar),
-                  IconButton(
-                    onPressed: _showFiltersModal,
-                    icon: Icon(Icons.tune),
-                  ),
-                ],
-              ),
-              _buildContent(_filteredPlans),
+            children: [
+              searchbarAndFiltersButtonRow,
+              const SizedBox(height: 8),
+              _content(_filteredPlans),
             ],
           ),
         ),
@@ -167,7 +168,7 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
     );
   }
 
-  Widget _buildContent(List<Plan> plans) {
+  Widget _content(List<Plan> plans) {
     final anyFiltersApplied = _searchController.text.isNotEmpty ||
         _selectedTags.isNotEmpty ||
         _selectedDifficulty != null;

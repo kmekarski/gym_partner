@@ -142,7 +142,6 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
     );
 
     var listTitle = Container(
-      margin: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
@@ -167,7 +166,7 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
                           'See all',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        Icon(Icons.chevron_right),
+                        const Icon(Icons.chevron_right),
                       ],
                     ),
                   )
@@ -183,9 +182,12 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
             filterChips,
+            const SizedBox(height: 24),
             listTitle,
+            const SizedBox(height: 16),
             content(),
           ],
         ),

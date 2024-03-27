@@ -1,12 +1,9 @@
-import 'dart:ffi';
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
 import 'package:gym_partner/services/history_service.dart';
-import 'package:gym_partner/services/plans_service.dart';
 import 'package:gym_partner/utils/time_format.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
@@ -37,7 +34,7 @@ class ChartBarData {
 }
 
 class WorkoutHistoryScreen extends StatefulWidget {
-  WorkoutHistoryScreen({super.key});
+  const WorkoutHistoryScreen({super.key});
 
   @override
   State<WorkoutHistoryScreen> createState() => _WorkoutHistoryScreenState();
@@ -48,12 +45,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   ChartTime _selectedChartTime = ChartTime.lastWeek;
 
   late Map<ChartDataType, int> weekTotalStatsData;
-  Map<ChartDataType, int> monthTotalStatsData = {
-    ChartDataType.exercises: 0,
-    ChartDataType.sets: 0,
-    ChartDataType.time: 0,
-  };
+  late Map<ChartDataType, int> monthTotalStatsData;
   late Map<ChartDataType, int> allTimeTotalStatsData;
+
   late Map<String, Map<ChartDataType, int>> weekChartData;
   late Map<String, Map<ChartDataType, int>> monthChartData;
   late Map<String, Map<ChartDataType, int>> allTimeChartData;
@@ -105,7 +99,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   final List<WorkoutInHistory> workoutsHistory = [
     for (var i = 0; i < 30; i++)
       WorkoutInHistory(
-        id: '${i}',
+        id: '$i',
         planName: 'some plan',
         tags: [
           PlanTag.cardio,
@@ -214,7 +208,6 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
         title: const Text('My workout history'),
       ),
       body: SingleChildScrollView(
-          physics: const ScrollPhysics(),
           padding: const EdgeInsets.only(left: 16, right: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,8 +215,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
               totalStatsRow,
               const Divider(),
               chart,
-              const Divider(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               chartDataTypePicker,
               const SizedBox(height: 16),
               chartTimePicker,

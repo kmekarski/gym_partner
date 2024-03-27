@@ -36,8 +36,6 @@ class HistoryService {
     List<WorkoutInHistory> workoutsHistory,
     ChartTime chartTime,
   ) {
-    print('calculating total stats');
-
     final Map<ChartDataType, int> totalStats = {};
 
     int totalExercisesCount = 0;
@@ -78,12 +76,6 @@ class HistoryService {
     if (chartTime == ChartTime.allTime) {
       Jiffy firstWorkoutDate =
           Jiffy.parseFromDateTime(workoutsHistory.first.timestamp.toDate());
-      for (final workout in workoutsHistory) {
-        final workoutDate = Jiffy.parseFromDateTime(workout.timestamp.toDate());
-        if (workoutDate.isBefore(firstWorkoutDate)) {
-          firstWorkoutDate = workoutDate;
-        }
-      }
       intervalStart = firstWorkoutDate;
     }
 

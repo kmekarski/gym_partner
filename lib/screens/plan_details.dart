@@ -158,7 +158,7 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
 
     var daysList = ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: widget.plan.days.length,
       itemBuilder: (context, index) =>
           _planDayCard(widget.plan.days[index], index, context),
