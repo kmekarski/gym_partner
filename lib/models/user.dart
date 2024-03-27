@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
 
@@ -25,11 +26,16 @@ class AppUser {
     List<dynamic> workoutsHistoryData = data['workouts_history'] ?? [];
     List<WorkoutInHistory> workoutsHistory =
         workoutsHistoryData.map((workoutInHistoryData) {
+      List<dynamic> tagsData = workoutInHistoryData['tags'] ?? [];
+      List<PlanTag> tags = tagsData.map((tagString) {
+        return PlanTag.values.firstWhere((e) => e.toString() == tagString,
+            orElse: () => PlanTag.cardio);
+      }).toList();
       return WorkoutInHistory(
         id: workoutInHistoryData['id'] ?? '',
         planName: workoutInHistoryData['plan_name'] ?? '',
         dayIndex: workoutInHistoryData['day_index'] ?? 0,
-        tags: [],
+        tags: tags,
         numOfSets: workoutInHistoryData['num_of_sets'] ?? 0,
         numOfExercises: workoutInHistoryData['num_of_exercises'] ?? 0,
         timestamp: workoutInHistoryData['timestamp'] ?? Timestamp.now(),

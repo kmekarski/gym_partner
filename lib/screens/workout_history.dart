@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
+import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/services/history_service.dart';
 import 'package:gym_partner/utils/time_format.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
@@ -33,14 +35,15 @@ class ChartBarData {
   final String label;
 }
 
-class WorkoutHistoryScreen extends StatefulWidget {
+class WorkoutHistoryScreen extends ConsumerStatefulWidget {
   const WorkoutHistoryScreen({super.key});
 
   @override
-  State<WorkoutHistoryScreen> createState() => _WorkoutHistoryScreenState();
+  ConsumerState<WorkoutHistoryScreen> createState() =>
+      _WorkoutHistoryScreenState();
 }
 
-class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
+class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
   ChartDataType _selectedChartDataType = ChartDataType.exercises;
   ChartTime _selectedChartTime = ChartTime.lastWeek;
 
@@ -59,6 +62,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   }
 
   void _getDataFromService() {
+    final workoutsHistory = ref.read(userProvider).workoutsHistory;
     weekChartData = historyService.calculateHistoryChartData(
         workoutsHistory, ChartTime.lastWeek);
     monthChartData = historyService.calculateHistoryChartData(
@@ -96,23 +100,23 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
     }
   }
 
-  final List<WorkoutInHistory> workoutsHistory = [
-    for (var i = 0; i < 30; i++)
-      WorkoutInHistory(
-        id: '$i',
-        planName: 'some plan',
-        tags: [
-          PlanTag.cardio,
-          PlanTag.strength,
-        ],
-        dayIndex: 0,
-        numOfSets: Random().nextInt(10) + 20,
-        numOfExercises: Random().nextInt(10),
-        timeInSeconds: Random().nextInt(4000) + 10000,
-        timestamp:
-            Timestamp.fromDate(DateTime.now().subtract(Duration(days: i))),
-      ),
-  ];
+  // final List<WorkoutInHistory> workoutsHistory = [
+  //   for (var i = 0; i < 30; i++)
+  //     WorkoutInHistory(
+  //       id: '$i',
+  //       planName: 'some plan',
+  //       tags: [
+  //         PlanTag.cardio,
+  //         PlanTag.strength,
+  //       ],
+  //       dayIndex: 0,
+  //       numOfSets: Random().nextInt(10) + 20,
+  //       numOfExercises: Random().nextInt(10),
+  //       timeInSeconds: Random().nextInt(4000) + 10000,
+  //       timestamp:
+  //           Timestamp.fromDate(DateTime.now().subtract(Duration(days: i))),
+  //     ),
+  // ];
 
   void _selectChartDataType(ChartDataType chartDataType) {
     setState(() {
@@ -128,6 +132,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final workoutsHistory = ref.watch(userProvider).workoutsHistory;
     var filteredWorkoutsHistory = workoutsHistory
         .where((workoutInHistory) => chartTimeConditions[_selectedChartTime]!(
             workoutInHistory.timestamp.toDate()))

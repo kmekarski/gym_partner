@@ -19,7 +19,6 @@ class WorkoutInHistoryRow extends StatefulWidget {
 
 class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
   final dateFormat = DateFormat('dd MMMM yyyy \'at\' hh:mm');
-  final double rowsGap = 4;
 
   @override
   Widget build(BuildContext context) {
@@ -29,55 +28,36 @@ class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.only(top: 4, right: 4, bottom: 16, left: 16),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(dateFormat
-                      .format(widget.workoutInHistory.timestamp.toDate())),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.close),
-                  style: IconButton.styleFrom(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.workoutInHistory.planName,
-                        style:
-                            Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                      ),
-                      SizedBox(height: rowsGap),
-                      Text(tagsString),
-                    ],
+            Text(dateFormat.format(widget.workoutInHistory.timestamp.toDate())),
+            const SizedBox(height: 4),
+            Text(
+              widget.workoutInHistory.planName,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
-                  Spacer(),
+            ),
+            const SizedBox(height: 4),
+            if (tagsString != '') Text(tagsString),
+            const SizedBox(height: 8),
+            IntrinsicHeight(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   stat('Exercises',
                       widget.workoutInHistory.numOfExercises.toString()),
+                  const VerticalDivider(),
                   stat('Sets', widget.workoutInHistory.numOfSets.toString()),
+                  const VerticalDivider(),
                   stat('Time',
                       timeFormat(widget.workoutInHistory.timeInSeconds)),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -85,21 +65,21 @@ class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
   }
 
   Widget stat(String title, String value) {
-    return SizedBox(
-      width: 70,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Column(
         children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-          SizedBox(height: rowsGap),
           Text(
             value,
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ],
       ),
