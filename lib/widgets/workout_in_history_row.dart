@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
-import 'package:gym_partner/utilities/time_format.dart';
+import 'package:gym_partner/utils/time_format.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutInHistoryRow extends StatefulWidget {
@@ -86,7 +86,7 @@ class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
 
   Widget stat(String title, String value) {
     return SizedBox(
-      width: 60,
+      width: 70,
       child: Column(
         children: [
           Text(

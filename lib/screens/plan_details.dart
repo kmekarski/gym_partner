@@ -9,6 +9,7 @@ import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/workout.dart';
+import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/modals/delete_plan_confirmation.dart';
 import 'package:gym_partner/widgets/plan_day_card.dart';
@@ -39,6 +40,8 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
       await ref.read(userProvider.notifier).addNewPlanData(downloadedPlan!.id);
     }
     Navigator.of(context).pop();
+    showSnackBar(
+        context, 'Workout plan ${widget.plan.name} added to your plans');
   }
 
   void _deletePlan() async {
@@ -46,6 +49,7 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
     await ref.read(userProvider.notifier).deletePlanData(widget.plan.id);
     Navigator.of(context).pop();
     Navigator.of(context).pop();
+    showSnackBar(context, 'Workout plan ${widget.plan.name} deleted');
   }
 
   void _showDeleteModal() {

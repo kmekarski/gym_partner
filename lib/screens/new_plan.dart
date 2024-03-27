@@ -10,6 +10,7 @@ import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/exercise_searchbar.dart';
 import 'package:gym_partner/widgets/badges/form_clickable_badge.dart';
@@ -152,6 +153,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       return;
     }
     Navigator.of(context).pop();
+    showSnackBar(context, 'Workout plan ${_enteredName} created');
   }
 
   Widget sectionTitle(String text) {
@@ -272,46 +274,57 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       ),
     );
 
-    var tagsPicker = Row(
-      children: [
-        sectionTitle('Tags:'),
-        Row(
-          children: [
-            for (final tag in PlanTag.values)
-              FormBadge(
-                text: planTagStrings[tag] ?? '',
-                isSelected: _selectedTags.contains(tag),
-                onTap: () => _toggleTag(tag),
-                selectedBackgroundColor: tagSelectedBackgroundColor,
-                unselectedBackgroundColor: tagUnselectedBackgroundColor,
-                selectedTextColor: tagSelectedTextColor,
-                unselectedTextColor: tagUnselectedTextColor,
-              )
-          ],
-        ),
-      ],
+    var tagsPicker = SizedBox(
+      height: 42,
+      child: Row(
+        children: [
+          sectionTitle('Tags:'),
+          Expanded(
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                Row(
+                  children: [
+                    for (final tag in PlanTag.values)
+                      FormBadge(
+                        text: planTagStrings[tag] ?? '',
+                        isSelected: _selectedTags.contains(tag),
+                        onTap: () => _toggleTag(tag),
+                        selectedBackgroundColor: tagSelectedBackgroundColor,
+                        unselectedBackgroundColor: tagUnselectedBackgroundColor,
+                        selectedTextColor: tagSelectedTextColor,
+                        unselectedTextColor: tagUnselectedTextColor,
+                      )
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
 
     var difficultyPicker = SizedBox(
       height: 42,
-      width: MediaQuery.of(context).size.width,
       child: Row(
-        mainAxisSize: MainAxisSize.max,
         children: [
           sectionTitle('Difficulty:'),
-          Row(
-            children: [
-              for (final difficulty in PlanDifficulty.values)
-                FormBadge(
-                  text: planDifficultyStrings[difficulty] ?? '',
-                  isSelected: _selectedDifficulty == difficulty,
-                  onTap: () => _selectDifficulty(difficulty),
-                  selectedBackgroundColor: tagSelectedBackgroundColor,
-                  unselectedBackgroundColor: tagUnselectedBackgroundColor,
-                  selectedTextColor: tagSelectedTextColor,
-                  unselectedTextColor: tagUnselectedTextColor,
-                ),
-            ],
+          Expanded(
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                for (final difficulty in PlanDifficulty.values)
+                  FormBadge(
+                    text: planDifficultyStrings[difficulty] ?? '',
+                    isSelected: _selectedDifficulty == difficulty,
+                    onTap: () => _selectDifficulty(difficulty),
+                    selectedBackgroundColor: tagSelectedBackgroundColor,
+                    unselectedBackgroundColor: tagUnselectedBackgroundColor,
+                    selectedTextColor: tagSelectedTextColor,
+                    unselectedTextColor: tagUnselectedTextColor,
+                  ),
+              ],
+            ),
           ),
         ],
       ),

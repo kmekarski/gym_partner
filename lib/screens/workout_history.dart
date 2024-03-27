@@ -7,7 +7,7 @@ import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
 import 'package:gym_partner/services/history_service.dart';
 import 'package:gym_partner/services/plans_service.dart';
-import 'package:gym_partner/utilities/time_format.dart';
+import 'package:gym_partner/utils/time_format.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
 import 'package:gym_partner/widgets/workout_in_history_row.dart';
@@ -166,29 +166,35 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
             workoutInHistory: filteredWorkoutsHistory[index]),
       ),
     );
-    var chartDataTypePicker = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (final chartDataType in ChartDataType.values)
-          CustomFilterChip(
-            text: chartDataTypeStrings[chartDataType] ?? '',
-            onTap: () => _selectChartDataType(chartDataType),
-            isSelected: _selectedChartDataType == chartDataType,
-            hasTick: true,
-          ),
-      ],
+    var chartDataTypePicker = SizedBox(
+      height: 42,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          for (final chartDataType in ChartDataType.values)
+            CustomFilterChip(
+              text: chartDataTypeStrings[chartDataType] ?? '',
+              onTap: () => _selectChartDataType(chartDataType),
+              isSelected: _selectedChartDataType == chartDataType,
+              hasTick: true,
+            ),
+        ],
+      ),
     );
-    var chartTimePicker = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (final chartTime in ChartTime.values)
-          CustomFilterChip(
-            text: chartTimeStrings[chartTime] ?? '',
-            onTap: () => _selectChartTime(chartTime),
-            isSelected: _selectedChartTime == chartTime,
-            hasTick: true,
-          ),
-      ],
+    var chartTimePicker = SizedBox(
+      height: 42,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          for (final chartTime in ChartTime.values)
+            CustomFilterChip(
+              text: chartTimeStrings[chartTime] ?? '',
+              onTap: () => _selectChartTime(chartTime),
+              isSelected: _selectedChartTime == chartTime,
+              hasTick: true,
+            ),
+        ],
+      ),
     );
     var chart = Chart(
       data: mappedChartData,
@@ -221,15 +227,18 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
 
   Widget totalStat(String title, String value) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           value,
-          style: Theme.of(context).textTheme.displaySmall,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(fontWeight: FontWeight.w600),
         ),
+        const SizedBox(height: 4),
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
       ],
     );
