@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/user_plan_data.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/plan_card.dart';
 
@@ -23,34 +24,33 @@ class PlansList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (type == PlansListType.private) {
-      final plansData = ref.watch(userProvider).plansData;
-      return ListView.builder(
-        itemCount: plans.length,
-        itemBuilder: (ctx, index) {
-          for (final planData in plansData) {}
-          final planData = plansData.firstWhere(
-            (data) => data.planId == plans[index].id,
-          );
-          return PlanCard(
-            type: type,
-            plan: plans[index],
-            planData: planData,
-            onSelectPlan: onSelectPlan,
-          );
-        },
-      );
-    } else {
-      return ListView.builder(
-        itemCount: plans.length,
-        itemBuilder: (ctx, index) {
-          return PlanCard(
-            type: type,
-            plan: plans[index],
-            onSelectPlan: onSelectPlan,
-          );
-        },
-      );
+    final plansData = ref.watch(userProvider).plansData;
+
+    Widget? listItemBuilder(BuildContext ctx, int index) {
+      if (type == PlansListType.private) {
+        final planData = plansData.firstWhere(
+          (data) => data.planId == plans[index].id,
+        );
+        return PlanCard(
+          type: type,
+          plan: plans[index],
+          planData: planData,
+          onSelectPlan: onSelectPlan,
+        );
+      } else {
+        return PlanCard(
+          type: type,
+          plan: plans[index],
+          onSelectPlan: onSelectPlan,
+        );
+      }
     }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: plans.length,
+      itemBuilder: listItemBuilder,
+    );
   }
 }

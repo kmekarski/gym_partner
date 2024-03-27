@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
+import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
+import 'package:gym_partner/widgets/plan_card.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/modals/shared_plans_filters.dart';
 
@@ -141,22 +143,25 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
         title: const Text('Other users\' workout plans'),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(child: searchbar),
-                IconButton(
-                  onPressed: _showFiltersModal,
-                  icon: Icon(Icons.tune),
-                ),
-              ],
-            ),
-            Expanded(
-              child: _buildContent(_filteredPlans),
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: SingleChildScrollView(
+          physics: const ScrollPhysics(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                children: [
+                  Expanded(child: searchbar),
+                  IconButton(
+                    onPressed: _showFiltersModal,
+                    icon: Icon(Icons.tune),
+                  ),
+                ],
+              ),
+              _buildContent(_filteredPlans),
+            ],
+          ),
         ),
       ),
     );

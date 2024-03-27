@@ -27,7 +27,7 @@ class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
         .map((tag) => planTagStrings[tag])
         .join(', ');
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.only(top: 4, right: 4, bottom: 16, left: 16),
         child: Column(

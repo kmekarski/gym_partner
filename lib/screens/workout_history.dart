@@ -159,12 +159,12 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
       ),
     );
 
-    var workoutsList = Expanded(
-      child: ListView.builder(
-        itemCount: filteredWorkoutsHistory.length,
-        itemBuilder: (context, index) => WorkoutInHistoryRow(
-            workoutInHistory: filteredWorkoutsHistory[index]),
-      ),
+    var workoutsList = ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: filteredWorkoutsHistory.length,
+      itemBuilder: (context, index) =>
+          WorkoutInHistoryRow(workoutInHistory: filteredWorkoutsHistory[index]),
     );
     var chartDataTypePicker = SizedBox(
       height: 42,
@@ -202,13 +202,22 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
       barWidth: 56,
       chartDataType: _selectedChartDataType,
     );
+    var listTitle = Text(
+      'Finished workouts',
+      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            fontSize: 26,
+            fontWeight: FontWeight.w600,
+          ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('My workout history'),
       ),
-      body: Container(
+      body: SingleChildScrollView(
+          physics: const ScrollPhysics(),
           padding: const EdgeInsets.only(left: 16, right: 16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               totalStatsRow,
               const Divider(),
@@ -218,6 +227,8 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
               chartDataTypePicker,
               const SizedBox(height: 16),
               chartTimePicker,
+              const SizedBox(height: 32),
+              listTitle,
               const SizedBox(height: 16),
               workoutsList,
             ],

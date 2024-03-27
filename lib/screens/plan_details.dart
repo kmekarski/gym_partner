@@ -156,12 +156,12 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
           )
         : null;
 
-    var daysList = Expanded(
-      child: ListView.builder(
-        itemCount: widget.plan.days.length,
-        itemBuilder: (context, index) =>
-            _planDayCard(widget.plan.days[index], index, context),
-      ),
+    var daysList = ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: widget.plan.days.length,
+      itemBuilder: (context, index) =>
+          _planDayCard(widget.plan.days[index], index, context),
     );
 
     var bottomButton = WideButton(
@@ -188,16 +188,25 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
       appBar: appBar,
       body: Padding(
         padding:
-            const EdgeInsets.only(top: 12, right: 24, left: 24, bottom: 32),
+            const EdgeInsets.only(top: 12, right: 16, left: 16, bottom: 32),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            authorInfo,
-            const SizedBox(height: 16),
-            badges,
-            const SizedBox(height: 16),
-            if (widget.type == PlansListType.private) todaysActivitySection!,
-            daysList,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    authorInfo,
+                    const SizedBox(height: 16),
+                    badges,
+                    const SizedBox(height: 16),
+                    if (widget.type == PlansListType.private)
+                      todaysActivitySection!,
+                    daysList,
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
             bottomButton,
           ],

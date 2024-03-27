@@ -180,15 +180,13 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
 
     return Scaffold(
       appBar: appBar,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
             filterChips,
             listTitle,
-            Expanded(
-              child: content(),
-            ),
+            content(),
           ],
         ),
       ),

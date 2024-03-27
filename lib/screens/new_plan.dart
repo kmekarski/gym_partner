@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/exercise.dart';
 import 'package:gym_partner/models/plan.dart';
@@ -220,56 +221,51 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
         ],
       ),
     );
-    var exercisesPicker = Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              ExerciseSearchbar(
-                  hintText: _days[_selectedDayIndex].exercises.isEmpty
-                      ? 'Search for exercise...'
-                      : 'Add another exercise...',
-                  onSelect: _addExercise),
-              const SizedBox(height: 12),
-              if (_days[_selectedDayIndex].exercises.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    '...or make it a rest day!',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+    var exercisesPicker = Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            ExerciseSearchbar(
+                hintText: _days[_selectedDayIndex].exercises.isEmpty
+                    ? 'Search for exercise...'
+                    : 'Add another exercise...',
+                onSelect: _addExercise),
+            const SizedBox(height: 12),
+            if (_days[_selectedDayIndex].exercises.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  '...or make it a rest day!',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-              if (_days[_selectedDayIndex].exercises.isNotEmpty)
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _days[_selectedDayIndex].exercises.length,
-                    itemBuilder: (context, index) => NewPlanExerciseCard(
-                      exercise: _days[_selectedDayIndex].exercises[index],
-                      index: index,
-                      onNumberOfSetsChanged: (value) => setState(() {
-                        _days[_selectedDayIndex].exercises[index].numOfSets =
-                            value;
-                      }),
-                      onNumberOfRepsChanged: (value) => setState(() {
-                        _days[_selectedDayIndex].exercises[index].numOfReps =
-                            value;
-                      }),
-                      onRestTimeChanged: (value) => setState(() {
-                        _days[_selectedDayIndex].exercises[index].restTime =
-                            value;
-                      }),
-                      onXTap: _removeExercise,
-                    ),
-                  ),
+              ),
+            if (_days[_selectedDayIndex].exercises.isNotEmpty)
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _days[_selectedDayIndex].exercises.length,
+                itemBuilder: (context, index) => NewPlanExerciseCard(
+                  exercise: _days[_selectedDayIndex].exercises[index],
+                  index: index,
+                  onNumberOfSetsChanged: (value) => setState(() {
+                    _days[_selectedDayIndex].exercises[index].numOfSets = value;
+                  }),
+                  onNumberOfRepsChanged: (value) => setState(() {
+                    _days[_selectedDayIndex].exercises[index].numOfReps = value;
+                  }),
+                  onRestTimeChanged: (value) => setState(() {
+                    _days[_selectedDayIndex].exercises[index].restTime = value;
+                  }),
+                  onXTap: _removeExercise,
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
@@ -389,27 +385,34 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.only(right: 24, left: 24, bottom: 32),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              sectionTitle('Name:'),
-              nameTextFormField,
-              const SizedBox(height: 8),
-              visibilityPicker,
-              const SizedBox(height: 12),
-              daysPicker,
-              const SizedBox(height: 12),
-              exercisesPicker,
-              const SizedBox(height: 16),
-              tagsPicker,
-              const SizedBox(height: 16),
-              difficultyPicker,
-              const SizedBox(height: 24),
-              createButton,
-            ],
-          ),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      sectionTitle('Name:'),
+                      nameTextFormField,
+                      const SizedBox(height: 8),
+                      visibilityPicker,
+                      const SizedBox(height: 16),
+                      daysPicker,
+                      const SizedBox(height: 12),
+                      exercisesPicker,
+                      const SizedBox(height: 24),
+                      tagsPicker,
+                      const SizedBox(height: 16),
+                      difficultyPicker,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            createButton,
+          ],
         ),
       ),
     );
