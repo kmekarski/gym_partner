@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_partner/models/plan_tag.dart';
+import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
 
@@ -10,6 +11,7 @@ class AppUser {
     required this.email,
     required this.plansData,
     required this.workoutsHistory,
+    required this.totalStatsData,
   });
 
   factory AppUser.fromFirestore(DocumentSnapshot doc) {
@@ -42,12 +44,19 @@ class AppUser {
         timeInSeconds: workoutInHistoryData['time_in_seconds'] ?? 0,
       );
     }).toList();
+
+    Map<String, dynamic> totalStatsDataData = data['total_stats_data'] ?? {};
+    final totalStatsData = TotalStatsData.fromMap(totalStatsDataData);
+
+    print(totalStatsData.toString());
+
     return AppUser(
       id: doc.id,
       username: data['username'] ?? '',
       email: data['email'],
       plansData: plansData,
       workoutsHistory: workoutsHistory,
+      totalStatsData: totalStatsData,
     );
   }
 
@@ -56,4 +65,5 @@ class AppUser {
   final String email;
   final List<UserPlanData> plansData;
   final List<WorkoutInHistory> workoutsHistory;
+  final TotalStatsData totalStatsData;
 }

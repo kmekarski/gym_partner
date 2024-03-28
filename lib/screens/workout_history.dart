@@ -2,7 +2,9 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/models/chart_data.dart';
 import 'package:gym_partner/models/plan_tag.dart';
+import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/services/history_service.dart';
@@ -47,46 +49,16 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
   ChartDataType _selectedChartDataType = ChartDataType.exercises;
   ChartTime _selectedChartTime = ChartTime.lastWeek;
 
-  late Map<ChartDataType, int> weekTotalStatsData;
-  late Map<ChartDataType, int> monthTotalStatsData;
-  late Map<ChartDataType, int> allTimeTotalStatsData;
-
   late Map<String, Map<ChartDataType, int>> weekChartData;
   late Map<String, Map<ChartDataType, int>> monthChartData;
   late Map<String, Map<ChartDataType, int>> allTimeChartData;
 
-  @override
-  void initState() {
-    _getDataFromService();
-    super.initState();
-  }
-
-  void _getDataFromService() {
-    final workoutsHistory = ref.read(userProvider).workoutsHistory;
-    weekChartData = historyService.calculateHistoryChartData(
-        workoutsHistory, ChartTime.lastWeek);
-    monthChartData = historyService.calculateHistoryChartData(
-        workoutsHistory, ChartTime.thisMonth);
-    allTimeChartData = historyService.calculateHistoryChartData(
-        workoutsHistory, ChartTime.allTime);
-
-    weekTotalStatsData =
-        historyService.calculateTotalStats(workoutsHistory, ChartTime.lastWeek);
-    monthTotalStatsData = historyService.calculateTotalStats(
-        workoutsHistory, ChartTime.thisMonth);
-    allTimeTotalStatsData =
-        historyService.calculateTotalStats(workoutsHistory, ChartTime.allTime);
-  }
-
-  Map<ChartDataType, int> get totalStatsData {
-    if (_selectedChartTime == ChartTime.lastWeek) {
-      return weekTotalStatsData;
-    }
-    if (_selectedChartTime == ChartTime.thisMonth) {
-      return monthTotalStatsData;
-    } else {
-      return allTimeTotalStatsData;
-    }
+  Stream<DocumentSnapshot<Map<String, dynamic>>> get userDataStream {
+    final userId = ref.read(userProvider).id;
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .snapshots();
   }
 
   Map<String, Map<ChartDataType, int>> get chartData {
@@ -100,23 +72,12 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
     }
   }
 
-  // final List<WorkoutInHistory> workoutsHistory = [
-  //   for (var i = 0; i < 30; i++)
-  //     WorkoutInHistory(
-  //       id: '$i',
-  //       planName: 'some plan',
-  //       tags: [
-  //         PlanTag.cardio,
-  //         PlanTag.strength,
-  //       ],
-  //       dayIndex: 0,
-  //       numOfSets: Random().nextInt(10) + 20,
-  //       numOfExercises: Random().nextInt(10),
-  //       timeInSeconds: Random().nextInt(4000) + 10000,
-  //       timestamp:
-  //           Timestamp.fromDate(DateTime.now().subtract(Duration(days: i))),
-  //     ),
-  // ];
+  List<ChartBarData> mapChartData(Map<String, Map<ChartDataType, int>> data) {
+    return data.entries
+        .map((e) => ChartBarData(
+            value: e.value[_selectedChartDataType] ?? 0, label: e.key))
+        .toList();
+  }
 
   void _selectChartDataType(ChartDataType chartDataType) {
     setState(() {
@@ -133,38 +94,12 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final workoutsHistory = ref.watch(userProvider).workoutsHistory;
+
     var filteredWorkoutsHistory = workoutsHistory
         .where((workoutInHistory) => chartTimeConditions[_selectedChartTime]!(
             workoutInHistory.timestamp.toDate()))
         .toList();
 
-    var mappedChartData = chartData.entries
-        .map((e) => ChartBarData(
-            value: e.value[_selectedChartDataType] ?? 0, label: e.key))
-        .toList();
-
-    var totalStatsRow = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          totalStat('Total exercises',
-              totalStatsData[ChartDataType.exercises].toString()),
-          totalStat(
-              'Total sets', totalStatsData[ChartDataType.sets].toString()),
-          totalStat('Total time',
-              timeFormat(totalStatsData[ChartDataType.time] ?? 0)),
-        ],
-      ),
-    );
-
-    var workoutsList = ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: filteredWorkoutsHistory.length,
-      itemBuilder: (context, index) =>
-          WorkoutInHistoryRow(workoutInHistory: filteredWorkoutsHistory[index]),
-    );
     var chartDataTypePicker = SizedBox(
       height: 42,
       child: ListView(
@@ -195,12 +130,106 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
         ],
       ),
     );
-    var chart = Chart(
-      data: mappedChartData,
-      height: 240,
-      barWidth: 56,
-      chartDataType: _selectedChartDataType,
+
+    var streamBuilder = StreamBuilder(
+      stream: userDataStream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Column();
+        }
+        final data = snapshot.data!.data() ?? {};
+        final totalStatsData =
+            TotalStatsData.fromMap(data['total_stats_data'] ?? {});
+        final chartData = ChartData.fromMap(data['chart_data'] ?? {});
+        List<ChartBarData> mappedChartData;
+
+        int totalExercisesCount = 0;
+        int totalSetsCount = 0;
+        int totalWorkoutTime = 0;
+
+        switch (_selectedChartTime) {
+          case ChartTime.lastWeek:
+            totalExercisesCount =
+                totalStatsData.weekTotalStatsData[ChartDataType.exercises] ?? 0;
+            totalSetsCount =
+                totalStatsData.weekTotalStatsData[ChartDataType.sets] ?? 0;
+            totalWorkoutTime =
+                totalStatsData.weekTotalStatsData[ChartDataType.time] ?? 0;
+            mappedChartData = mapChartData(chartData.weekChartData);
+            break;
+          case ChartTime.thisMonth:
+            totalExercisesCount =
+                totalStatsData.monthTotalStatsData[ChartDataType.exercises] ??
+                    0;
+            totalSetsCount =
+                totalStatsData.monthTotalStatsData[ChartDataType.sets] ?? 0;
+            totalWorkoutTime =
+                totalStatsData.monthTotalStatsData[ChartDataType.time] ?? 0;
+            mappedChartData = mapChartData(chartData.monthChartData);
+            mappedChartData.sort(
+                (a, b) => int.parse(a.label).compareTo(int.parse(b.label)));
+          case ChartTime.allTime:
+            totalExercisesCount =
+                totalStatsData.allTimeTotalStatsData[ChartDataType.exercises] ??
+                    0;
+            totalSetsCount =
+                totalStatsData.allTimeTotalStatsData[ChartDataType.sets] ?? 0;
+            totalWorkoutTime =
+                totalStatsData.allTimeTotalStatsData[ChartDataType.time] ?? 0;
+            mappedChartData = mapChartData(chartData.allTimeChartData);
+        }
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  totalStat(
+                    'Total exercises',
+                    totalExercisesCount.toString(),
+                  ),
+                  totalStat(
+                    'Total sets',
+                    totalSetsCount.toString(),
+                  ),
+                  totalStat(
+                    'Total time',
+                    timeFormat(totalWorkoutTime),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+            if (mappedChartData.isNotEmpty)
+              Column(
+                children: [
+                  Chart(
+                    data: mappedChartData,
+                    height: 240,
+                    barWidth: 56,
+                    chartDataType: _selectedChartDataType,
+                  ),
+                  const SizedBox(height: 12),
+                  chartDataTypePicker,
+                  const SizedBox(height: 16),
+                  chartTimePicker,
+                  const SizedBox(height: 8),
+                ],
+              ),
+          ],
+        );
+      },
     );
+
+    var workoutsList = ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: filteredWorkoutsHistory.length,
+      itemBuilder: (context, index) =>
+          WorkoutInHistoryRow(workoutInHistory: filteredWorkoutsHistory[index]),
+    );
+
     var listTitle = Text(
       'Finished workouts',
       style: Theme.of(context).textTheme.titleLarge!.copyWith(
@@ -217,14 +246,8 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              totalStatsRow,
-              const Divider(),
-              chart,
-              const SizedBox(height: 12),
-              chartDataTypePicker,
+              streamBuilder,
               const SizedBox(height: 16),
-              chartTimePicker,
-              const SizedBox(height: 32),
               listTitle,
               const SizedBox(height: 16),
               workoutsList,

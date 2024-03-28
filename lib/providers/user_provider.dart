@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
+import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/services/plans_service.dart';
 import 'package:gym_partner/services/users_service.dart';
@@ -18,6 +19,7 @@ class UserNotifier extends StateNotifier<AppUser> {
           email: '',
           plansData: [],
           workoutsHistory: [],
+          totalStatsData: TotalStatsData(),
         ));
 
   Future<void> getUserData() async {

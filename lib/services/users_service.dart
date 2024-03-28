@@ -130,6 +130,7 @@ class UsersService {
         email: userData.email,
         plansData: plansData,
         workoutsHistory: updatedWorkoutsHistory,
+        totalStatsData: userData.totalStatsData,
       );
       return updatedUserData;
     } catch (e) {
@@ -165,6 +166,7 @@ class UsersService {
         email: userData.email,
         plansData: plansData,
         workoutsHistory: userData.workoutsHistory,
+        totalStatsData: userData.totalStatsData,
       );
       return updatedUserData;
     } catch (e) {
