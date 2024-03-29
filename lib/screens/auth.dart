@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
 final _firebaseAuth = FirebaseAuth.instance;
 
@@ -69,14 +71,19 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var formFieldPadding = const EdgeInsets.symmetric(vertical: 4);
+
     var formButtons = Column(
       children: [
-        ElevatedButton(
+        WideButton(
           onPressed: _submit,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          ),
-          child: Text(_isSignIn ? 'Sign in' : 'Sign up'),
+          text: _isAuthenticating
+              ? null
+              : _isSignIn
+                  ? 'Sign in'
+                  : 'Sign up',
+          label:
+              _isAuthenticating ? const SmallCircleProgressIndicator() : null,
         ),
         TextButton(
           onPressed: () => setState(
@@ -89,89 +96,120 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ],
     );
+    var emailField = Padding(
+      padding: formFieldPadding,
+      child: TextFormField(
+        controller: _emailController,
+        autocorrect: false,
+        textCapitalization: TextCapitalization.none,
+        decoration: decoration('Email'),
+        validator: (value) {
+          if (value == null || value.trim().isEmpty || !value.contains('@')) {
+            return 'Please enter a valid email address.';
+          }
+          return null;
+        },
+      ),
+    );
+    var usernameField = Padding(
+      padding: formFieldPadding,
+      child: TextFormField(
+        controller: _usernameController,
+        enableSuggestions: false,
+        decoration: decoration('Username'),
+        validator: (value) {
+          if (value == null || value.trim().length < 4) {
+            return 'Please enter at least 4 characters.';
+          }
+          return null;
+        },
+      ),
+    );
+    var passwordField = Padding(
+      padding: formFieldPadding,
+      child: TextFormField(
+        controller: _passwordController,
+        obscureText: true,
+        decoration: decoration('Password'),
+        validator: (value) {
+          if (value == null || value.trim().length < 6) {
+            return 'Please enter at least 6 characters.';
+          }
+          return null;
+        },
+      ),
+    );
+    var repeatPasswordField = Padding(
+      padding: formFieldPadding,
+      child: TextFormField(
+        controller: _repeatPasswordController,
+        obscureText: true,
+        decoration: decoration('Repeat password'),
+        validator: (value) {
+          if (value == null ||
+              value.trim().length < 6 ||
+              value != _passwordController.text) {
+            return 'Passwords must match';
+          }
+          return null;
+        },
+      ),
+    );
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          child: Card(
-            margin: const EdgeInsets.all(24),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      autocorrect: false,
-                      textCapitalization: TextCapitalization.none,
-                      decoration: const InputDecoration(
-                        label: Text('Email'),
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _isSignIn ? 'Hey there' : 'Create your account',
+                        style: Theme.of(context).textTheme.displaySmall,
                       ),
-                      validator: (value) {
-                        if (value == null ||
-                            value.trim().isEmpty ||
-                            !value.contains('@')) {
-                          return 'Please enter a valid email address.';
-                        }
-                        return null;
-                      },
-                    ),
-                    if (!_isSignIn)
-                      TextFormField(
-                        controller: _usernameController,
-                        enableSuggestions: false,
-                        decoration: const InputDecoration(
-                          label: Text('Username'),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().length < 4) {
-                            return 'Please enter at least 4 characters.';
-                          }
-                          return null;
-                        },
+                      const SizedBox(height: 12),
+                      Text(
+                        _isSignIn
+                            ? 'Welcome back. Use your email and password to Sign in.'
+                            : 'Enter your credentials and Sign up to start your fitness journey!',
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        label: Text('Password'),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().length < 6) {
-                          return 'Please enter at least 6 characters.';
-                        }
-                        return null;
-                      },
-                    ),
-                    if (!_isSignIn)
-                      TextFormField(
-                        controller: _repeatPasswordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          label: Text('Repeat password'),
-                        ),
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().length < 6 ||
-                              value != _passwordController.text) {
-                            return 'Passwords must match';
-                          }
-                          return null;
-                        },
-                      ),
-                    const SizedBox(height: 16),
-                    if (_isAuthenticating)
-                      const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    if (!_isAuthenticating) formButtons,
-                  ],
-                ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  emailField,
+                  if (!_isSignIn) usernameField,
+                  passwordField,
+                  if (!_isSignIn) repeatPasswordField,
+                  const SizedBox(height: 16),
+                  formButtons,
+                ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  InputDecoration decoration(String text) {
+    return InputDecoration(
+      contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      filled: true,
+      fillColor: Theme.of(context).colorScheme.primaryContainer,
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+            color: Theme.of(context).primaryColor.withOpacity(0.5), width: 2.0),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      label: Text(text),
     );
   }
 }

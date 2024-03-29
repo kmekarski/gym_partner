@@ -2,49 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:gym_partner/widgets/modals/confirmation_modal.dart';
 import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
-class DeletePlanConfirmationModal extends StatefulWidget {
-  const DeletePlanConfirmationModal({
+class SignoutConfirmationModal extends StatefulWidget {
+  const SignoutConfirmationModal({
     super.key,
-    required this.onDelete,
+    required this.onSignOut,
   });
 
-  final void Function() onDelete;
+  final void Function() onSignOut;
 
   @override
-  State<DeletePlanConfirmationModal> createState() =>
+  State<SignoutConfirmationModal> createState() =>
       _DeletePlanConfirmationModalState();
 }
 
 class _DeletePlanConfirmationModalState
-    extends State<DeletePlanConfirmationModal> {
-  bool _isDeleting = false;
+    extends State<SignoutConfirmationModal> {
+  bool _isSigningOut = false;
   @override
   Widget build(BuildContext context) {
     Widget cancelButton = ElevatedButton(
       child: const Text("Cancel"),
       onPressed: () => Navigator.of(context).pop(),
     );
-    var deleteButton = ElevatedButton(
+    var signOutButton = ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      child: _isDeleting
+      child: _isSigningOut
           ? const SmallCircleProgressIndicator()
           : Text(
-              "Delete",
+              "Sign out",
               style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
             ),
       onPressed: () {
         setState(() {
-          _isDeleting = true;
+          _isSigningOut = true;
         });
-        widget.onDelete();
+        widget.onSignOut();
       },
     );
     return ConfirmationModal(
-      title: 'Delete plan',
-      content: 'Do you want to delete this workout plan? This is irreversible.',
-      actions: [cancelButton, deleteButton],
+      title: 'Sign out',
+      content: 'Do you want to sign out?',
+      actions: [cancelButton, signOutButton],
     );
   }
 }

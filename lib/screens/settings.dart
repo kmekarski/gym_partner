@@ -7,28 +7,157 @@ import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
+import 'package:gym_partner/widgets/modals/sign_out_confirmation_modal.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _isDarkMode = false;
 
   void _signOut() {
     FirebaseAuth.instance.signOut();
+    Navigator.of(context).pop();
+  }
+
+  void _showSignOutModal() {
+    showDialog(
+        context: context,
+        builder: (context) => SignoutConfirmationModal(onSignOut: _signOut));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final userData = ref.watch(userProvider);
+    final username = userData.username;
+    final email = userData.email;
+    var userProfileCard = Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: AssetImage('assets/images/default.png'),
+              radius: 26,
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  username,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(email),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+    var darkModeCard = Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            Icon(
+              Icons.dark_mode_outlined,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Dark mode',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            Switch(
+              value: _isDarkMode,
+              onChanged: (value) {
+                setState(() {
+                  _isDarkMode = value;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              userProfileCard,
+              const SizedBox(height: 4),
+              darkModeCard,
+              const SizedBox(height: 4),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    children: [
+                      clickableSettingCard(context, Icons.person_outline,
+                          'Change username', () {}),
+                      const Divider(),
+                      clickableSettingCard(
+                          context, Icons.mail_outline, 'Change email', () {}),
+                      const Divider(),
+                      clickableSettingCard(context, Icons.lock_outline,
+                          'Change password', () {}),
+                      const Divider(),
+                      clickableSettingCard(context, Icons.photo_outlined,
+                          'Change profile picture', () {}),
+                      const Divider(),
+                      clickableSettingCard(
+                          context, Icons.logout, 'Sign out', _showSignOutModal),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget clickableSettingCard(
+      BuildContext context, IconData icon, String text, void Function() onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
           children: [
-            Text('username: ${userData.username}'),
-            Text('email: ${userData.email}'),
-            ElevatedButton(onPressed: _signOut, child: const Text('Sign out')),
+            Icon(
+              icon,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(fontWeight: FontWeight.w600),
+            ),
+            const Spacer(),
+            const Icon(Icons.chevron_right),
           ],
         ),
       ),
