@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:gym_partner/models/chart/chart_data_type.dart';
 import 'package:gym_partner/screens/workout_history.dart';
-import 'package:gym_partner/services/history_service.dart';
 import 'package:gym_partner/utils/time_format.dart';
 import 'package:gym_partner/widgets/chart/chart_bar.dart';
 

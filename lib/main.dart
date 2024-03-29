@@ -19,8 +19,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme =
-        ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 219, 41, 174));
+    final colorScheme = ColorScheme.fromSeed(
+        seedColor: const Color.fromARGB(255, 219, 41, 174));
     return MaterialApp(
       theme: ThemeData().copyWith(
         colorScheme: colorScheme,

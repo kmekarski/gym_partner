@@ -1,4 +1,4 @@
-import 'package:gym_partner/services/history_service.dart';
+import 'package:gym_partner/models/chart/chart_data_type.dart';
 
 class ChartData {
   const ChartData({

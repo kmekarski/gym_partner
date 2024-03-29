@@ -173,7 +173,10 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     ref.read(userProvider.notifier).incrementCurrentDayIndex(widget.plan);
     ref.read(userProvider.notifier).finishWorkout(widget.plan);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => const FinishedWorkoutScreen(),
+      builder: (context) => FinishedWorkoutScreen(
+        day: widget.day,
+        timeInSeconds: 2000,
+      ),
     ));
   }
 

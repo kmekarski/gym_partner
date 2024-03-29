@@ -2,18 +2,17 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/models/chart/chart_data_type.dart';
+import 'package:gym_partner/models/chart/chart_time.dart';
 import 'package:gym_partner/models/chart_data.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
 import 'package:gym_partner/providers/user_provider.dart';
-import 'package:gym_partner/services/history_service.dart';
 import 'package:gym_partner/utils/time_format.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
 import 'package:gym_partner/widgets/workout_in_history_row.dart';
-
-final historyService = HistoryService();
 
 const Map<ChartTime, String> chartTimeStrings = {
   ChartTime.lastWeek: 'Last week',
@@ -25,6 +24,23 @@ const Map<ChartDataType, String> chartDataTypeStrings = {
   ChartDataType.exercises: 'Exercises',
   ChartDataType.sets: 'Sets',
   ChartDataType.time: 'Time',
+};
+
+Map<ChartTime, bool Function(DateTime date)> chartTimeConditions = {
+  ChartTime.lastWeek: (date) {
+    final now = DateTime.now();
+    final sixDaysBefore = now.subtract(const Duration(days: 6));
+    return date.isAfter(DateTime(
+            sixDaysBefore.year, sixDaysBefore.month, sixDaysBefore.day)) &&
+        date.isBefore(now);
+  },
+  ChartTime.thisMonth: (date) {
+    final now = DateTime.now();
+    return date.month == now.month &&
+        date.year == now.year &&
+        date.isBefore(now);
+  },
+  ChartTime.allTime: (date) => date.isBefore(DateTime.now())
 };
 
 class ChartBarData {

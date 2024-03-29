@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_partner/models/chart/chart_data_type.dart';
 import 'package:gym_partner/screens/workout_history.dart';
-import 'package:gym_partner/services/history_service.dart';
 
 class TotalStatsData {
   const TotalStatsData({
