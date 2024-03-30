@@ -40,9 +40,4 @@ class TotalStatsData {
   final Map<ChartDataType, int> weekTotalStatsData;
   final Map<ChartDataType, int> monthTotalStatsData;
   final Map<ChartDataType, int> allTimeTotalStatsData;
-
-  @override
-  String toString() {
-    return 'week: $weekTotalStatsData, month:$monthTotalStatsData, all time: $allTimeTotalStatsData';
-  }
 }

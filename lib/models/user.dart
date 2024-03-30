@@ -48,8 +48,6 @@ class AppUser {
     Map<String, dynamic> totalStatsDataData = data['total_stats_data'] ?? {};
     final totalStatsData = TotalStatsData.fromMap(totalStatsDataData);
 
-    print(totalStatsData.toString());
-
     return AppUser(
       id: doc.id,
       username: data['username'] ?? '',

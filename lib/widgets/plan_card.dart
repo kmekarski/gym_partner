@@ -3,6 +3,7 @@ import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
+import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/badges/simple_badge.dart';
 
@@ -24,12 +25,8 @@ class PlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var numOfDaysIndicator = Row(
       children: [
-        Icon(
-          Icons.calendar_month,
-          size: 30,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const SizedBox(width: 4),
+        const CircleIcon(iconData: Icons.calendar_month),
+        const SizedBox(width: 6),
         Text(
           '${plan.days.length}',
           style: Theme.of(context).textTheme.titleLarge!.copyWith(

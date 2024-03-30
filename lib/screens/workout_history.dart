@@ -151,7 +151,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
       stream: userDataStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Column();
+          return const SizedBox();
         }
         final data = snapshot.data!.data() ?? {};
         final totalStatsData =

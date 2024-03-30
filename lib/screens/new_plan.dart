@@ -395,6 +395,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       sectionTitle('Name:'),
+                      const SizedBox(height: 8),
                       nameTextFormField,
                       const SizedBox(height: 8),
                       visibilityPicker,

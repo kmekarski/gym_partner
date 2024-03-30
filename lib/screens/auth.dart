@@ -71,7 +71,9 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var formFieldPadding = const EdgeInsets.symmetric(vertical: 4);
+    const fieldsTextStyle = TextStyle(fontSize: 18);
+
+    const formFieldPadding = EdgeInsets.symmetric(vertical: 4);
 
     var formButtons = Column(
       children: [
@@ -85,6 +87,7 @@ class _AuthScreenState extends State<AuthScreen> {
           label:
               _isAuthenticating ? const SmallCircleProgressIndicator() : null,
         ),
+        const SizedBox(height: 6),
         TextButton(
           onPressed: () => setState(
             () {
@@ -100,9 +103,10 @@ class _AuthScreenState extends State<AuthScreen> {
       padding: formFieldPadding,
       child: TextFormField(
         controller: _emailController,
+        style: fieldsTextStyle,
         autocorrect: false,
         textCapitalization: TextCapitalization.none,
-        decoration: decoration('Email'),
+        decoration: const InputDecoration(label: Text('Email')),
         validator: (value) {
           if (value == null || value.trim().isEmpty || !value.contains('@')) {
             return 'Please enter a valid email address.';
@@ -115,8 +119,9 @@ class _AuthScreenState extends State<AuthScreen> {
       padding: formFieldPadding,
       child: TextFormField(
         controller: _usernameController,
+        style: fieldsTextStyle,
         enableSuggestions: false,
-        decoration: decoration('Username'),
+        decoration: const InputDecoration(label: Text('Username')),
         validator: (value) {
           if (value == null || value.trim().length < 4) {
             return 'Please enter at least 4 characters.';
@@ -129,8 +134,9 @@ class _AuthScreenState extends State<AuthScreen> {
       padding: formFieldPadding,
       child: TextFormField(
         controller: _passwordController,
+        style: fieldsTextStyle,
         obscureText: true,
-        decoration: decoration('Password'),
+        decoration: const InputDecoration(label: Text('Password')),
         validator: (value) {
           if (value == null || value.trim().length < 6) {
             return 'Please enter at least 6 characters.';
@@ -144,7 +150,8 @@ class _AuthScreenState extends State<AuthScreen> {
       child: TextFormField(
         controller: _repeatPasswordController,
         obscureText: true,
-        decoration: decoration('Repeat password'),
+        style: fieldsTextStyle,
+        decoration: const InputDecoration(label: Text('Repeat password')),
         validator: (value) {
           if (value == null ||
               value.trim().length < 6 ||
@@ -174,7 +181,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 12),
                       Text(
                         _isSignIn
-                            ? 'Welcome back. Use your email and password to Sign in.'
+                            ? 'Welcome back! Use your email and password to Sign in.'
                             : 'Enter your credentials and Sign up to start your fitness journey!',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
@@ -193,23 +200,6 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  InputDecoration decoration(String text) {
-    return InputDecoration(
-      contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      filled: true,
-      fillColor: Theme.of(context).colorScheme.primaryContainer,
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-            color: Theme.of(context).primaryColor.withOpacity(0.5), width: 2.0),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
-      label: Text(text),
     );
   }
 }

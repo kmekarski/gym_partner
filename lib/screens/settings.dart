@@ -6,6 +6,7 @@ import 'package:gym_partner/models/chart/chart_data_type.dart';
 import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
 import 'package:gym_partner/widgets/modals/sign_out_confirmation_modal.dart';
 
@@ -67,10 +68,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
-            Icon(
-              Icons.dark_mode_outlined,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
+            const CircleIcon(iconData: Icons.dark_mode),
             const SizedBox(width: 12),
             Text(
               'Dark mode',
@@ -106,29 +104,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               const SizedBox(height: 4),
               darkModeCard,
               const SizedBox(height: 4),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Column(
-                    children: [
-                      clickableSettingCard(context, Icons.person_outline,
-                          'Change username', () {}),
-                      const Divider(),
-                      clickableSettingCard(
-                          context, Icons.mail_outline, 'Change email', () {}),
-                      const Divider(),
-                      clickableSettingCard(context, Icons.lock_outline,
-                          'Change password', () {}),
-                      const Divider(),
-                      clickableSettingCard(context, Icons.photo_outlined,
-                          'Change profile picture', () {}),
-                      const Divider(),
-                      clickableSettingCard(
-                          context, Icons.logout, 'Sign out', _showSignOutModal),
-                    ],
-                  ),
-                ),
-              ),
+              clickableSettingCard(
+                  context, Icons.person, 'Change username', () {}),
+              clickableSettingCard(context, Icons.mail, 'Change email', () {}),
+              clickableSettingCard(
+                  context, Icons.lock, 'Change password', () {}),
+              clickableSettingCard(
+                  context, Icons.photo, 'Change profile picture', () {}),
+              clickableSettingCard(
+                  context, Icons.logout, 'Sign out', _showSignOutModal),
             ],
           ),
         ),
@@ -138,27 +122,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget clickableSettingCard(
       BuildContext context, IconData icon, String text, void Function() onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 3),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Card(
+          margin: const EdgeInsets.all(0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                CircleIcon(iconData: icon),
+                const SizedBox(width: 12),
+                Text(
+                  text,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.w600),
+                ),
+                const Spacer(),
+                const Icon(Icons.chevron_right),
+              ],
             ),
-            const SizedBox(width: 12),
-            Text(
-              text,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w600),
-            ),
-            const Spacer(),
-            const Icon(Icons.chevron_right),
-          ],
+          ),
         ),
       ),
     );

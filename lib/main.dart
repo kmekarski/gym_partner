@@ -28,6 +28,20 @@ class App extends StatelessWidget {
           elevation: 0,
           color: colorScheme.primaryContainer.withOpacity(0.7),
         ),
+        inputDecorationTheme: InputDecorationTheme().copyWith(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          filled: true,
+          fillColor: colorScheme.primaryContainer,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: colorScheme.primary.withOpacity(0.2), width: 2.0),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ),
         appBarTheme: const AppBarTheme().copyWith(
           scrolledUnderElevation: 0,
           centerTitle: false,

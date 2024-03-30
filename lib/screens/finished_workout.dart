@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/utils/time_format.dart';
+import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 
 class FinishedWorkoutScreen extends ConsumerStatefulWidget {
@@ -117,21 +118,7 @@ class _FinishedWorkoutScreenState extends ConsumerState<FinishedWorkoutScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.15),
-              ),
-              Icon(
-                icon,
-                size: 20,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-            ],
-          ),
+          CircleIcon(iconData: icon),
           const SizedBox(width: 10),
           Text(
             '$value $label',

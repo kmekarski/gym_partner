@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/workout_in_history.dart';
 import 'package:gym_partner/utils/time_format.dart';
+import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:intl/intl.dart';
 
 class WorkoutInHistoryRow extends StatefulWidget {
@@ -35,7 +36,7 @@ class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
             Text(dateFormat.format(widget.workoutInHistory.timestamp.toDate())),
             const SizedBox(height: 4),
             Text(
-              widget.workoutInHistory.planName,
+              '${widget.workoutInHistory.planName} - Day ${widget.workoutInHistory.dayIndex + 1}',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -48,13 +49,16 @@ class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  stat('Exercises',
-                      widget.workoutInHistory.numOfExercises.toString()),
-                  const VerticalDivider(),
-                  stat('Sets', widget.workoutInHistory.numOfSets.toString()),
-                  const VerticalDivider(),
-                  stat('Time',
-                      timeFormat(widget.workoutInHistory.timeInSeconds)),
+                  stat(
+                      'Exercises',
+                      widget.workoutInHistory.numOfExercises.toString(),
+                      Icons.fitness_center),
+                  stat('Sets', widget.workoutInHistory.numOfSets.toString(),
+                      Icons.repeat),
+                  stat(
+                      'Time',
+                      timeFormat(widget.workoutInHistory.timeInSeconds),
+                      Icons.schedule),
                 ],
               ),
             )
@@ -64,22 +68,22 @@ class _WorkoutInHistoryRowState extends State<WorkoutInHistoryRow> {
     );
   }
 
-  Widget stat(String title, String value) {
+  Widget stat(String title, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Column(
+      child: Row(
         children: [
+          CircleIcon(
+            iconData: icon,
+            size: 18,
+          ),
+          const SizedBox(width: 4),
           Text(
             value,
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.labelMedium,
           ),
         ],
       ),

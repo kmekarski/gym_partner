@@ -114,9 +114,6 @@ class UsersService {
         ...currentWorkoutsHistory
       ];
 
-      print(currentWorkoutsHistory.length);
-      print(updatedWorkoutsHistory.length);
-
       await userDocRef(currentUser.uid).update(
         {
           'workouts_history': updatedWorkoutsHistory
