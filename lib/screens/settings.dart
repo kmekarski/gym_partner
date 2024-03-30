@@ -15,6 +15,7 @@ import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
 import 'package:gym_partner/widgets/modals/change_profile_picture.dart';
+import 'package:gym_partner/widgets/modals/change_user_data.dart';
 import 'package:gym_partner/widgets/modals/sign_out_confirmation_modal.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -26,10 +27,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _userDataController = TextEditingController();
-  final _passwordController = TextEditingController();
-
   bool _isDarkMode = false;
 
   void _signOut() {
@@ -49,32 +46,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required FormFieldType type,
     String passwordLabel = 'Password',
   }) {
-    setState(() {
-      _userDataController.clear();
-      _passwordController.clear();
-    });
     showModalBottomSheet(
+      useSafeArea: true,
       isScrollControlled: true,
       context: context,
-      builder: (context) => _changeUserDataModalContent(
+      builder: (context) => ChangeUserDataModal(
         type: type,
         title: title,
         fieldLabel: label,
         passwordFieldLabel: passwordLabel,
+        onSave: () {},
       ),
     );
   }
 
   void _changeProfilePicture(File image) {
     print('profile picture changed');
-  }
-
-  void _changeUserData() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    Navigator.of(context).pop();
   }
 
   void _showChangeProfilePictureModal() {
@@ -84,54 +71,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         builder: (context) => ChangeProfilePictureModal(
               onPickImage: _changeProfilePicture,
             ));
-  }
-
-  Widget _changeUserDataModalContent({
-    required String title,
-    required String fieldLabel,
-    required String passwordFieldLabel,
-    required FormFieldType type,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 48),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 24),
-          Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _userDataController,
-                    validator: validatorForType(type),
-                    obscureText: type == FormFieldType.password,
-                    decoration: InputDecoration(label: Text(fieldLabel)),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration:
-                        InputDecoration(label: Text(passwordFieldLabel)),
-                  ),
-                  const SizedBox(height: 24),
-                  WideButton(
-                    onPressed: _changeUserData,
-                    text: 'Save',
-                  ),
-                ],
-              )),
-        ],
-      ),
-    );
   }
 
   @override

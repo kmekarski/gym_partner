@@ -11,7 +11,7 @@ class EndWorkoutConfirmationModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget cancelButton = ElevatedButton(
+    var cancelButton = ElevatedButton(
       child: const Text("Cancel"),
       onPressed: () => Navigator.of(context).pop(),
     );
