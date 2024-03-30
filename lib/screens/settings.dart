@@ -38,7 +38,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final email = userData.email;
     var userProfileCard = Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         child: Row(
           children: [
             CircleAvatar(
@@ -101,9 +101,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               userProfileCard,
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               darkModeCard,
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               clickableSettingCard(
                   context, Icons.person, 'Change username', () {}),
               clickableSettingCard(context, Icons.mail, 'Change email', () {}),

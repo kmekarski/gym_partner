@@ -59,10 +59,10 @@ class UserNotifier extends StateNotifier<AppUser> {
     }
   }
 
-  Future<void> finishWorkout(Plan plan) async {
+  Future<void> finishWorkout(Plan plan, int workoutTime) async {
     AppUser? updatedUser;
     try {
-      updatedUser = await usersService.addWorkoutInHistory(plan, 2000);
+      updatedUser = await usersService.addWorkoutInHistory(plan, workoutTime);
     } finally {
       if (updatedUser != null) {
         state = updatedUser;

@@ -56,27 +56,26 @@ class _FinishedWorkoutScreenState extends ConsumerState<FinishedWorkoutScreen> {
       textAlign: TextAlign.center,
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 17),
     );
-    var statsContainer = Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(16)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              statRow(Icons.fitness_center, numOfExercises.toString(),
-                  numOfExercises > 1 ? 'Exercises' : 'Exercise'),
-              statRow(Icons.repeat, numOfSets.toString(),
-                  numOfSets > 1 ? 'Sets' : 'Set'),
-            ],
-          ),
-          statRow(Icons.schedule, timeString, ''),
-        ],
+    var statsContainer = Card(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                statRow(Icons.fitness_center, numOfExercises.toString(),
+                    numOfExercises > 1 ? 'Exercises' : 'Exercise'),
+                statRow(Icons.repeat, numOfSets.toString(),
+                    numOfSets > 1 ? 'Sets' : 'Set'),
+              ],
+            ),
+            statRow(Icons.schedule, timeString, ''),
+          ],
+        ),
       ),
     );
     return Scaffold(

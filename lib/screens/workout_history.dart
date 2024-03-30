@@ -246,12 +246,26 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
           WorkoutInHistoryRow(workoutInHistory: filteredWorkoutsHistory[index]),
     );
 
-    var listTitle = Text(
-      'Finished workouts',
-      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-            fontSize: 26,
-            fontWeight: FontWeight.w600,
-          ),
+    var listTitle = Row(
+      children: [
+        Text(
+          'Finished workouts',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontSize: 26,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        const SizedBox(width: 6),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            CircleAvatar(
+              radius: 18,
+            ),
+            Text('23'),
+          ],
+        ),
+      ],
     );
     return Scaffold(
       appBar: AppBar(

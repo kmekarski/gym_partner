@@ -28,8 +28,19 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   int _currentSetIndex = 0;
   bool _isRest = false;
 
-  Timer? _timer;
+  final oneSecond = const Duration(seconds: 1);
+  Timer? _restTimer;
+  Timer? _workoutTimer;
   int _remainingSeconds = 0;
+  int _workoutTime = 0;
+
+  @override
+  void initState() {
+    _restTimer = Timer.periodic(oneSecond, (Timer timer) {
+      _workoutTime += 1;
+    });
+    super.initState();
+  }
 
   PlanExercise get _currentExercise {
     return widget.day.exercises[_currentExerciseIndex];
@@ -109,13 +120,10 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   }
 
   void _startRest() {
-    const oneSecond = Duration(seconds: 1);
     _remainingSeconds = _currentExercise.restTime;
-    _timer = Timer.periodic(oneSecond, (Timer timer) {
+    _restTimer = Timer.periodic(oneSecond, (Timer timer) {
       if (_remainingSeconds <= 0) {
-        setState(() {
-          timer.cancel();
-        });
+        timer.cancel();
         _finishRest();
       } else {
         setState(() {
@@ -132,7 +140,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     _jumpToNextSet();
     setState(() {
       _isRest = false;
-      _timer?.cancel();
+      _restTimer?.cancel();
     });
   }
 
@@ -170,12 +178,13 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
   }
 
   void _finishWorkout() {
+    _workoutTimer?.cancel();
     ref.read(userProvider.notifier).incrementCurrentDayIndex(widget.plan);
-    ref.read(userProvider.notifier).finishWorkout(widget.plan);
+    ref.read(userProvider.notifier).finishWorkout(widget.plan, _workoutTime);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (context) => FinishedWorkoutScreen(
         day: widget.day,
-        timeInSeconds: 2000,
+        timeInSeconds: _workoutTime,
       ),
     ));
   }
@@ -366,7 +375,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _restTimer?.cancel();
     super.dispose();
   }
 

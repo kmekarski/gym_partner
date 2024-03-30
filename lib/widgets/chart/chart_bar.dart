@@ -23,7 +23,7 @@ class ChartBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final barHeight = (fullHeight - labelsHeight) * fill;
-    return Container(
+    return SizedBox(
       width: width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,

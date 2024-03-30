@@ -36,7 +36,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   Widget build(BuildContext context) {
     Widget activePage = const MyPlansScreen();
     if (_selectedPageIndex == 1) {
-      activePage = WorkoutHistoryScreen();
+      activePage = const WorkoutHistoryScreen();
     }
     switch (_selectedPageIndex) {
       case 0:
@@ -44,7 +44,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       case 1:
         activePage = const SharedPlansScreen();
       case 2:
-        activePage = WorkoutHistoryScreen();
+        activePage = const WorkoutHistoryScreen();
       case 3:
         activePage = const SettingsScreen();
       default:
@@ -52,11 +52,12 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
     }
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: _selectedPageIndex,
         onTap: _selectPage,
         items: [
           tabBarItem(context, icon: Icons.event_note, text: 'My plans'),
-          tabBarItem(context, icon: Icons.event_note, text: 'Browse plans'),
+          tabBarItem(context, icon: Icons.public, text: 'Others\' plans'),
           tabBarItem(context, icon: Icons.history, text: 'History'),
           tabBarItem(context, icon: Icons.settings, text: 'Settings'),
         ],

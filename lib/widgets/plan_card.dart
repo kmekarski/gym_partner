@@ -90,9 +90,6 @@ class PlanCard extends StatelessWidget {
         : null;
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
       clipBehavior: Clip.hardEdge,
       child: InkWell(
         onTap: () {

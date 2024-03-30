@@ -412,6 +412,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 16),
             createButton,
           ],
         ),

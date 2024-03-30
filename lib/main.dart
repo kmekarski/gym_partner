@@ -25,14 +25,17 @@ class App extends StatelessWidget {
       theme: ThemeData().copyWith(
         colorScheme: colorScheme,
         cardTheme: const CardTheme().copyWith(
-          elevation: 0,
-          color: colorScheme.primaryContainer.withOpacity(0.7),
-        ),
-        inputDecorationTheme: InputDecorationTheme().copyWith(
+            elevation: 0,
+            color: colorScheme.primaryContainer.withOpacity(0.7),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                    color: colorScheme.primary.withOpacity(0.2), width: 2))),
+        inputDecorationTheme: const InputDecorationTheme().copyWith(
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           filled: true,
-          fillColor: colorScheme.primaryContainer,
+          fillColor: colorScheme.primaryContainer.withOpacity(0.7),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
                 color: colorScheme.primary.withOpacity(0.2), width: 2.0),
@@ -50,7 +53,7 @@ class App extends StatelessWidget {
               .titleLarge!
               .copyWith(fontWeight: FontWeight.w600, fontSize: 26),
         ),
-        searchBarTheme: SearchBarThemeData().copyWith(
+        searchBarTheme: const SearchBarThemeData().copyWith(
           elevation: const MaterialStatePropertyAll(0),
           backgroundColor:
               MaterialStateProperty.all(Colors.black.withOpacity(0.08)),

@@ -86,15 +86,16 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
     int maxValue,
     int step,
     void Function(int value) onChanged, {
-    double width = 94,
+    double width = 84,
     String Function(String numberText)? textMapper,
   }) {
     final buttonStyle = IconButton.styleFrom(
+      padding: const EdgeInsets.all(0),
       backgroundColor: Theme.of(context).cardTheme.color,
       foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
     );
-    const double iconSize = 16;
-    const double buttonSize = 32;
+    const double iconSize = 14;
+    const double buttonSize = 24;
     return SizedBox(
       width: width,
       child: Column(

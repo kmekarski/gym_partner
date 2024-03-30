@@ -1,4 +1,5 @@
 import 'package:gym_partner/models/chart/chart_data_type.dart';
+import 'package:gym_partner/utils/day_of_week_mappers.dart';
 
 class ChartData {
   const ChartData({
@@ -40,8 +41,30 @@ class ChartData {
       };
     }
 
+    DateTime now = DateTime.now();
+    String currentDay = getDayOfWeekString(now.weekday);
+
+    List<MapEntry<String, Map<ChartDataType, int>>> sortedEntries =
+        weekChartData.entries.toList()
+          ..sort((a, b) {
+            int aIndex = getDayOfWeekIndex(a.key);
+            int bIndex = getDayOfWeekIndex(b.key);
+            int currentDayIndex = getDayOfWeekIndex(currentDay);
+
+            if (currentDayIndex - bIndex < 0) {
+              bIndex -= 7;
+            }
+
+            if (currentDayIndex - aIndex < 0) {
+              aIndex -= 7;
+            }
+
+            return (currentDayIndex - bIndex)
+                .compareTo(currentDayIndex - aIndex);
+          });
+
     return ChartData(
-      weekChartData: weekChartData,
+      weekChartData: Map.fromEntries(sortedEntries),
       monthChartData: monthChartData,
       allTimeChartData: allTimeChartData,
     );
