@@ -7,6 +7,7 @@ import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
+import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
 import 'package:gym_partner/widgets/modals/sign_out_confirmation_modal.dart';
 
@@ -29,6 +30,62 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     showDialog(
         context: context,
         builder: (context) => SignoutConfirmationModal(onSignOut: _signOut));
+  }
+
+  void _showChangeUserDataModal({
+    required String title,
+    required String label,
+    String passwordLabel = 'Password',
+  }) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => _changeUserDataModalContent(
+        title: title,
+        fieldLabel: label,
+        passwordFieldLabel: passwordLabel,
+      ),
+    );
+  }
+
+  Padding _changeUserDataModalContent({
+    required String title,
+    required String fieldLabel,
+    required String passwordFieldLabel,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 48),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: 24),
+          Form(
+              child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(label: Text(passwordFieldLabel)),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                decoration: InputDecoration(label: Text(fieldLabel)),
+              ),
+              const SizedBox(height: 24),
+              WideButton(
+                onPressed: () {},
+                text: 'Save',
+              ),
+            ],
+          )),
+        ],
+      ),
+    );
   }
 
   @override
@@ -105,10 +162,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               darkModeCard,
               const SizedBox(height: 8),
               clickableSettingCard(
-                  context, Icons.person, 'Change username', () {}),
-              clickableSettingCard(context, Icons.mail, 'Change email', () {}),
+                context,
+                Icons.person,
+                'Change username',
+                () => _showChangeUserDataModal(
+                    title: 'Change username', label: 'New username'),
+              ),
               clickableSettingCard(
-                  context, Icons.lock, 'Change password', () {}),
+                context,
+                Icons.mail,
+                'Change email',
+                () => _showChangeUserDataModal(
+                    title: 'Change email', label: 'New email'),
+              ),
+              clickableSettingCard(
+                context,
+                Icons.lock,
+                'Change password',
+                () => _showChangeUserDataModal(
+                    title: 'Change password',
+                    label: 'New password',
+                    passwordLabel: 'Current password'),
+              ),
               clickableSettingCard(
                   context, Icons.photo, 'Change profile picture', () {}),
               clickableSettingCard(

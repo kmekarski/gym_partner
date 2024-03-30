@@ -64,10 +64,7 @@ class WorkoutHistoryScreen extends ConsumerStatefulWidget {
 class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
   ChartDataType _selectedChartDataType = ChartDataType.exercises;
   ChartTime _selectedChartTime = ChartTime.lastWeek;
-
-  late Map<String, Map<ChartDataType, int>> weekChartData;
-  late Map<String, Map<ChartDataType, int>> monthChartData;
-  late Map<String, Map<ChartDataType, int>> allTimeChartData;
+  int _finishedWorkoutsCount = 0;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> get userDataStream {
     final userId = ref.read(userProvider).id;
@@ -75,17 +72,6 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
         .collection('users')
         .doc(userId)
         .snapshots();
-  }
-
-  Map<String, Map<ChartDataType, int>> get chartData {
-    if (_selectedChartTime == ChartTime.lastWeek) {
-      return weekChartData;
-    }
-    if (_selectedChartTime == ChartTime.thisMonth) {
-      return monthChartData;
-    } else {
-      return allTimeChartData;
-    }
   }
 
   List<ChartBarData> mapChartData(Map<String, Map<ChartDataType, int>> data) {
@@ -115,6 +101,10 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
         .where((workoutInHistory) => chartTimeConditions[_selectedChartTime]!(
             workoutInHistory.timestamp.toDate()))
         .toList();
+
+    setState(() {
+      _finishedWorkoutsCount = filteredWorkoutsHistory.length;
+    });
 
     var chartDataTypePicker = SizedBox(
       height: 42,
@@ -247,6 +237,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
     );
 
     var listTitle = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Finished workouts',
@@ -255,14 +246,20 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                 fontWeight: FontWeight.w600,
               ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 12),
         Stack(
           alignment: Alignment.center,
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 18,
             ),
-            Text('23'),
+            Text(
+              '$_finishedWorkoutsCount',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ],
         ),
       ],

@@ -96,6 +96,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
       padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 48),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'All exercises',
@@ -103,7 +104,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           for (final (index, exercise) in widget.day.exercises.indexed)
             PlanExerciseRow(exercise: exercise, index: index)
         ],
