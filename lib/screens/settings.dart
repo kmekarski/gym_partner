@@ -1,6 +1,10 @@
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/chart/chart_data_type.dart';
 import 'package:gym_partner/models/total_stats_data.dart';
@@ -9,7 +13,9 @@ import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
+import 'package:gym_partner/widgets/modals/change_profile_picture.dart';
 import 'package:gym_partner/widgets/modals/sign_out_confirmation_modal.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -48,7 +54,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Padding _changeUserDataModalContent({
+  void _changeProfilePicture(File image) {
+    print('profile picture changed');
+  }
+
+  void _changeUsername() {}
+
+  void _showChangeProfilePictureModal() {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) => ChangeProfilePictureModal(
+              onPickImage: _changeProfilePicture,
+            ));
+  }
+
+  Widget _changeUserDataModalContent({
     required String title,
     required String fieldLabel,
     required String passwordFieldLabel,
@@ -70,11 +91,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Column(
             children: [
               TextFormField(
-                decoration: InputDecoration(label: Text(passwordFieldLabel)),
+                decoration: InputDecoration(label: Text(fieldLabel)),
               ),
               const SizedBox(height: 12),
               TextFormField(
-                decoration: InputDecoration(label: Text(fieldLabel)),
+                decoration: InputDecoration(label: Text(passwordFieldLabel)),
               ),
               const SizedBox(height: 24),
               WideButton(
@@ -132,7 +153,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               style: Theme.of(context)
                   .textTheme
                   .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w600),
+                  .copyWith(fontWeight: FontWeight.w500),
             ),
             const Spacer(),
             Switch(
@@ -184,8 +205,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     label: 'New password',
                     passwordLabel: 'Current password'),
               ),
-              clickableSettingCard(
-                  context, Icons.photo, 'Change profile picture', () {}),
+              clickableSettingCard(context, Icons.photo,
+                  'Change profile picture', _showChangeProfilePictureModal),
               clickableSettingCard(
                   context, Icons.logout, 'Sign out', _showSignOutModal),
             ],
@@ -215,7 +236,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.w600),
+                      .copyWith(fontWeight: FontWeight.w500),
                 ),
                 const Spacer(),
                 const Icon(Icons.chevron_right),
