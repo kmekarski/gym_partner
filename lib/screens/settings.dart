@@ -10,6 +10,7 @@ import 'package:gym_partner/models/chart/chart_data_type.dart';
 import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/providers/user_provider.dart';
+import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
@@ -25,6 +26,10 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _userDataController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   bool _isDarkMode = false;
 
   void _signOut() {
@@ -41,12 +46,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void _showChangeUserDataModal({
     required String title,
     required String label,
+    required FormFieldType type,
     String passwordLabel = 'Password',
   }) {
+    setState(() {
+      _userDataController.clear();
+      _passwordController.clear();
+    });
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
       builder: (context) => _changeUserDataModalContent(
+        type: type,
         title: title,
         fieldLabel: label,
         passwordFieldLabel: passwordLabel,
@@ -58,7 +69,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     print('profile picture changed');
   }
 
-  void _changeUsername() {}
+  void _changeUserData() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    Navigator.of(context).pop();
+  }
 
   void _showChangeProfilePictureModal() {
     showModalBottomSheet(
@@ -73,6 +90,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required String title,
     required String fieldLabel,
     required String passwordFieldLabel,
+    required FormFieldType type,
   }) {
     return Padding(
       padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 48),
@@ -88,22 +106,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 24),
           Form(
+              key: _formKey,
               child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(label: Text(fieldLabel)),
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                decoration: InputDecoration(label: Text(passwordFieldLabel)),
-              ),
-              const SizedBox(height: 24),
-              WideButton(
-                onPressed: () {},
-                text: 'Save',
-              ),
-            ],
-          )),
+                children: [
+                  TextFormField(
+                    controller: _userDataController,
+                    validator: validatorForType(type),
+                    obscureText: type == FormFieldType.password,
+                    decoration: InputDecoration(label: Text(fieldLabel)),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration:
+                        InputDecoration(label: Text(passwordFieldLabel)),
+                  ),
+                  const SizedBox(height: 24),
+                  WideButton(
+                    onPressed: _changeUserData,
+                    text: 'Save',
+                  ),
+                ],
+              )),
         ],
       ),
     );
@@ -187,23 +212,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Icons.person,
                 'Change username',
                 () => _showChangeUserDataModal(
-                    title: 'Change username', label: 'New username'),
+                  title: 'Change username',
+                  label: 'New username',
+                  type: FormFieldType.username,
+                ),
               ),
               clickableSettingCard(
                 context,
                 Icons.mail,
                 'Change email',
                 () => _showChangeUserDataModal(
-                    title: 'Change email', label: 'New email'),
+                  title: 'Change email',
+                  label: 'New email',
+                  type: FormFieldType.email,
+                ),
               ),
               clickableSettingCard(
                 context,
                 Icons.lock,
                 'Change password',
                 () => _showChangeUserDataModal(
-                    title: 'Change password',
-                    label: 'New password',
-                    passwordLabel: 'Current password'),
+                  title: 'Change password',
+                  label: 'New password',
+                  passwordLabel: 'Current password',
+                  type: FormFieldType.password,
+                ),
               ),
               clickableSettingCard(context, Icons.photo,
                   'Change profile picture', _showChangeProfilePictureModal),

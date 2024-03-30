@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
@@ -102,33 +103,21 @@ class _AuthScreenState extends State<AuthScreen> {
     var emailField = Padding(
       padding: formFieldPadding,
       child: TextFormField(
-        controller: _emailController,
-        style: fieldsTextStyle,
-        autocorrect: false,
-        textCapitalization: TextCapitalization.none,
-        decoration: const InputDecoration(label: Text('Email')),
-        validator: (value) {
-          if (value == null || value.trim().isEmpty || !value.contains('@')) {
-            return 'Please enter a valid email address.';
-          }
-          return null;
-        },
-      ),
+          controller: _emailController,
+          style: fieldsTextStyle,
+          autocorrect: false,
+          textCapitalization: TextCapitalization.none,
+          decoration: const InputDecoration(label: Text('Email')),
+          validator: emailValidator),
     );
     var usernameField = Padding(
       padding: formFieldPadding,
       child: TextFormField(
-        controller: _usernameController,
-        style: fieldsTextStyle,
-        enableSuggestions: false,
-        decoration: const InputDecoration(label: Text('Username')),
-        validator: (value) {
-          if (value == null || value.trim().length < 4) {
-            return 'Please enter at least 4 characters.';
-          }
-          return null;
-        },
-      ),
+          controller: _usernameController,
+          style: fieldsTextStyle,
+          enableSuggestions: false,
+          decoration: const InputDecoration(label: Text('Username')),
+          validator: usernameValidator),
     );
     var passwordField = Padding(
       padding: formFieldPadding,
@@ -137,12 +126,7 @@ class _AuthScreenState extends State<AuthScreen> {
         style: fieldsTextStyle,
         obscureText: true,
         decoration: const InputDecoration(label: Text('Password')),
-        validator: (value) {
-          if (value == null || value.trim().length < 6) {
-            return 'Please enter at least 6 characters.';
-          }
-          return null;
-        },
+        validator: passwordValidator,
       ),
     );
     var repeatPasswordField = Padding(
@@ -152,14 +136,8 @@ class _AuthScreenState extends State<AuthScreen> {
         obscureText: true,
         style: fieldsTextStyle,
         decoration: const InputDecoration(label: Text('Repeat password')),
-        validator: (value) {
-          if (value == null ||
-              value.trim().length < 6 ||
-              value != _passwordController.text) {
-            return 'Passwords must match';
-          }
-          return null;
-        },
+        validator: (value) =>
+            repeatPasswordValidator(value, _passwordController.text),
       ),
     );
     return Scaffold(
