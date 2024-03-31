@@ -12,7 +12,7 @@ class ExerciseInfoModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final okButton = ElevatedButton(
+    final okButton = OutlinedButton(
         onPressed: () => Navigator.of(context).pop(), child: const Text('OK'));
     return ConfirmationModal(
         title: exercise.name,

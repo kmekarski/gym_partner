@@ -5,9 +5,11 @@ import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ChangeProfilePictureModal extends StatefulWidget {
-  const ChangeProfilePictureModal({super.key, required this.onPickImage});
+  const ChangeProfilePictureModal(
+      {super.key, required this.onPickImage, required this.oldAvatarUrl});
 
   final void Function(File pickedImage) onPickImage;
+  final String oldAvatarUrl;
 
   @override
   State<ChangeProfilePictureModal> createState() =>
@@ -43,6 +45,18 @@ class _ChangeProfilePictureModalState extends State<ChangeProfilePictureModal> {
 
   @override
   Widget build(BuildContext context) {
+    final showDefaultAvatar =
+        _pickedImageFile == null && widget.oldAvatarUrl == '';
+    final showOldAvatar = _pickedImageFile == null && widget.oldAvatarUrl != '';
+
+    var circleAvatar = CircleAvatar(
+      radius: 100,
+      backgroundImage: showDefaultAvatar
+          ? const AssetImage('assets/images/default.png') as ImageProvider
+          : showOldAvatar
+              ? NetworkImage(widget.oldAvatarUrl) as ImageProvider
+              : FileImage(_pickedImageFile!),
+    );
     return Padding(
       padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 48),
       child: Column(
@@ -57,18 +71,8 @@ class _ChangeProfilePictureModalState extends State<ChangeProfilePictureModal> {
                   ),
             ),
           ),
-          if (_pickedImageFile != null)
-            Column(
-              children: [
-                const SizedBox(height: 24),
-                CircleAvatar(
-                  radius: 100,
-                  foregroundImage: _pickedImageFile != null
-                      ? FileImage(_pickedImageFile!)
-                      : null,
-                ),
-              ],
-            ),
+          const SizedBox(height: 24),
+          circleAvatar,
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

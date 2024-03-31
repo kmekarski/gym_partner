@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/total_stats_data.dart';
@@ -19,7 +21,8 @@ class UserNotifier extends StateNotifier<AppUser> {
           email: '',
           plansData: [],
           workoutsHistory: [],
-          totalStatsData: TotalStatsData(),
+          totalStatsData: const TotalStatsData(),
+          avatarUrl: '',
         ));
 
   Future<void> getUserData() async {
@@ -63,6 +66,17 @@ class UserNotifier extends StateNotifier<AppUser> {
     AppUser? updatedUser;
     try {
       updatedUser = await usersService.addWorkoutInHistory(plan, workoutTime);
+    } finally {
+      if (updatedUser != null) {
+        state = updatedUser;
+      }
+    }
+  }
+
+  Future<void> updateAvatar(File image) async {
+    AppUser? updatedUser;
+    try {
+      updatedUser = await usersService.updateUserAvatar(image);
     } finally {
       if (updatedUser != null) {
         state = updatedUser;

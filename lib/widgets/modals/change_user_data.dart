@@ -48,7 +48,7 @@ class _ChangeUserDataModalState extends State<ChangeUserDataModal> {
   Widget build(BuildContext context) {
     final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
 
-    var cancelButton = ElevatedButton(
+    var cancelButton = OutlinedButton(
       child: const Text("Cancel"),
       onPressed: () => Navigator.of(context).pop(),
     );

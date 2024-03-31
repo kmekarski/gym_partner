@@ -24,6 +24,14 @@ class App extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData().copyWith(
         colorScheme: colorScheme,
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(
+              color: colorScheme.primary,
+              width: 1,
+            ),
+          ),
+        ),
         cardTheme: const CardTheme().copyWith(
             elevation: 0,
             color: colorScheme.primaryContainer.withOpacity(0.7),

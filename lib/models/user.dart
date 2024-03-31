@@ -12,6 +12,7 @@ class AppUser {
     required this.plansData,
     required this.workoutsHistory,
     required this.totalStatsData,
+    required this.avatarUrl,
   });
 
   factory AppUser.fromFirestore(DocumentSnapshot doc) {
@@ -52,6 +53,7 @@ class AppUser {
       id: doc.id,
       username: data['username'] ?? '',
       email: data['email'],
+      avatarUrl: data['avatar_url'] ?? '',
       plansData: plansData,
       workoutsHistory: workoutsHistory,
       totalStatsData: totalStatsData,
@@ -64,4 +66,5 @@ class AppUser {
   final List<UserPlanData> plansData;
   final List<WorkoutInHistory> workoutsHistory;
   final TotalStatsData totalStatsData;
+  final String avatarUrl;
 }

@@ -14,6 +14,7 @@ import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
+import 'package:gym_partner/widgets/circle_user_avatar.dart';
 import 'package:gym_partner/widgets/modals/change_profile_picture.dart';
 import 'package:gym_partner/widgets/modals/change_user_data.dart';
 import 'package:gym_partner/widgets/modals/sign_out_confirmation_modal.dart';
@@ -60,16 +61,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _changeProfilePicture(File image) {
-    print('profile picture changed');
+  void _changeProfilePicture(File image) async {
+    await ref.read(userProvider.notifier).updateAvatar(image);
   }
 
   void _showChangeProfilePictureModal() {
+    final oldAvatarUrl = ref.watch(userProvider).avatarUrl;
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
         builder: (context) => ChangeProfilePictureModal(
               onPickImage: _changeProfilePicture,
+              oldAvatarUrl: oldAvatarUrl,
             ));
   }
 
@@ -78,16 +81,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final userData = ref.watch(userProvider);
     final username = userData.username;
     final email = userData.email;
+    final avatarUrl = userData.avatarUrl;
     var userProfileCard = Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundImage: AssetImage('assets/images/default.png'),
-              radius: 26,
-            ),
-            const SizedBox(width: 12),
+            CircleUserAvatar(avatarUrl: avatarUrl, radius: 36),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -98,7 +99,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                 ),
                 const SizedBox(height: 4),
-                Text(email),
+                Text(email, style: Theme.of(context).textTheme.bodyLarge),
               ],
             ),
           ],

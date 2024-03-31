@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
@@ -81,6 +84,38 @@ class UsersService {
     }
   }
 
+  Future<AppUser?> updateUserAvatar(File image) async {
+    try {
+      print('trying to upload image');
+      final userData = await currentUserData;
+
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('user_avatars')
+          .child('${userData.id}.jpg');
+      await storageRef.putFile(image);
+      print(image);
+      final avatarUrl = await storageRef.getDownloadURL();
+      print(avatarUrl);
+
+      await userDocRef(userData.id).update({
+        'avatar_url': avatarUrl,
+      });
+      return AppUser(
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        plansData: userData.plansData,
+        workoutsHistory: userData.workoutsHistory,
+        totalStatsData: userData.totalStatsData,
+        avatarUrl: avatarUrl,
+      );
+    } catch (e) {
+      print("Error updating avatar: $e");
+      return null;
+    }
+  }
+
   Future<AppUser?> addWorkoutInHistory(
       Plan plan, int workoutTimeInSeconds) async {
     try {
@@ -128,6 +163,7 @@ class UsersService {
         plansData: plansData,
         workoutsHistory: updatedWorkoutsHistory,
         totalStatsData: userData.totalStatsData,
+        avatarUrl: userData.avatarUrl,
       );
       return updatedUserData;
     } catch (e) {
@@ -164,6 +200,7 @@ class UsersService {
         plansData: plansData,
         workoutsHistory: userData.workoutsHistory,
         totalStatsData: userData.totalStatsData,
+        avatarUrl: userData.avatarUrl,
       );
       return updatedUserData;
     } catch (e) {

@@ -20,7 +20,7 @@ class _DeletePlanConfirmationModalState
   bool _isSigningOut = false;
   @override
   Widget build(BuildContext context) {
-    Widget cancelButton = ElevatedButton(
+    Widget cancelButton = OutlinedButton(
       child: const Text("Cancel"),
       onPressed: () => Navigator.of(context).pop(),
     );

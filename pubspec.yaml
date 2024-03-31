@@ -45,6 +45,7 @@ dependencies:
   jiffy: ^6.2.2
   cloud_functions: ^4.6.10
   image_picker: ^1.0.7
+  firebase_storage: ^11.6.11
 
 dev_dependencies:
   flutter_test:
