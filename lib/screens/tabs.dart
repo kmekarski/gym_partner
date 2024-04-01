@@ -6,6 +6,7 @@ import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/my_plans.dart';
 import 'package:gym_partner/screens/settings.dart';
 import 'package:gym_partner/screens/shared_plans.dart';
+import 'package:gym_partner/screens/splash.dart';
 import 'package:gym_partner/screens/workout_history.dart';
 
 class TabsScreen extends ConsumerStatefulWidget {
@@ -17,13 +18,22 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   var _selectedPageIndex = 0;
+  bool _isFetching = true;
 
   @override
   void initState() {
-    ref.read(userProvider.notifier).getUserData();
-    ref.read(userPlansProvider.notifier).getUserPlans();
-    ref.read(publicPlansProvider.notifier).getPlans();
+    _fetchData();
     super.initState();
+  }
+
+  void _fetchData() async {
+    await ref.read(userProvider.notifier).getUserData();
+    await ref.read(userPlansProvider.notifier).getUserPlans();
+    await ref.read(publicPlansProvider.notifier).getPlans();
+
+    setState(() {
+      _isFetching = false;
+    });
   }
 
   void _selectPage(int index) {
@@ -35,9 +45,6 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     Widget activePage = const MyPlansScreen();
-    if (_selectedPageIndex == 1) {
-      activePage = const WorkoutHistoryScreen();
-    }
     switch (_selectedPageIndex) {
       case 0:
         activePage = const MyPlansScreen();
@@ -50,19 +57,33 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       default:
         activePage = const MyPlansScreen();
     }
+    var bottomNavigationBar = BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: _selectedPageIndex,
+      onTap: _selectPage,
+      items: [
+        tabBarItem(context, icon: Icons.event_note, text: 'My plans'),
+        tabBarItem(context, icon: Icons.public, text: 'Others\' plans'),
+        tabBarItem(context, icon: Icons.history, text: 'History'),
+        tabBarItem(context, icon: Icons.settings, text: 'Settings'),
+      ],
+    );
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedPageIndex,
-        onTap: _selectPage,
-        items: [
-          tabBarItem(context, icon: Icons.event_note, text: 'My plans'),
-          tabBarItem(context, icon: Icons.public, text: 'Others\' plans'),
-          tabBarItem(context, icon: Icons.history, text: 'History'),
-          tabBarItem(context, icon: Icons.settings, text: 'Settings'),
+      bottomNavigationBar: _isFetching ? null : bottomNavigationBar,
+      body: Stack(
+        children: [
+          activePage,
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 200),
+            left: _isFetching ? 0 : -MediaQuery.of(context).size.width,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: const SplashScreen(),
+            ),
+          ),
         ],
       ),
-      body: activePage,
     );
   }
 
@@ -70,7 +91,10 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       {required IconData icon, required String text}) {
     return BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.onBackground,
-        icon: Icon(icon),
+        icon: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Icon(icon),
+        ),
         label: text);
   }
 }

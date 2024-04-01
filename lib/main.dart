@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gym_partner/firebase_options.dart';
 import 'package:gym_partner/screens/auth.dart';
+import 'package:gym_partner/screens/splash.dart';
 import 'package:gym_partner/screens/tabs.dart';
 
 void main() async {
