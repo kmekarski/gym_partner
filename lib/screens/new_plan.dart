@@ -143,6 +143,7 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
       visibility: _selectedVisibility,
       authorName: '',
       authorId: '',
+      authorAvatarUrl: '',
     );
 
     final addedPlan =

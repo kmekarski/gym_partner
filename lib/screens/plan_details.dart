@@ -11,6 +11,7 @@ import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/workout.dart';
 import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/circle_user_avatar.dart';
 import 'package:gym_partner/widgets/modals/delete_plan_confirmation.dart';
 import 'package:gym_partner/widgets/plan_day_card.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
@@ -83,10 +84,7 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
         : null;
     var authorInfo = Row(
       children: [
-        const CircleAvatar(
-          radius: 24,
-          backgroundImage: AssetImage('assets/images/default.png'),
-        ),
+        CircleUserAvatar(avatarUrl: widget.plan.authorAvatarUrl, radius: 24),
         const SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

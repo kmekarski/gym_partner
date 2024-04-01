@@ -1,13 +1,16 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_partner/models/plan.dart';
 import 'package:gym_partner/models/plan_difficulty.dart';
 import 'package:gym_partner/models/plan_tag.dart';
 import 'package:gym_partner/models/user_plan_data.dart';
+import 'package:gym_partner/services/users_service.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
+import 'package:gym_partner/widgets/circle_user_avatar.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/badges/simple_badge.dart';
 
-class PlanCard extends StatelessWidget {
+class PlanCard extends StatefulWidget {
   const PlanCard({
     super.key,
     required this.type,
@@ -22,13 +25,18 @@ class PlanCard extends StatelessWidget {
   final void Function(Plan plan) onSelectPlan;
 
   @override
+  State<PlanCard> createState() => _PlanCardState();
+}
+
+class _PlanCardState extends State<PlanCard> {
+  @override
   Widget build(BuildContext context) {
     var numOfDaysIndicator = Row(
       children: [
         const CircleIcon(iconData: Icons.calendar_month),
         const SizedBox(width: 6),
         Text(
-          '${plan.days.length}',
+          '${widget.plan.days.length}',
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
@@ -37,7 +45,7 @@ class PlanCard extends StatelessWidget {
     );
 
     var difficultyBadge = SimpleBadge(
-      text: planDifficultyStrings[plan.difficulty] ?? '',
+      text: planDifficultyStrings[widget.plan.difficulty] ?? '',
       backgroundColor: Theme.of(context).colorScheme.primary,
       textColor: Theme.of(context).colorScheme.onPrimary,
     );
@@ -50,7 +58,7 @@ class PlanCard extends StatelessWidget {
 
     var tags = Row(
       children: [
-        for (PlanTag tag in plan.tags)
+        for (PlanTag tag in widget.plan.tags)
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Text(
@@ -64,7 +72,7 @@ class PlanCard extends StatelessWidget {
       ],
     );
 
-    var progressCircle = planData != null
+    var progressCircle = widget.planData != null
         ? Center(
             child: Stack(
               alignment: Alignment.center,
@@ -73,14 +81,15 @@ class PlanCard extends StatelessWidget {
                   width: 60,
                   height: 60,
                   child: CircularProgressIndicator(
-                    value: planData!.currentDayIndex / plan.days.length,
+                    value: widget.planData!.currentDayIndex /
+                        widget.plan.days.length,
                     strokeWidth: 6,
                     backgroundColor: Theme.of(context).colorScheme.onPrimary,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 Text(
-                  '${plan.getCompletionPercentage(planData!.currentDayIndex)}%',
+                  '${widget.plan.getCompletionPercentage(widget.planData!.currentDayIndex)}%',
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w600),
                 ),
@@ -93,7 +102,7 @@ class PlanCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       child: InkWell(
         onTap: () {
-          onSelectPlan(plan);
+          widget.onSelectPlan(widget.plan);
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -110,7 +119,7 @@ class PlanCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          plan.name,
+                          widget.plan.name,
                           style:
                               Theme.of(context).textTheme.titleLarge!.copyWith(
                                     fontWeight: FontWeight.w600,
@@ -121,18 +130,15 @@ class PlanCard extends StatelessWidget {
                         tags,
                       ],
                     ),
-                    if (planData != null) progressCircle!,
-                    if (planData == null)
+                    if (widget.planData != null) progressCircle!,
+                    if (widget.planData == null)
                       Row(
                         children: [
-                          const CircleAvatar(
-                            radius: 16,
-                            backgroundImage:
-                                AssetImage('assets/images/default.png'),
-                          ),
+                          CircleUserAvatar(
+                              avatarUrl: widget.plan.authorAvatarUrl),
                           const SizedBox(width: 6),
                           Text(
-                            plan.authorName,
+                            widget.plan.authorName,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ],
@@ -144,7 +150,7 @@ class PlanCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     difficultyBadge,
-                    if (planData != null && planData!.isRecent)
+                    if (widget.planData != null && widget.planData!.isRecent)
                       Row(
                         children: [
                           const SizedBox(width: 6),

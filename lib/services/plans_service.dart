@@ -103,6 +103,7 @@ class PlansService {
         visibility: plan.visibility,
         authorName: userData.username,
         authorId: userData.id,
+        authorAvatarUrl: userData.avatarUrl,
       );
       DocumentReference userPlanDocRef = await userDocRef(currentUser.uid)
           .collection('plans')
@@ -120,6 +121,7 @@ class PlansService {
         visibility: plan.visibility,
         authorName: userData.username,
         authorId: userData.id,
+        authorAvatarUrl: userData.avatarUrl,
       );
 
       if (plan.visibility == PlanVisibility.public) {

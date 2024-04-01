@@ -61,7 +61,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  void _changeProfilePicture(File image) async {
+  Future<void> _changeProfilePicture(File image) async {
     await ref.read(userProvider.notifier).updateAvatar(image);
   }
 

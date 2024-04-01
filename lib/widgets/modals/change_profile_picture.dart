@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ChangeProfilePictureModal extends StatefulWidget {
   const ChangeProfilePictureModal(
       {super.key, required this.onPickImage, required this.oldAvatarUrl});
 
-  final void Function(File pickedImage) onPickImage;
+  final Future<void> Function(File pickedImage) onPickImage;
   final String oldAvatarUrl;
 
   @override
@@ -18,6 +19,7 @@ class ChangeProfilePictureModal extends StatefulWidget {
 
 class _ChangeProfilePictureModalState extends State<ChangeProfilePictureModal> {
   File? _pickedImageFile;
+  bool _isUploading = false;
 
   void _pickPicture(ImageSource source) async {
     final pickedImage = await ImagePicker().pickImage(
@@ -35,11 +37,14 @@ class _ChangeProfilePictureModalState extends State<ChangeProfilePictureModal> {
     });
   }
 
-  void _save() {
+  void _save() async {
     if (_pickedImageFile == null) {
       return;
     }
-    widget.onPickImage(_pickedImageFile!);
+
+    setState(() => _isUploading = true);
+
+    await widget.onPickImage(_pickedImageFile!);
     Navigator.of(context).pop();
   }
 
@@ -85,7 +90,8 @@ class _ChangeProfilePictureModalState extends State<ChangeProfilePictureModal> {
           if (_pickedImageFile != null)
             WideButton(
               onPressed: _save,
-              text: 'Save',
+              text: _isUploading ? null : 'Save',
+              label: _isUploading ? SmallCircleProgressIndicator() : null,
             )
         ],
       ),
@@ -106,7 +112,6 @@ class _ChangeProfilePictureModalState extends State<ChangeProfilePictureModal> {
                 Icon(
                   icon,
                   size: 40,
-                  color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(height: 6),
                 Text(text,

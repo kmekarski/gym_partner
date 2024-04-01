@@ -59,6 +59,20 @@ class UsersService {
     }
   }
 
+  Future<String> getUserAvatarUrl(String userId) async {
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('user_avatars')
+          .child('${userId}.jpg');
+      final avatarUrl = await storageRef.getDownloadURL();
+      return avatarUrl;
+    } catch (e) {
+      print("Error adding plan data: $e");
+      return '';
+    }
+  }
+
   Future<AppUser?> setPlanAsRecent(String planId) async {
     try {
       final userData = await currentUserData;
@@ -86,7 +100,6 @@ class UsersService {
 
   Future<AppUser?> updateUserAvatar(File image) async {
     try {
-      print('trying to upload image');
       final userData = await currentUserData;
 
       final storageRef = FirebaseStorage.instance
@@ -94,9 +107,7 @@ class UsersService {
           .child('user_avatars')
           .child('${userData.id}.jpg');
       await storageRef.putFile(image);
-      print(image);
       final avatarUrl = await storageRef.getDownloadURL();
-      print(avatarUrl);
 
       await userDocRef(userData.id).update({
         'avatar_url': avatarUrl,

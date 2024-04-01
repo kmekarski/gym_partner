@@ -17,6 +17,7 @@ class Plan {
     required this.tags,
     required this.difficulty,
     required this.visibility,
+    required this.authorAvatarUrl,
   });
 
   factory Plan.fromFirestore(DocumentSnapshot doc) {
@@ -66,6 +67,7 @@ class Plan {
       visibility: visibility,
       authorName: data['author_name'] ?? '',
       authorId: data['author_id'] ?? '',
+      authorAvatarUrl: data['author_avatar_url'] ?? '',
     );
   }
 
@@ -79,6 +81,7 @@ class Plan {
       'visibility': visibility.toString(),
       'author_name': authorName,
       'author_id': authorId,
+      'author_avatar_url': authorAvatarUrl,
     };
   }
 
@@ -90,6 +93,7 @@ class Plan {
   final PlanVisibility visibility;
   final String authorName;
   final String authorId;
+  final String authorAvatarUrl;
 
   int getCompletionPercentage(int currentDayIndex) {
     return (100 * currentDayIndex / days.length).round();
