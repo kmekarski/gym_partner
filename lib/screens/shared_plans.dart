@@ -7,6 +7,7 @@ import 'package:gym_partner/models/plan_visibility.dart';
 import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
+import 'package:gym_partner/widgets/center_message.dart';
 import 'package:gym_partner/widgets/plan_card.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 import 'package:gym_partner/widgets/modals/shared_plans_filters.dart';
@@ -143,7 +144,37 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
         Expanded(child: searchbar),
         IconButton(
           onPressed: _showFiltersModal,
-          icon: Icon(Icons.tune),
+          icon: const Icon(Icons.tune),
+        ),
+      ],
+    );
+    final anyFiltersApplied = _searchController.text.isNotEmpty ||
+        _selectedTags.isNotEmpty ||
+        _selectedDifficulty != null;
+    var contentWithPlans = SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          searchbarAndFiltersButtonRow,
+          const SizedBox(height: 8),
+          PlansList(
+            type: PlansListType.public,
+            plans: _filteredPlans,
+            onSelectPlan: _selectPlan,
+          )
+        ],
+      ),
+    );
+    var contentWithoutPlans = Column(
+      children: [
+        searchbarAndFiltersButtonRow,
+        const SizedBox(height: 8),
+        Expanded(
+          child: CenterMessage(
+              text: anyFiltersApplied
+                  ? 'Couldn\'t find any plans matching your criteria.'
+                  : 'Couldn\'t find any other user\'s plans.'),
         ),
       ],
     );
@@ -153,46 +184,8 @@ class _SharedPlansScreenState extends ConsumerState<SharedPlansScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              searchbarAndFiltersButtonRow,
-              const SizedBox(height: 8),
-              _content(_filteredPlans),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _content(List<Plan> plans) {
-    final anyFiltersApplied = _searchController.text.isNotEmpty ||
-        _selectedTags.isNotEmpty ||
-        _selectedDifficulty != null;
-    if (plans.isEmpty) {
-      return _centerMessage(
-          context,
-          anyFiltersApplied
-              ? 'Couldn\'t find any plans matching your criteria.'
-              : 'Couldn\'t find any other user\'s plans.');
-    } else {
-      return PlansList(
-        type: PlansListType.public,
-        plans: plans,
-        onSelectPlan: _selectPlan,
-      );
-    }
-  }
-
-  Widget _centerMessage(BuildContext context, String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.titleLarge,
-        textAlign: TextAlign.center,
+        child:
+            _filteredPlans.isNotEmpty ? contentWithPlans : contentWithoutPlans,
       ),
     );
   }

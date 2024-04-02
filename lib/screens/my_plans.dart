@@ -10,6 +10,7 @@ import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/new_plan.dart';
 import 'package:gym_partner/screens/plan_details.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
+import 'package:gym_partner/widgets/center_message.dart';
 import 'package:gym_partner/widgets/plans_list.dart';
 
 class MyPlansScreen extends ConsumerStatefulWidget {
@@ -71,45 +72,6 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
             planFilterCriteriaConditions[MyPlansCategory.published]!(
                 plan, userData))
         .length;
-
-    Widget content() {
-      final filterCondition =
-          planFilterCriteriaConditions[_selectedFilterCriteria] ??
-              (Plan plan, AppUser userData) => true;
-      final filteredPlans =
-          plans.where((plan) => filterCondition(plan, userData)).toList();
-
-      final List<Plan> sortedPlans = [];
-
-      String? recentPlanId;
-
-      for (final planData in plansData) {
-        if (planData.isRecent) {
-          try {
-            var foundPlan =
-                filteredPlans.firstWhere((plan) => plan.id == planData.planId);
-            recentPlanId = planData.planId;
-            sortedPlans.add(foundPlan);
-          } catch (e) {}
-        }
-      }
-
-      sortedPlans
-          .addAll(filteredPlans.where((plan) => plan.id != recentPlanId));
-
-      if (sortedPlans.isEmpty) {
-        return _centerMessage(
-            context,
-            _selectedFilterCriteria == MyPlansCategory.all
-                ? 'You don\'t have any workout plans yet.'
-                : 'Couldn\'t find any plans matching selected criteria.');
-      } else {
-        return PlansList(
-            type: PlansListType.private,
-            plans: sortedPlans,
-            onSelectPlan: (plan) => _selectPlan(context, plan));
-      }
-    }
 
     var appBar = AppBar(
       title: const Text(
@@ -177,30 +139,60 @@ class _MyPlansScreenState extends ConsumerState<MyPlansScreen> {
       ),
     );
 
-    return Scaffold(
-      appBar: appBar,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            filterChips,
-            const SizedBox(height: 24),
-            listTitle,
-            const SizedBox(height: 16),
-            content(),
-          ],
-        ),
+    final filterCondition =
+        planFilterCriteriaConditions[_selectedFilterCriteria] ??
+            (Plan plan, AppUser userData) => true;
+    final filteredPlans =
+        plans.where((plan) => filterCondition(plan, userData)).toList();
+
+    final List<Plan> sortedPlans = [];
+
+    String? recentPlanId;
+
+    for (final planData in plansData) {
+      if (planData.isRecent) {
+        try {
+          var foundPlan =
+              filteredPlans.firstWhere((plan) => plan.id == planData.planId);
+          recentPlanId = planData.planId;
+          sortedPlans.add(foundPlan);
+        } catch (e) {}
+      }
+    }
+    sortedPlans.addAll(filteredPlans.where((plan) => plan.id != recentPlanId));
+
+    var contentWithPlans = SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          filterChips,
+          const SizedBox(height: 24),
+          listTitle,
+          const SizedBox(height: 16),
+          PlansList(
+              type: PlansListType.private,
+              plans: sortedPlans,
+              onSelectPlan: (plan) => _selectPlan(context, plan)),
+        ],
       ),
     );
-  }
-
-  Widget _centerMessage(BuildContext context, String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.titleLarge,
-        textAlign: TextAlign.center,
+    var contentWithoutPlans = Column(
+      children: [
+        filterChips,
+        const SizedBox(height: 24),
+        listTitle,
+        Expanded(
+            child: CenterMessage(
+                text: _selectedFilterCriteria == MyPlansCategory.all
+                    ? 'You don\'t have any workout plans yet.'
+                    : 'Couldn\'t find any plans matching selected criteria.')),
+      ],
+    );
+    return Scaffold(
+      appBar: appBar,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: sortedPlans.isNotEmpty ? contentWithPlans : contentWithoutPlans,
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'package:gym_partner/models/workout_in_history.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/utils/time_format.dart';
 import 'package:gym_partner/widgets/badges/custom_filter_chip.dart';
+import 'package:gym_partner/widgets/center_message.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
 import 'package:gym_partner/widgets/workout_in_history_row.dart';
 
@@ -268,18 +269,33 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
       appBar: AppBar(
         title: const Text('My workout history'),
       ),
-      body: SingleChildScrollView(
-          padding: const EdgeInsets.only(left: 16, right: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              streamBuilder,
-              const SizedBox(height: 16),
-              listTitle,
-              const SizedBox(height: 16),
-              workoutsList,
-            ],
-          )),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16),
+        child: filteredWorkoutsHistory.isNotEmpty
+            ? SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    streamBuilder,
+                    const SizedBox(height: 16),
+                    listTitle,
+                    const SizedBox(height: 16),
+                    workoutsList,
+                  ],
+                ),
+              )
+            : Column(
+                children: [
+                  streamBuilder,
+                  const SizedBox(height: 16),
+                  listTitle,
+                  const SizedBox(height: 16),
+                  const Expanded(
+                      child: CenterMessage(
+                          text: 'You didn\'t finish any workouts yet.'))
+                ],
+              ),
+      ),
     );
   }
 

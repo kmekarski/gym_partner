@@ -9,12 +9,22 @@ import 'package:gym_partner/screens/tabs.dart';
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
-  final double progressIndicatorSize = 32;
+  final double progressIndicatorSize = 48;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.4),
+              Theme.of(context).colorScheme.primary.withOpacity(0.10),
+            ],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
+        ),
         alignment: Alignment.center,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -24,10 +34,10 @@ class SplashScreen extends StatelessWidget {
               width: progressIndicatorSize,
               child: const CircularProgressIndicator(),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Text(
               'We are loading your data...',
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ],
         ),
