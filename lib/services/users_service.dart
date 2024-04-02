@@ -127,6 +127,53 @@ class UsersService {
     }
   }
 
+  Future<AppUser?> changeUsername(
+      String newUsername, String providedPassword) async {
+    final userData = await currentUserData;
+    AppUser? updatedUser;
+    await checkCurrentPassword(
+      providedPassword: providedPassword,
+      onPasswordCorrect: () async {
+        try {
+          await userDocRef(currentUser.uid).update(
+            {
+              'username': newUsername,
+            },
+          );
+          updatedUser = AppUser(
+            id: userData.id,
+            username: newUsername,
+            email: userData.email,
+            plansData: userData.plansData,
+            workoutsHistory: userData.workoutsHistory,
+            totalStatsData: userData.totalStatsData,
+            avatarUrl: userData.avatarUrl,
+          );
+        } catch (e) {
+          print("Error changing username: $e");
+        }
+      },
+    );
+    return updatedUser;
+  }
+
+  Future<void> checkCurrentPassword({
+    required String providedPassword,
+    required void Function() onPasswordCorrect,
+  }) async {
+    if (currentUser.email == null) {
+      return;
+    }
+    var credential = EmailAuthProvider.credential(
+      email: currentUser.email!,
+      password: providedPassword,
+    );
+    await currentUser
+        .reauthenticateWithCredential(credential)
+        .then((value) => onPasswordCorrect())
+        .catchError((er) => {});
+  }
+
   Future<AppUser?> addWorkoutInHistory(
       Plan plan, int workoutTimeInSeconds) async {
     try {

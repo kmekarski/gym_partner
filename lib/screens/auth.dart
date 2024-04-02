@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_partner/utils/form_validators.dart';
+import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/gradients/auth_gradient.dart';
 import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
@@ -59,12 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       }
     } on FirebaseAuthException catch (err) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(err.message ?? 'Authentication failed.'),
-        ),
-      );
+      showSnackBar(context, err.message ?? 'Authentication failed.');
       setState(() {
         _isAuthenticating = false;
       });

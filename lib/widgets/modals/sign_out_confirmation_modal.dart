@@ -25,15 +25,9 @@ class _DeletePlanConfirmationModalState
       onPressed: () => Navigator.of(context).pop(),
     );
     var signOutButton = ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
       child: _isSigningOut
           ? const SmallCircleProgressIndicator()
-          : Text(
-              "Sign out",
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-            ),
+          : const Text("Sign out"),
       onPressed: () {
         setState(() {
           _isSigningOut = true;

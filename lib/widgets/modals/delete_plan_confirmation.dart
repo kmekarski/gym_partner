@@ -25,15 +25,9 @@ class _DeletePlanConfirmationModalState
       onPressed: () => Navigator.of(context).pop(),
     );
     var deleteButton = ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
       child: _isDeleting
           ? const SmallCircleProgressIndicator()
-          : Text(
-              "Delete",
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-            ),
+          : const Text("Delete"),
       onPressed: () {
         setState(() {
           _isDeleting = true;

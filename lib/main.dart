@@ -33,6 +33,13 @@ class App extends StatelessWidget {
             ),
           ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+          ),
+        ),
         cardTheme: const CardTheme().copyWith(
             elevation: 0,
             color: colorScheme.primaryContainer.withOpacity(0.7),

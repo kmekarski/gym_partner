@@ -21,9 +21,6 @@ class WideButton extends StatelessWidget {
       height: 50,
       child: icon == null
           ? ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary),
               onPressed: onPressed,
               child: label ??
                   Text(
@@ -33,9 +30,6 @@ class WideButton extends StatelessWidget {
                   ),
             )
           : ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary),
               onPressed: onPressed,
               icon: icon!,
               label: label ??

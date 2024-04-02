@@ -84,6 +84,23 @@ class UserNotifier extends StateNotifier<AppUser> {
     }
   }
 
+  Future<bool> changeUsername(
+      String newUsername, String providedPassword) async {
+    AppUser? updatedUser;
+    try {
+      updatedUser =
+          await usersService.changeUsername(newUsername, providedPassword);
+      if (updatedUser == null) {
+        return false;
+      }
+      return true;
+    } finally {
+      if (updatedUser != null) {
+        state = updatedUser;
+      }
+    }
+  }
+
   Future<void> setPlanAsRecent(String planId) async {
     AppUser? updatedUser;
     try {

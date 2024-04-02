@@ -11,12 +11,14 @@ import 'package:gym_partner/models/total_stats_data.dart';
 import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/utils/form_validators.dart';
+import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
 import 'package:gym_partner/widgets/circle_user_avatar.dart';
 import 'package:gym_partner/widgets/modals/change_profile_picture.dart';
 import 'package:gym_partner/widgets/modals/change_user_data.dart';
+import 'package:gym_partner/widgets/modals/confirmation_modal.dart';
 import 'package:gym_partner/widgets/modals/sign_out_confirmation_modal.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -30,23 +32,12 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _isDarkMode = false;
 
-  void _signOut() {
-    FirebaseAuth.instance.signOut();
-    Navigator.of(context).pop();
-  }
-
-  void _showSignOutModal() {
-    showDialog(
-        context: context,
-        builder: (context) => SignoutConfirmationModal(onSignOut: _signOut));
-  }
-
   void _showChangeUserDataModal({
     required String title,
     required String label,
     required FormFieldType type,
     String passwordLabel = 'Password',
-  }) {
+  }) async {
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
@@ -56,24 +47,61 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title: title,
         fieldLabel: label,
         passwordFieldLabel: passwordLabel,
-        onSave: () {},
+        onSave: _changeUsername,
       ),
     );
+  }
+
+  void _showChangeProfilePictureModal() {
+    final oldAvatarUrl = ref.watch(userProvider).avatarUrl;
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => ChangeProfilePictureModal(
+        onPickImage: _changeProfilePicture,
+        oldAvatarUrl: oldAvatarUrl,
+      ),
+    );
+  }
+
+  void _showSignOutModal() {
+    showDialog(
+        context: context,
+        builder: (context) => SignoutConfirmationModal(onSignOut: _signOut));
+  }
+
+  Future<void> _changeUsername(
+      String newUsername, String providedPassword) async {
+    if (await ref
+        .read(userProvider.notifier)
+        .changeUsername(newUsername, providedPassword)) {
+      Navigator.of(context).pop();
+    } else {
+      _showPasswordIncorrectDialog();
+    }
+  }
+
+  void _showPasswordIncorrectDialog() {
+    showDialog(
+        context: context,
+        builder: (context) => ConfirmationModal(
+                title: 'Alert',
+                content: 'Password incorrect.',
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('OK'),
+                  ),
+                ]));
   }
 
   Future<void> _changeProfilePicture(File image) async {
     await ref.read(userProvider.notifier).updateAvatar(image);
   }
 
-  void _showChangeProfilePictureModal() {
-    final oldAvatarUrl = ref.watch(userProvider).avatarUrl;
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (context) => ChangeProfilePictureModal(
-              onPickImage: _changeProfilePicture,
-              oldAvatarUrl: oldAvatarUrl,
-            ));
+  void _signOut() {
+    FirebaseAuth.instance.signOut();
+    Navigator.of(context).pop();
   }
 
   @override

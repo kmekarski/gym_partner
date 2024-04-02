@@ -16,14 +16,9 @@ class EndWorkoutConfirmationModal extends StatelessWidget {
       onPressed: () => Navigator.of(context).pop(),
     );
     var deleteButton = ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-        onPressed: onConfirm,
-        child: Text(
-          "Confirm",
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        ));
+      onPressed: onConfirm,
+      child: const Text("Confirm"),
+    );
     return ConfirmationModal(
       title: 'End workout',
       content: 'Do you want to end this workout? Your progress will be lost.',
