@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/gradients/auth_gradient.dart';
 import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
 final _firebaseAuth = FirebaseAuth.instance;
@@ -141,7 +142,13 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
     );
     return Scaffold(
-      body: Center(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          gradient: authGradient(context),
+        ),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(32),

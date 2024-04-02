@@ -5,26 +5,19 @@ import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/tabs.dart';
+import 'package:gym_partner/widgets/gradients/auth_gradient.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
-  final double progressIndicatorSize = 48;
+  final double progressIndicatorSize = 60;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.4),
-              Theme.of(context).colorScheme.primary.withOpacity(0.10),
-            ],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-          ),
-        ),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(gradient: authGradient(context)),
         alignment: Alignment.center,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -32,12 +25,14 @@ class SplashScreen extends StatelessWidget {
             SizedBox(
               height: progressIndicatorSize,
               width: progressIndicatorSize,
-              child: const CircularProgressIndicator(),
+              child: const CircularProgressIndicator(
+                strokeWidth: 5,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
               'We are loading your data...',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ],
         ),

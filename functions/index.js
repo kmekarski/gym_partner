@@ -1,15 +1,6 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
 const {initializeApp, applicationDefault} = require("firebase-admin/app");
 const {onDocumentUpdated} = require("firebase-functions/v2/firestore");
 const {getFirestore} = require("firebase-admin/firestore");
-// const logger = require("firebase-functions/logger");
 
 initializeApp({
   credential: applicationDefault(),
@@ -115,7 +106,7 @@ exports.myfunction = onDocumentUpdated(onDocumentWrittenUrl, async (event) => {
   const history = event.data.after.data()["workouts_history"];
   const prevHistory = event.data.before.data()["workouts_history"];
 
-  if (history.length == prevHistory.length) {
+  if (prevHistory != null && history.length == prevHistory.length) {
     return null;
   }
 
