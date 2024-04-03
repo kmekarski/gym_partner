@@ -98,7 +98,19 @@ class UsersService {
     }
   }
 
-  Future<AppUser?> updateUserAvatar(File image) async {
+  Future<bool> resetPassword(String email) async {
+    bool returnedValue = false;
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      returnedValue = true;
+    } on FirebaseAuthException catch (e) {
+      print("Error reseting password: $e");
+      returnedValue = false;
+    }
+    return returnedValue;
+  }
+
+  Future<AppUser?> changeUserAvatar(File image) async {
     try {
       final userData = await currentUserData;
 

@@ -1,29 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gym_partner/providers/user_plans_provider.dart';
+import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/utils/form_validators.dart';
+import 'package:gym_partner/utils/show_info_dialog.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/gradients/auth_gradient.dart';
 import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
+class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ChangeUserDataModalState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ChangeUserDataModalState();
 }
 
-class _ChangeUserDataModalState extends State<ForgotPasswordScreen> {
+class _ChangeUserDataModalState extends ConsumerState<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _userDataController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
   bool _isAuthenticating = false;
 
   @override
   void initState() {
     setState(() {
-      _userDataController.clear();
-      _passwordController.clear();
+      _emailController.clear();
     });
     super.initState();
+  }
+
+  void _resetPassword() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isAuthenticating = true;
+    });
+
+    final email = _emailController.text;
+
+    if (await ref.read(userProvider.notifier).resetPassword(email)) {
+      Navigator.of(context).pop();
+      showCustomInfoDialog(context, 'Success',
+          'Reset password link was send to $email. Click it to set a new password.');
+    } else {
+      setState(() {
+        _isAuthenticating = false;
+      });
+      showCustomInfoDialog(context, 'Alert',
+          'Something went wrong. Make sure you entered your email address correctly.');
+    }
   }
 
   @override
@@ -35,7 +62,7 @@ class _ChangeUserDataModalState extends State<ForgotPasswordScreen> {
       onPressed: () => Navigator.of(context).pop(),
     );
     var confirmButtom = ElevatedButton(
-      onPressed: () {},
+      onPressed: _resetPassword,
       child: _isAuthenticating
           ? const SmallCircleProgressIndicator()
           : const Text("Reset password"),
@@ -70,7 +97,7 @@ class _ChangeUserDataModalState extends State<ForgotPasswordScreen> {
                 child: Column(
                   children: [
                     TextFormField(
-                      controller: _userDataController,
+                      controller: _emailController,
                       validator: emailValidator,
                       decoration: const InputDecoration(label: Text('Email')),
                     ),

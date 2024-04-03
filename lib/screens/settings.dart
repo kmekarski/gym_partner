@@ -12,6 +12,7 @@ import 'package:gym_partner/models/user.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
+import 'package:gym_partner/utils/show_info_dialog.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
 import 'package:gym_partner/widgets/chart/chart.dart';
@@ -114,61 +115,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationModal(
-        title: 'Alert',
-        content: 'Something went wrong. Check your password and try again.',
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+    showCustomInfoDialog(context, 'Alert',
+        'Something went wrong. Check your password and try again.');
   }
 
   void _showVerifyEmailDialog(String email) {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationModal(
-        title: 'Email verification',
-        content:
-            'Verification link was send to $email. Click it to change your email.',
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+    showCustomInfoDialog(context, 'Email verification',
+        'Verification link was send to $email. Click it to change your email.');
   }
 
   void _showPasswordChangedDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => ConfirmationModal(
-        title: 'Success',
-        content:
-            'Your password was successfully updated. You can now use new password to sign in.',
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+    showCustomInfoDialog(context, 'Success',
+        'Your password was successfully updated. You can now use new password to sign in.');
   }
 
   Future<void> _changeProfilePicture(File image) async {
-    await ref.read(userProvider.notifier).updateAvatar(image);
+    await ref.read(userProvider.notifier).changeAvatar(image);
   }
 
   void _signOut() {

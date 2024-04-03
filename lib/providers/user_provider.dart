@@ -73,10 +73,10 @@ class UserNotifier extends StateNotifier<AppUser> {
     }
   }
 
-  Future<void> updateAvatar(File image) async {
+  Future<void> changeAvatar(File image) async {
     AppUser? updatedUser;
     try {
-      updatedUser = await usersService.updateUserAvatar(image);
+      updatedUser = await usersService.changeUserAvatar(image);
     } finally {
       if (updatedUser != null) {
         state = updatedUser;
@@ -119,6 +119,16 @@ class UserNotifier extends StateNotifier<AppUser> {
       didChangePassword = false;
     }
     return didChangePassword;
+  }
+
+  Future<bool> resetPassword(String email) async {
+    bool didResetPassword = false;
+    try {
+      didResetPassword = await usersService.resetPassword(email);
+    } catch (e) {
+      didResetPassword = false;
+    }
+    return didResetPassword;
   }
 
   Future<void> setPlanAsRecent(String planId) async {
