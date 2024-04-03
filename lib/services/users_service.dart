@@ -157,6 +157,36 @@ class UsersService {
     return updatedUser;
   }
 
+  Future<AppUser?> changeEmail(String newEmail, String providedPassword) async {
+    final userData = await currentUserData;
+    AppUser? updatedUser;
+    await checkCurrentPassword(
+      providedPassword: providedPassword,
+      onPasswordCorrect: () async {
+        try {
+          currentUser.verifyBeforeUpdateEmail(newEmail);
+          await userDocRef(currentUser.uid).update(
+            {
+              'email': newEmail,
+            },
+          );
+          updatedUser = AppUser(
+            id: userData.id,
+            username: userData.username,
+            email: newEmail,
+            plansData: userData.plansData,
+            workoutsHistory: userData.workoutsHistory,
+            totalStatsData: userData.totalStatsData,
+            avatarUrl: userData.avatarUrl,
+          );
+        } catch (e) {
+          print("Error changing email: $e");
+        }
+      },
+    );
+    return updatedUser;
+  }
+
   Future<void> checkCurrentPassword({
     required String providedPassword,
     required void Function() onPasswordCorrect,

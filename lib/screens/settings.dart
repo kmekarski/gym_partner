@@ -38,6 +38,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     required FormFieldType type,
     String passwordLabel = 'Password',
   }) async {
+    final Future<void> Function(String newData, String password) onSaveCallback;
+    switch (type) {
+      case FormFieldType.username:
+        onSaveCallback = _changeUsername;
+      case FormFieldType.email:
+        onSaveCallback = _changeEmail;
+      case FormFieldType.password:
+        onSaveCallback = _changePassword;
+    }
     showModalBottomSheet(
       useSafeArea: true,
       isScrollControlled: true,
@@ -47,7 +56,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title: title,
         fieldLabel: label,
         passwordFieldLabel: passwordLabel,
-        onSave: _changeUsername,
+        onSave: onSaveCallback,
       ),
     );
   }
@@ -77,22 +86,65 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         .changeUsername(newUsername, providedPassword)) {
       Navigator.of(context).pop();
     } else {
-      _showPasswordIncorrectDialog();
+      _showErrorDialog();
     }
   }
 
-  void _showPasswordIncorrectDialog() {
+  Future<void> _changeEmail(String newEmail, String providedPassword) async {
+    if (await ref
+        .read(userProvider.notifier)
+        .changeEmail(newEmail, providedPassword)) {
+      _signOut();
+      _showVerifyEmailDialog(newEmail);
+    } else {
+      _showErrorDialog();
+    }
+  }
+
+  Future<void> _changePassword(
+      String newPassword, String currentPassword) async {
+    if (await ref
+        .read(userProvider.notifier)
+        .changePassword(newPassword, currentPassword)) {
+      Navigator.of(context).pop();
+    } else {
+      _showErrorDialog();
+    }
+  }
+
+  void _showErrorDialog() {
     showDialog(
-        context: context,
-        builder: (context) => ConfirmationModal(
-                title: 'Alert',
-                content: 'Password incorrect.',
-                actions: [
-                  ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('OK'),
-                  ),
-                ]));
+      context: context,
+      builder: (context) => ConfirmationModal(
+        title: 'Alert',
+        content: 'Something went wrong. Check your password and try again.',
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showVerifyEmailDialog(String email) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationModal(
+        title: 'Email verification',
+        content:
+            'Verification link was send to $email. Click it to change your email.',
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _changeProfilePicture(File image) async {
@@ -115,8 +167,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         child: Row(
           children: [
-            CircleUserAvatar(avatarUrl: avatarUrl, radius: 36),
-            const SizedBox(width: 16),
+            CircleUserAvatar(avatarUrl: avatarUrl, radius: 30),
+            const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
