@@ -187,6 +187,24 @@ class UsersService {
     return updatedUser;
   }
 
+  Future<bool> changePassword(
+      String newPassword, String providedPassword) async {
+    bool returnedValue = false;
+    await checkCurrentPassword(
+      providedPassword: providedPassword,
+      onPasswordCorrect: () async {
+        try {
+          await currentUser.updatePassword(newPassword);
+          returnedValue = true;
+        } catch (e) {
+          print("Error changing password: $e");
+          returnedValue = false;
+        }
+      },
+    );
+    return returnedValue;
+  }
+
   Future<void> checkCurrentPassword({
     required String providedPassword,
     required void Function() onPasswordCorrect,

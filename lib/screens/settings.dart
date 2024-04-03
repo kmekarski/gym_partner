@@ -106,7 +106,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (await ref
         .read(userProvider.notifier)
         .changePassword(newPassword, currentPassword)) {
-      Navigator.of(context).pop();
+      _signOut();
+      _showPasswordChangedDialog();
     } else {
       _showErrorDialog();
     }
@@ -135,6 +136,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title: 'Email verification',
         content:
             'Verification link was send to $email. Click it to change your email.',
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPasswordChangedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationModal(
+        title: 'Success',
+        content:
+            'Your password was successfully updated. You can now use new password to sign in.',
         actions: [
           ElevatedButton(
             onPressed: () {
