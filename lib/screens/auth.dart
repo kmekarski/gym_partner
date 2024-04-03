@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_partner/screens/forgot_password.dart';
 import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
@@ -137,6 +138,36 @@ class _AuthScreenState extends State<AuthScreen> {
             repeatPasswordValidator(value, _passwordController.text),
       ),
     );
+    var bigHeaderText = Text(
+      _isSignIn ? 'Hey there' : 'Create your account',
+      style: Theme.of(context).textTheme.displaySmall,
+    );
+    var smallHeaderText = Text(
+      _isSignIn
+          ? 'Welcome back! Use your email and password to Sign in.'
+          : 'Enter your credentials and Sign up to start your fitness journey!',
+      style: Theme.of(context).textTheme.bodyLarge,
+    );
+    var forgotPasswordButton = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ForgotPasswordScreen(),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Text(
+                'Forgot password?',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            )),
+      ],
+    );
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -155,23 +186,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        _isSignIn ? 'Hey there' : 'Create your account',
-                        style: Theme.of(context).textTheme.displaySmall,
-                      ),
+                      bigHeaderText,
                       const SizedBox(height: 12),
-                      Text(
-                        _isSignIn
-                            ? 'Welcome back! Use your email and password to Sign in.'
-                            : 'Enter your credentials and Sign up to start your fitness journey!',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      smallHeaderText,
                     ],
                   ),
                   const SizedBox(height: 24),
                   emailField,
                   if (!_isSignIn) usernameField,
                   passwordField,
+                  if (_isSignIn) forgotPasswordButton,
                   if (!_isSignIn) repeatPasswordField,
                   const SizedBox(height: 16),
                   formButtons,
