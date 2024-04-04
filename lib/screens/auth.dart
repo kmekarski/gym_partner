@@ -5,7 +5,7 @@ import 'package:gym_partner/screens/forgot_password.dart';
 import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/utils/scaffold_messeger_utils.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
-import 'package:gym_partner/widgets/gradients/auth_gradient.dart';
+import 'package:gym_partner/widgets/gradients/background_gradient.dart';
 import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
 final _firebaseAuth = FirebaseAuth.instance;
@@ -71,8 +71,11 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     const fieldsTextStyle = TextStyle(fontSize: 18);
-
     const formFieldPadding = EdgeInsets.symmetric(vertical: 4);
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final textButtonsColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.primaryContainer;
 
     var formButtons = Column(
       children: [
@@ -94,7 +97,9 @@ class _AuthScreenState extends State<AuthScreen> {
             },
           ),
           child: Text(
-              _isSignIn ? 'Create an account' : 'I already have an account'),
+            _isSignIn ? 'Create an account' : 'I already have an account',
+            style: TextStyle(color: textButtonsColor),
+          ),
         ),
       ],
     );
@@ -163,7 +168,8 @@ class _AuthScreenState extends State<AuthScreen> {
               padding: const EdgeInsets.all(4),
               child: Text(
                 'Forgot password?',
-                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                style: TextStyle(
+                    color: textButtonsColor, fontWeight: FontWeight.w600),
               ),
             )),
       ],
@@ -174,7 +180,8 @@ class _AuthScreenState extends State<AuthScreen> {
         height: double.infinity,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          gradient: authGradient(context),
+          gradient: authBackgroundGradient(context,
+              diagonalOrientation: GradientDialonalOrientation.right),
         ),
         child: SingleChildScrollView(
           child: Padding(

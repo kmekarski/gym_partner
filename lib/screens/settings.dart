@@ -168,33 +168,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       ),
     );
-    var darkModeCard = Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            const CircleIcon(iconData: Icons.dark_mode),
-            const SizedBox(width: 12),
-            Text(
-              'Dark mode',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.w500),
-            ),
-            const Spacer(),
-            Switch(
-              value: _isDarkMode,
-              onChanged: (value) {
-                setState(() {
-                  _isDarkMode = value;
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -206,8 +179,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               userProfileCard,
-              const SizedBox(height: 8),
-              darkModeCard,
               const SizedBox(height: 8),
               clickableSettingCard(
                 context,

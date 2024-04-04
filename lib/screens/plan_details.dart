@@ -228,6 +228,8 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
   }
 
   Widget _planDayCard(PlanDay day, int dayIndex, BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: Padding(
@@ -260,7 +262,13 @@ class _PlanDetailsScreenState extends ConsumerState<PlanDetailsScreen> {
                 ],
               ),
             for (final (index, exercise) in day.exercises.indexed)
-              PlanExerciseRow(exercise: exercise, index: index)
+              PlanExerciseRow(
+                exercise: exercise,
+                index: index,
+                dividerColor: brightness == Brightness.light
+                    ? null
+                    : Theme.of(context).colorScheme.primary,
+              )
           ],
         ),
       ),

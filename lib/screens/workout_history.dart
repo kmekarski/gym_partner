@@ -257,6 +257,7 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             Text(
               '$_finishedWorkoutsCount',
               style: const TextStyle(
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),

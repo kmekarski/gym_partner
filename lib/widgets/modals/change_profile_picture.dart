@@ -62,7 +62,8 @@ class _ChangeProfilePictureModalState extends State<ChangeProfilePictureModal> {
               ? NetworkImage(widget.oldAvatarUrl) as ImageProvider
               : FileImage(_pickedImageFile!),
     );
-    return Padding(
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 48),
       child: Column(
         mainAxisSize: MainAxisSize.min,

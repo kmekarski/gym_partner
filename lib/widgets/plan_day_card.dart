@@ -4,18 +4,24 @@ import 'package:gym_partner/models/plan_day.dart';
 import 'package:gym_partner/models/plan_exercise.dart';
 
 class PlanExerciseRow extends StatelessWidget {
-  const PlanExerciseRow(
-      {super.key, required this.exercise, required this.index});
+  const PlanExerciseRow({
+    super.key,
+    required this.exercise,
+    required this.index,
+    this.dividerColor,
+  });
 
   final PlanExercise exercise;
   final int index;
+  final Color? dividerColor;
 
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (index > 0) Divider(),
+        if (index > 0) Divider(color: dividerColor),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Row(

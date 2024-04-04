@@ -72,7 +72,8 @@ class _ChangeUserDataModalState extends State<ChangeUserDataModal> {
           : const Text("Save"),
     );
 
-    return SizedBox(
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
       height: double.infinity,
       child: SingleChildScrollView(
         child: Padding(

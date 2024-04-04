@@ -12,18 +12,22 @@ class CircleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final backgroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
+        : Theme.of(context).colorScheme.primaryContainer;
+    final foregroundColor = Theme.of(context).colorScheme.onPrimaryContainer;
     return Stack(
       alignment: Alignment.center,
       children: [
         CircleAvatar(
           radius: size,
-          backgroundColor:
-              Theme.of(context).colorScheme.primary.withOpacity(0.15),
+          backgroundColor: backgroundColor,
         ),
         Icon(
           iconData,
           size: size,
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          color: foregroundColor,
         ),
       ],
     );

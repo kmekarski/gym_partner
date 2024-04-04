@@ -16,11 +16,25 @@ class ExerciseSearchbar extends StatefulWidget {
 class _ExerciseSearchbarState extends State<ExerciseSearchbar> {
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final backgroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.onPrimary
+        : Theme.of(context).colorScheme.onPrimaryContainer;
+    final viewBackgroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.onPrimary
+        : Colors.grey.shade900;
+    final textColor = brightness == Brightness.light
+        ? Colors.grey.shade900
+        : Colors.grey.shade100;
+    final darkerTextColor = brightness == Brightness.light
+        ? Colors.grey.shade800
+        : Colors.grey.shade200;
     return SearchAnchor(
+      headerTextStyle: TextStyle(color: textColor),
+      viewBackgroundColor: viewBackgroundColor,
       builder: (context, controller) {
         return SearchBar(
-          backgroundColor: MaterialStateProperty.all(
-              Theme.of(context).colorScheme.onPrimary),
+          backgroundColor: MaterialStateProperty.all(backgroundColor),
           controller: controller,
           leading: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
@@ -42,6 +56,9 @@ class _ExerciseSearchbarState extends State<ExerciseSearchbar> {
                 .map((bodyPart) => bodyPartStrings[bodyPart] ?? '')
                 .join(', ');
             return ListTile(
+              titleTextStyle:
+                  TextStyle(color: textColor, fontWeight: FontWeight.w600),
+              subtitleTextStyle: TextStyle(color: darkerTextColor),
               title: Text(exercise.name),
               subtitle: Text(bodyPartsString),
               onTap: () {

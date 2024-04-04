@@ -31,6 +31,16 @@ class PlanCard extends StatefulWidget {
 class _PlanCardState extends State<PlanCard> {
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final badgesBackgroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
+        : Theme.of(context).colorScheme.primaryContainer;
+    final bagdesForegroundColor =
+        Theme.of(context).colorScheme.onPrimaryContainer;
+    final progressCircleBackgroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.onPrimary
+        : Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7);
+
     var numOfDaysIndicator = Row(
       children: [
         const CircleIcon(iconData: Icons.calendar_month),
@@ -38,7 +48,7 @@ class _PlanCardState extends State<PlanCard> {
         Text(
           '${widget.plan.days.length}',
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                color: badgesBackgroundColor,
               ),
         ),
       ],
@@ -52,8 +62,8 @@ class _PlanCardState extends State<PlanCard> {
 
     var isRecentBadge = SimpleBadge(
       text: 'Recent workout',
-      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-      textColor: Theme.of(context).colorScheme.onPrimaryContainer,
+      backgroundColor: badgesBackgroundColor,
+      textColor: bagdesForegroundColor,
     );
 
     var tags = Row(
@@ -84,7 +94,7 @@ class _PlanCardState extends State<PlanCard> {
                     value: widget.planData!.currentDayIndex /
                         widget.plan.days.length,
                     strokeWidth: 6,
-                    backgroundColor: Theme.of(context).colorScheme.onPrimary,
+                    backgroundColor: progressCircleBackgroundColor,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),

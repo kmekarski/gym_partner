@@ -69,7 +69,8 @@ class _SharedPlansFiltersState extends State<SharedPlansFilters> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 36),
       child: Column(
         mainAxisSize: MainAxisSize.min,

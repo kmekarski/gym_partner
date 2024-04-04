@@ -14,7 +14,7 @@ class WorkoutProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeSetColor = Theme.of(context).colorScheme.tertiary;
+    final activeSetColor = Theme.of(context).colorScheme.secondary;
     final finishedSetColor = Theme.of(context).colorScheme.primary;
     final unfinishedSetColor = Theme.of(context).colorScheme.primaryContainer;
 

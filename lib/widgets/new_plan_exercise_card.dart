@@ -26,11 +26,15 @@ class NewPlanExerciseCard extends StatefulWidget {
 class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final backgroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.onPrimary
+        : Theme.of(context).colorScheme.onPrimaryContainer;
     final bodyPartsString = widget.exercise.exercise.bodyParts
         .map((bodyPart) => bodyPartStrings[bodyPart] ?? '')
         .join(', ');
     return Card(
-      color: Theme.of(context).colorScheme.onPrimary,
+      color: backgroundColor,
       margin: const EdgeInsets.only(bottom: 12),
       child: Container(
         padding: const EdgeInsets.only(top: 4, right: 4, bottom: 16, left: 4),
@@ -59,7 +63,11 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
                 ),
               ],
             ),
-            const Divider(),
+            Divider(
+              color: brightness == Brightness.light
+                  ? null
+                  : Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: 6),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -89,10 +97,14 @@ class _NewPlanExerciseCardState extends State<NewPlanExerciseCard> {
     double width = 84,
     String Function(String numberText)? textMapper,
   }) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final foregroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.onPrimaryContainer
+        : Theme.of(context).colorScheme.onPrimary;
     final buttonStyle = IconButton.styleFrom(
       padding: const EdgeInsets.all(0),
       backgroundColor: Theme.of(context).cardTheme.color,
-      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+      foregroundColor: foregroundColor,
     );
     const double iconSize = 14;
     const double buttonSize = 24;

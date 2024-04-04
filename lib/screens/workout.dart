@@ -8,6 +8,7 @@ import 'package:gym_partner/models/plan_exercise.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/finished_workout.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/gradients/background_gradient.dart';
 import 'package:gym_partner/widgets/modals/end_workout_confirmation.dart';
 import 'package:gym_partner/widgets/modals/exercise_info.dart';
 import 'package:gym_partner/widgets/plan_day_card.dart';
@@ -91,8 +92,9 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     );
   }
 
-  Padding _dayInfoModalContent(BuildContext context) {
-    return Padding(
+  Widget _dayInfoModalContent(BuildContext context) {
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 48),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -210,6 +212,10 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final nextExerciseBannerBackgroundColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.primaryContainer
+        : Theme.of(context).colorScheme.onPrimaryContainer;
     var progressBar = PreferredSize(
         preferredSize: const Size.fromHeight(12),
         child: WorkoutProgressBar(
@@ -224,6 +230,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     var showDayInfoButton =
         IconButton(onPressed: _showDayInfo, icon: const Icon(Icons.list));
     var appBar = AppBar(
+      backgroundColor: backgroundGradientColors(context).firstOrNull,
       bottom: progressBar,
       actions: [
         if (!_isRest) showExerciseInfoButton,
@@ -239,8 +246,7 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
       height: 110,
       alignment: Alignment.center,
       padding: const EdgeInsets.all(24),
-      decoration:
-          BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer),
+      color: nextExerciseBannerBackgroundColor,
       child: _isLastSet
           ? Text(
               'Final exercise',
@@ -360,7 +366,8 @@ class _WorkoutScreenState extends ConsumerState<WorkoutScreen> {
     );
     return Scaffold(
       appBar: appBar,
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(gradient: backgroundGradient(context)),
         padding: const EdgeInsets.only(bottom: 48),
         child: Column(
           children: [

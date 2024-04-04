@@ -5,6 +5,7 @@ import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/utils/time_format.dart';
 import 'package:gym_partner/widgets/badges/circle_icon.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
+import 'package:gym_partner/widgets/gradients/background_gradient.dart';
 
 class FinishedWorkoutScreen extends ConsumerStatefulWidget {
   const FinishedWorkoutScreen({
@@ -80,6 +81,7 @@ class _FinishedWorkoutScreenState extends ConsumerState<FinishedWorkoutScreen> {
     );
     return Scaffold(
       body: Container(
+        decoration: BoxDecoration(gradient: backgroundGradient(context)),
         padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
         width: double.infinity,
         child: Column(

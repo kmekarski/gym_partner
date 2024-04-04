@@ -5,7 +5,7 @@ import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/utils/form_validators.dart';
 import 'package:gym_partner/utils/show_info_dialog.dart';
 import 'package:gym_partner/widgets/buttons/wide_button.dart';
-import 'package:gym_partner/widgets/gradients/auth_gradient.dart';
+import 'package:gym_partner/widgets/gradients/background_gradient.dart';
 import 'package:gym_partner/widgets/small_circle_progress_indicator.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
@@ -74,7 +74,8 @@ class _ChangeUserDataModalState extends ConsumerState<ForgotPasswordScreen> {
         height: double.infinity,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          gradient: authGradient(context),
+          gradient: authBackgroundGradient(context,
+              diagonalOrientation: GradientDialonalOrientation.left),
         ),
         child: Padding(
           padding: const EdgeInsets.all(32),

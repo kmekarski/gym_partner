@@ -18,6 +18,13 @@ class CustomFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final isSelectedBackgroundColor = brightness == Brightness.light
+        ? Colors.grey.shade400
+        : Colors.grey.shade700;
+    final isUnselectedBackgroundColor = brightness == Brightness.light
+        ? Colors.grey.shade300
+        : Colors.grey.shade800;
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: InkWell(
@@ -26,7 +33,9 @@ class CustomFilterChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(isSelected ? 0.18 : 0.08),
+            color: isSelected
+                ? isSelectedBackgroundColor
+                : isUnselectedBackgroundColor,
             borderRadius: BorderRadius.circular(50),
           ),
           child: Row(

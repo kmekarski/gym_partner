@@ -5,7 +5,7 @@ import 'package:gym_partner/providers/public_plans_provider.dart';
 import 'package:gym_partner/providers/user_plans_provider.dart';
 import 'package:gym_partner/providers/user_provider.dart';
 import 'package:gym_partner/screens/tabs.dart';
-import 'package:gym_partner/widgets/gradients/auth_gradient.dart';
+import 'package:gym_partner/widgets/gradients/background_gradient.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -17,7 +17,7 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(gradient: authGradient(context)),
+        decoration: BoxDecoration(gradient: backgroundGradient(context)),
         alignment: Alignment.center,
         child: Column(
           mainAxisSize: MainAxisSize.min,

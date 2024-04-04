@@ -173,12 +173,16 @@ class _NewPlanModalState extends ConsumerState<NewPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+
     final tagSelectedBackgroundColor = Theme.of(context).colorScheme.primary;
-    final tagUnselectedBackgroundColor =
-        Theme.of(context).colorScheme.primaryContainer;
+    final tagUnselectedBackgroundColor = brightness == Brightness.light
+        ? Colors.grey.shade300
+        : Colors.grey.shade800;
     final tagSelectedTextColor = Theme.of(context).colorScheme.onPrimary;
-    final tagUnselectedTextColor =
-        Theme.of(context).colorScheme.onPrimaryContainer;
+    final tagUnselectedTextColor = brightness == Brightness.light
+        ? Theme.of(context).colorScheme.onPrimaryContainer
+        : Theme.of(context).colorScheme.onPrimary;
     var daysPicker = SizedBox(
       height: 50,
       width: MediaQuery.of(context).size.width,
