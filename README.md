@@ -50,10 +50,18 @@ It uses Firebase as a backend server to authenticate users, persist and analyze 
 </div>
 
 #### Creating a workout plan
+
+<div align="center">
+  <img width="200" alt="Creating a plan" src="https://github.com/kmekarski/gym-partner-flutter/assets/72306134/df6d7dba-9aa2-4f96-b227-7aab37551cd7">
+  <img width="200" alt="Creating a plan" src="https://github.com/kmekarski/gym-partner-flutter/assets/72306134/b95344fa-934c-4d45-b1d9-b10fe06a9809">
+</div>
+
+
 #### Authentication
 
 <div align="center">
   <img width="200" alt="Signing in" src="https://github.com/kmekarski/gym-partner-flutter/assets/72306134/03debd26-0822-4efe-9eb5-82b0d7db7991">
+  <img width="200" alt="Signing up" src="https://github.com/kmekarski/gym-partner-flutter/assets/72306134/1dbef881-9cf7-4a26-8d72-5fc1fa072336">
   <img width="200" alt="Reseting password" src="https://github.com/kmekarski/gym-partner-flutter/assets/72306134/37858a62-b1e3-4d33-a9ed-e37990d7d094">
 </div>
 
